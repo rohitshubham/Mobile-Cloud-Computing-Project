@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from .serializers import UserAuthSerializer,UserSerializer
 from .models import UserAuth,User
 from django.views.decorators.csrf import csrf_exempt
-from firebase_admin import credentials, auth, initialize_app
+from firebase_admin import credentials, auth, initialize_app,db
 import os
 from django.conf import settings
 import hashlib
