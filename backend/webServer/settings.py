@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 # Application definition
 
