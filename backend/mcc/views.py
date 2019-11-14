@@ -4,53 +4,50 @@ from rest_framework.response import Response
 from .serializers import UserAuthSerializer,UserSerializer
 from .models import UserAuth,User
 from django.views.decorators.csrf import csrf_exempt
+from firebase_admin import credentials, auth, initialize_app
+import os
+from django.conf import settings
+import hashlib
 
-import pyrebase 
-
-
-config = {
-    'apiKey': "AIzaSyAZwRL3Oz-rJ3vx9U_IBrzqUDF2EcAj4kk",
-    'authDomain': "test-mcc-bba43.firebaseapp.com",
-    'databaseURL': "https://test-mcc-bba43.firebaseio.com",
-    'projectId': "test-mcc-bba43",
-    'storageBucket': "test-mcc-bba43.appspot.com",
-    'messagingSenderId': "162360953834",
-    'appId': "1:162360953834:web:b345e4c8a6f5d3489cc093"
-
-}
-
-
-def index(request):
-    return HttpResponse("Hello, world. You're at the Mobile Cloud Computing index.")
-
+cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
+default_app = initialize_app(cred)
 
 
 
 @csrf_exempt
 @api_view(['POST'])
-def user_list(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
-
-    firebase = pyrebase.initialize_app(config)
-    auth = firebase.auth()
+def user_save(request):
 
   
     if request.method == 'POST':
-        serializer = UserAuthSerializer(data=request.data)
-        if serializer.is_valid():
-            #serializer.save()
-            print(serializer.data['email'])
-            try:
-                user = auth.create_user_with_email_and_password(serializer.data['email'],serializer.data['password'])
-                   
-               
-            except Exception as e:
-                print(e)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-               
+
+        for user in auth.list_users().iterate_all():
+            user_name = request.data["display_name"]
+            if user.display_name == user_name:
+
+                email_hash = str(hashlib.sha256(request.data["email"].encode('utf-8')).hexdigest())
+                return Response({"error" : "DisplayNameAlreadyExists",
+                                  "suggestion_1"  :  f"{user_name}_{email_hash[0:5]}",
+                                  "suggestion_2"  :  f"{user_name}_{email_hash[5:10]}",
+                                  "suggestion_3"  :  f"{user_name}_{email_hash[10:15]}"},
+                                status=status.HTTP_409_CONFLICT)    
+
+        try:
+            user =  auth.create_user(
+                            email=request.data["email"],
+                            email_verified=False,
+                            password=request.data["password"],
+                            display_name=request.data["display_name"],
+                            photo_url=f'https://profilePhoto/{request.data["email"]}',
+                            disabled=False)
+
+            # Upload photo here                
+        except auth.EmailAlreadyExistsError:
+            return Response({"error" : "EmailAlreadyExists"}, status=status.HTTP_409_CONFLICT)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"success" : "created"}, status=status.HTTP_201_CREATED)
+            
            
-        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
