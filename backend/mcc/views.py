@@ -101,5 +101,20 @@ def project_save(request):
 
 @csrf_exempt
 @api_view(['GET'])
-def projects_list(request,email):
-   pass
+def projects_list(request,email_id):
+    try:
+        # Create a reference to the projects collection
+        projects_ref = db.collection(u'projects')
+
+        # Create a query against the collection
+        docs = projects_ref.where(u'requester_email', u'==', email_id).stream()
+
+        project_list = [ {el.id: el.to_dict()} for el in docs ]
+
+        for doc in docs:
+            print(u'{} => {}'.format(doc.id, doc.to_dict()))        
+        return Response({"sucess": "Done",
+                         "project_list":project_list }, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
