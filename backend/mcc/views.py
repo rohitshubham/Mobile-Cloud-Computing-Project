@@ -84,22 +84,48 @@ def user_get(request, email_id):
 @csrf_exempt
 @api_view(['POST', 'PUT'])
 def project_save(request):
-    try:
-        serializer = ProjectSerializer(data=request.data)
-        if serializer.is_valid():
-            print(serializer.data)
-            #using doc_ref.id as project id
-            doc_ref = db.collection(u'projects').document()
-            doc_ref.set(serializer.data)            
-            return Response({"success" : "created",
-                             "project_id":doc_ref.id}, status=status.HTTP_201_CREATED)
-        return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
-    except Exception as e:
-        print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    if request.method == 'POST':  
+        try:
+            serializer = ProjectSerializer(data=request.data)
+            if serializer.is_valid():
+                print(serializer.data)
+                #using doc_ref.id as project id
+                doc_ref = db.collection(u'projects').document()
+                doc_ref.set(serializer.data)            
+                return Response({"success" : "created",
+                                "project_id":doc_ref.id}, status=status.HTTP_201_CREATED)
+            return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    if request.method == 'PUT':
+        #Saving it before removing 
+        project_id = request.data['project_id']
+        #Removing it to pass the Serializer
+        del request.data['project_id']
+
+        try:
+            serializer = ProjectSerializer(data=request.data)
+            if serializer.is_valid():
+                print(serializer.data)
+                #using doc_ref.id as project id
+                doc_ref = db.collection(u'projects').document(project_id)
+                doc_ref.update(serializer.data)
+
+                #Manually adding project id
+                request.data['project_id'] = project_id
+                
+
+                return Response({"success" : "Updated",
+                                "project_now":request.data}, status=status.HTTP_200_OK)
+                                
+            return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
+#Just to add Project_id manually to each project object
 def projects_list_helper(project):
     p_obj = project.to_dict()
     p_obj['project_id'] = project.id
