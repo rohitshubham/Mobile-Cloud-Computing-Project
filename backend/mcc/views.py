@@ -130,18 +130,39 @@ def projects_list(request,email_id):
 
 
 @csrf_exempt
-@api_view(['GET'])
+@api_view(['GET','DELETE'])
 def project_details(request,project_id):
-    try:
-        # Create a reference to the projects collection
-        doc = db.collection(u'projects').document(project_id).get()
- 
-        project_dict = doc.to_dict()
-        project_dict['project_id'] = project_id
-        
-          
-        return Response({"success": "Done",                        
-                         "project_info":project_dict }, status=status.HTTP_200_OK)
-    except Exception as e:
-        print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    if request.method == 'GET':  
+        try:
+            # Create a reference to the projects collection
+            doc = db.collection(u'projects').document(project_id).get()
+
+            if not doc.exists:
+                 return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
+    
+            project_dict = doc.to_dict()
+            project_dict['project_id'] = project_id
+            
+            
+            return Response({"success": "Found",                        
+                            "project_info":project_dict }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if request.method == 'DELETE':  
+        try:
+
+             # Create a reference to the projects collection
+            doc = db.collection(u'projects').document(project_id)
+
+            if not doc.get().exists:
+                 return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+            
+            doc.delete()            
+            return Response({"success": "Deleted" }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+       
