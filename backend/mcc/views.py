@@ -11,11 +11,11 @@ from firebase_admin import credentials, auth, initialize_app, db, storage, fires
 from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer
 from .models import UserAuth, User, Project
 
+#This is GK's key
+#cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
 
-cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
 
-
-#cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
+cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
 
 # ToDO : Update the storage bucket ID
 default_app = initialize_app(cred,{
