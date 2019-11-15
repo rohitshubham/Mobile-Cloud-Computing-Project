@@ -99,6 +99,12 @@ def project_save(request):
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+
+def projects_list_helper(project):
+    p_obj = project.to_dict()
+    p_obj['project_id'] = project.id
+    return p_obj
+
 @csrf_exempt
 @api_view(['GET'])
 def projects_list(request,email_id):
@@ -109,12 +115,33 @@ def projects_list(request,email_id):
         # Create a query against the collection
         docs = projects_ref.where(u'requester_email', u'==', email_id).stream()
 
-        project_list = [ {el.id: el.to_dict()} for el in docs ]
+        project_list = [  projects_list_helper(el) for el in docs ]
 
         for doc in docs:
             print(u'{} => {}'.format(doc.id, doc.to_dict()))        
-        return Response({"sucess": "Done",
+        return Response({"success": "Done",
                          "project_list":project_list }, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+@csrf_exempt
+@api_view(['GET'])
+def project_details(request,project_id):
+    try:
+        # Create a reference to the projects collection
+        doc = db.collection(u'projects').document(project_id).get()
+ 
+        project_dict = doc.to_dict()
+        project_dict['project_id'] = project_id
+        
+          
+        return Response({"success": "Done",                        
+                         "project_info":project_dict }, status=status.HTTP_200_OK)
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
