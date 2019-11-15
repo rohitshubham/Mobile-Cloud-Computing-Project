@@ -11,13 +11,15 @@ from firebase_admin import credentials, auth, initialize_app, db, storage, fires
 from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer
 from .models import UserAuth, User, Project
 
+#This is GK's key
+#cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
 
 
 cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
 
 # ToDO : Update the storage bucket ID
 default_app = initialize_app(cred,{
-    'storageBucket': 'test-mcc-bba43.appspot.com'
+    'storageBucket': 'test-mcc-bba43.appspot.com' #change this
 })
 
 bucket = storage.bucket()
@@ -82,12 +84,111 @@ def user_get(request, email_id):
 @csrf_exempt
 @api_view(['POST', 'PUT'])
 def project_save(request):
+    if request.method == 'POST':  
+        try:
+            serializer = ProjectSerializer(data=request.data)
+            if serializer.is_valid():
+                print(serializer.data)
+                #using doc_ref.id as project id
+                doc_ref = db.collection(u'projects').document()
+                doc_ref.set(serializer.data)            
+                return Response({"success" : "created",
+                                "project_id":doc_ref.id}, status=status.HTTP_201_CREATED)
+            return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    if request.method == 'PUT':
+        #Saving it before removing 
+        project_id = request.data['project_id']
+        #Removing it to pass the Serializer
+        del request.data['project_id']
+
+        try:
+            serializer = ProjectSerializer(data=request.data)
+            if serializer.is_valid():
+                print(serializer.data)
+                #using doc_ref.id as project id
+                doc_ref = db.collection(u'projects').document(project_id)
+                doc_ref.update(serializer.data)
+
+                #Manually adding project id
+                request.data['project_id'] = project_id
+                
+
+                return Response({"success" : "Updated",
+                                "project_now":request.data}, status=status.HTTP_200_OK)
+                                
+            return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+#Just to add Project_id manually to each project object
+def projects_list_helper(project):
+    p_obj = project.to_dict()
+    p_obj['project_id'] = project.id
+    return p_obj
+
+@csrf_exempt
+@api_view(['GET'])
+def projects_list(request,email_id):
     try:
-        serializer = ProjectSerializer(data=request.data)
-        if serializer.is_valid():
-            print(serializer.data)
-            db.collection(u'projects').add(serializer.data)
-        return Response("Not working", status = status.HTTP_206_PARTIAL_CONTENT)
+        # Create a reference to the projects collection
+        projects_ref = db.collection(u'projects')
+
+        # Create a query against the collection
+        docs = projects_ref.where(u'requester_email', u'==', email_id).stream()
+
+        project_list = [  projects_list_helper(el) for el in docs ]
+
+        for doc in docs:
+            print(u'{} => {}'.format(doc.id, doc.to_dict()))        
+        return Response({"success": "Done",
+                         "project_list":project_list }, status=status.HTTP_200_OK)
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+@csrf_exempt
+@api_view(['GET','DELETE'])
+def project_details(request,project_id):
+    if request.method == 'GET':  
+        try:
+            # Create a reference to the projects collection
+            doc = db.collection(u'projects').document(project_id).get()
+
+            if not doc.exists:
+                 return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
+    
+            project_dict = doc.to_dict()
+            project_dict['project_id'] = project_id
+            
+            
+            return Response({"success": "Found",                        
+                            "project_info":project_dict }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if request.method == 'DELETE':  
+        try:
+
+             # Create a reference to the projects collection
+            doc = db.collection(u'projects').document(project_id)
+
+            if not doc.get().exists:
+                 return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+            
+            doc.delete()            
+            return Response({"success": "Deleted" }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+       
