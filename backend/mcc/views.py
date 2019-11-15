@@ -12,12 +12,14 @@ from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer
 from .models import UserAuth, User, Project
 
 
+cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
 
-cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
+
+#cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
 
 # ToDO : Update the storage bucket ID
 default_app = initialize_app(cred,{
-    'storageBucket': 'test-mcc-bba43.appspot.com'
+    'storageBucket': 'test-mcc-bba43.appspot.com' #change this
 })
 
 bucket = storage.bucket()
@@ -86,8 +88,18 @@ def project_save(request):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             print(serializer.data)
-            db.collection(u'projects').add(serializer.data)
-        return Response("Not working", status = status.HTTP_206_PARTIAL_CONTENT)
+            #using doc_ref.id as project id
+            doc_ref = db.collection(u'projects').document()
+            doc_ref.set(serializer.data)            
+            return Response({"success" : "created",
+                             "project_id":doc_ref.id}, status=status.HTTP_201_CREATED)
+        return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@csrf_exempt
+@api_view(['GET'])
+def projects_list(request,email):
+   pass
