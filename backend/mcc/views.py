@@ -4,21 +4,24 @@ from rest_framework.response import Response
 from .serializers import UserAuthSerializer,UserSerializer
 from .models import UserAuth,User
 from django.views.decorators.csrf import csrf_exempt
-from firebase_admin import credentials, auth, initialize_app,db
+from firebase_admin import credentials, auth, initialize_app, db, storage
 import os
 from django.conf import settings
 import hashlib
 
 cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
-default_app = initialize_app(cred)
+default_app = initialize_app(cred,{
+    'storageBucket': 'test-mcc-bba43.appspot.com'
+})
 
+bucket = storage.bucket()
 
 
 @csrf_exempt
 @api_view(['POST'])
 def user_save(request):
 
-  
+    
     if request.method == 'POST':
 
         for user in auth.list_users().iterate_all():
@@ -41,7 +44,8 @@ def user_save(request):
                             photo_url=f'https://profilePhoto/{request.data["email"]}',
                             disabled=False)
 
-            # Upload photo here                
+            # Upload photo here 
+                           
         except auth.EmailAlreadyExistsError:
             return Response({"error" : "EmailAlreadyExists"}, status=status.HTTP_409_CONFLICT)
         except Exception as e:
