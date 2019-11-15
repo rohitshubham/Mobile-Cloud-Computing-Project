@@ -1,13 +1,17 @@
+import os
+import hashlib
+import json
+from django.core import serializers
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import UserAuthSerializer,UserSerializer
-from .models import UserAuth,User
-from django.views.decorators.csrf import csrf_exempt
-from firebase_admin import credentials, auth, initialize_app, db, storage
-import os
-from django.conf import settings
-import hashlib
+from firebase_admin import credentials, auth, initialize_app, db, storage, firestore
+from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer
+from .models import UserAuth, User, Project
+
+
 
 cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
 
@@ -17,6 +21,7 @@ default_app = initialize_app(cred,{
 })
 
 bucket = storage.bucket()
+db = firestore.client()
 
 
 @csrf_exempt
@@ -74,3 +79,15 @@ def user_get(request, email_id):
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@csrf_exempt
+@api_view(['POST', 'PUT'])
+def project_save(request):
+    try:
+        serializer = ProjectSerializer(data=request.data)
+        if serializer.is_valid():
+            print(serializer.data)
+            db.collection(u'projects').add(serializer.data)
+        return Response("Not working", status = status.HTTP_206_PARTIAL_CONTENT)
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
