@@ -1,6 +1,7 @@
 import os
 import hashlib
 import json
+from datetime import datetime
 from django.core import serializers
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -8,8 +9,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from firebase_admin import credentials, auth, initialize_app, db, storage, firestore
-from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer
-from .models import UserAuth, User, Project
+from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, UserProjectSerializer
+from .models import UserAuth, User, Project, UserProject
 
 #This is GK's key
 cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
@@ -69,7 +70,14 @@ def user_save(request):
             print(e)
             return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-         
+
+def save_list_project_members(list_members, project_id, requester_email):
+    for member in list_members:
+        data = {'email_id' : member, 'project_id': project_id, 'is_project_administrator' :  member == requester_email  }
+        serializer_user_project = UserProjectSerializer(data = data)
+
+        db.collection(u'userProjects').document().set(serializer_user_project.initial_data)
+
            
 @csrf_exempt
 @api_view(['GET'])
@@ -86,14 +94,17 @@ def user_get(request, email_id):
 def project_save(request):
     if request.method == 'POST':  
         try:
+            request.data['creation_time'] = datetime.now()
             serializer = ProjectSerializer(data=request.data)
             if serializer.is_valid():
-                print(serializer.data)
                 #using doc_ref.id as project id
                 doc_ref = db.collection(u'projects').document()
-                doc_ref.set(serializer.data)            
+                doc_ref.set(serializer.data)
+                list_members = serializer.data["team_members"].split(",")
+                save_list_project_members(list_members, doc_ref.id, request.data["requester_email"])
+
                 return Response({"success" : "created",
-                                "project_id":doc_ref.id}, status=status.HTTP_201_CREATED)
+                                "project_id": doc_ref.id}, status=status.HTTP_201_CREATED)
             return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
         except Exception as e:
             print(e)
@@ -107,7 +118,6 @@ def project_save(request):
         try:
             serializer = ProjectSerializer(data=request.data)
             if serializer.is_valid():
-                print(serializer.data)
                 #using doc_ref.id as project id
                 doc_ref = db.collection(u'projects').document(project_id)
                 doc_ref.update(serializer.data)
@@ -117,7 +127,7 @@ def project_save(request):
                 
 
                 return Response({"success" : "Updated",
-                                "project_now":request.data}, status=status.HTTP_200_OK)
+                                "project_now" : request.data}, status = status.HTTP_200_OK)
                                 
             return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
         except Exception as e:
