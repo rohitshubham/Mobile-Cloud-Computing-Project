@@ -1,6 +1,10 @@
 # Created by https://www.gitignore.io/api/gradle,kotlin
 # Edit at https://www.gitignore.io/?templates=gradle,kotlin
 
+### Idea ### 
+.idea
+
+
 ### Kotlin ###
 # Compiled class file
 *.class
