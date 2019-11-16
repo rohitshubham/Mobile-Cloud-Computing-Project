@@ -8,6 +8,7 @@ urlpatterns = [
     path('user/<str:email_id>', views.user_get, name=""),
     path('project/', views.project_save, name=''),
     path('project/<str:project_id>', views.project_details, name=''),
+    path('project/remove_member/<str:project_id>', views.remove_team_member, name=''),
     path('projects/<str:email_id>', views.projects_list, name='')
 ]
 

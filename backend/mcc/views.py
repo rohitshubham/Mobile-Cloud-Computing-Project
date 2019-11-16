@@ -12,10 +12,10 @@ from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer
 from .models import UserAuth, User, Project
 
 #This is GK's key
-#cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
+cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
 
 
-cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
+#cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
 
 # ToDO : Update the storage bucket ID
 default_app = initialize_app(cred,{
@@ -192,3 +192,19 @@ def project_details(request,project_id):
             print(e)
             return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
        
+@csrf_exempt
+@api_view(['POST'])
+def remove_team_member(request,project_id):
+    try:
+
+        members_to_be_deleted = request.data['team_members'].split(',')
+
+        for member in members_to_be_deleted:
+            docs = projects_ref.where(u'email_id', u'==', member).where(u'project_id').delete()
+            print(member)
+
+     
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
