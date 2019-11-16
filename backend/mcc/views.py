@@ -153,8 +153,7 @@ def projects_list(request,email_id):
 
         project_list = [  projects_list_helper(el) for el in docs ]
 
-        for doc in docs:
-            print(u'{} => {}'.format(doc.id, doc.to_dict()))        
+         
         return Response({"success": "Done",
                          "project_list":project_list }, status=status.HTTP_200_OK)
     except Exception as e:
@@ -203,17 +202,18 @@ def project_details(request,project_id):
             return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
        
 @csrf_exempt
-@api_view(['POST'])
+@api_view(['DELETE'])
 def remove_team_member(request,project_id):
     try:
 
-        members_to_be_deleted = request.data['team_members'].split(',')
-
+        members_to_be_deleted = request.data['delete_members'].split(',')
+        projects_ref = db.collection(u'userProjects')
         for member in members_to_be_deleted:
-            docs = projects_ref.where(u'email_id', u'==', member).where(u'project_id').delete()
-            print(member)
-
-     
+            obj = projects_ref.where(u'email_id', u'==', member).where(u'project_id',u'==', project_id).get()
+            for d in obj:
+                projects_ref.document(d.id).delete()
+        return Response({"success" : 'Deleted'}, status=status.HTTP_200_OK)
+        
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
