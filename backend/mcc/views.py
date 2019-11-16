@@ -13,10 +13,10 @@ from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, 
 from .models import UserAuth, User, Project, UserProject
 
 #This is GK's key
-cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
+#cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
 
 
-#cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
+cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
 
 # ToDO : Update the storage bucket ID
 default_app = initialize_app(cred,{
@@ -71,7 +71,8 @@ def user_save(request):
             return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def save_list_project_members(list_members, project_id, requester_email):
+def save_list_project_members(members, project_id, requester_email):
+    list_members = members.split(",")
     for member in list_members:
         data = {'email_id' : member, 'project_id': project_id, 'is_project_administrator' :  member == requester_email  }
         serializer_user_project = UserProjectSerializer(data = data)
@@ -100,8 +101,7 @@ def project_save(request):
                 #using doc_ref.id as project id
                 doc_ref = db.collection(u'projects').document()
                 doc_ref.set(serializer.data)
-                list_members = serializer.data["team_members"].split(",")
-                save_list_project_members(list_members, doc_ref.id, request.data["requester_email"])
+                save_list_project_members(serializer.data["team_members"], doc_ref.id, request.data["requester_email"])
 
                 return Response({"success" : "created",
                                 "project_id": doc_ref.id}, status=status.HTTP_201_CREATED)
@@ -114,7 +114,8 @@ def project_save(request):
         project_id = request.data['project_id']
         #Removing it to pass the Serializer
         del request.data['project_id']
-
+        #ToDO: Check creation time logic -it shouldn't change
+        request.data['creation_time'] = datetime.now()
         try:
             serializer = ProjectSerializer(data=request.data)
             if serializer.is_valid():
@@ -124,7 +125,8 @@ def project_save(request):
 
                 #Manually adding project id
                 request.data['project_id'] = project_id
-                
+                remove_team_member(project_id)
+                save_list_project_members(serializer.data["team_members"], project_id, request.data["requester_email"])
 
                 return Response({"success" : "Updated",
                                 "project_now" : request.data}, status = status.HTTP_200_OK)
@@ -159,9 +161,6 @@ def projects_list(request,email_id):
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
 
 
 @csrf_exempt
@@ -201,20 +200,12 @@ def project_details(request,project_id):
             print(e)
             return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
        
-@csrf_exempt
-@api_view(['DELETE'])
-def remove_team_member(request,project_id):
+def remove_team_member(project_id):
     try:
-
-        members_to_be_deleted = request.data['delete_members'].split(',')
         projects_ref = db.collection(u'userProjects')
-        for member in members_to_be_deleted:
-            obj = projects_ref.where(u'email_id', u'==', member).where(u'project_id',u'==', project_id).get()
-            for d in obj:
-                projects_ref.document(d.id).delete()
-        return Response({"success" : 'Deleted'}, status=status.HTTP_200_OK)
-        
+        docs = projects_ref.where(u'project_id',u'==', project_id).get()
+        for doc in docs:
+            projects_ref.document(doc.id).delete()    
     except Exception as e:
         print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
