@@ -2,7 +2,7 @@
 # Edit at https://www.gitignore.io/?templates=gradle,kotlin
 
 ### Idea ### 
-.idea
+.idea/**
 
 
 ### Kotlin ###

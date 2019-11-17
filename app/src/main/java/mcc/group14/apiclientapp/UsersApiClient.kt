@@ -1,6 +1,9 @@
 package mcc.group14.apiclientapp
 
+import android.util.Log
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -12,21 +15,19 @@ import okhttp3.ResponseBody
 import retrofit2.http.POST
 import retrofit2.http.Multipart
 
-
-
 interface UsersApiClient{
     companion object {
 
         fun create(): UsersApiClient {
 
             val getURL = "https://my-json-server.typicode.com/MMirelli/mock-server/"
-            val postRQ = "https://enayq5hczfw0p.x.pipedream.net"
+            val postRQ = "https://enh6adcabkabd.x.pipedream.net/"
             val postURL = "https://end3tov89or2uks.m.pipedream.net/"
             val localURL = "http://10.0.2.2:5000/"
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(postRQ)
+                .baseUrl(getURL)
                 .build()
 
             return retrofit.create(UsersApiClient::class.java)
