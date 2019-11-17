@@ -25,7 +25,7 @@
       </configuration>
     </facet>
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/src/debug/kotlin;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe-new/app/src/debug/java;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe-new/app/src/release/kotlin;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe-new/app/src/release/java;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe-new/app/src/debugAndroidTest/kotlin;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe-new/app/src/debugUnitTest/kotlin;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe-new/app/src/releaseUnitTest/kotlin">
+      <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/src/debug/kotlin;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe/app/src/debug/java;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe/app/src/release/kotlin;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe/app/src/release/java;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe/app/src/debugAndroidTest/kotlin;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe/app/src/debugUnitTest/kotlin;/home/maks/Studying/Uni/MCC/mcc-fall-2019-g14/fe/app/src/releaseUnitTest/kotlin">
         <compilerSettings>
           <option name="additionalArguments" value="-Xallow-no-source-files" />
         </compilerSettings>
