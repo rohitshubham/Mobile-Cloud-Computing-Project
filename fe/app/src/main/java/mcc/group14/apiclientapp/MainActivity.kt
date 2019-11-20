@@ -14,34 +14,121 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 
+
+// User Settings view
 class MainActivity : AppCompatActivity(), UserContract.View {
 
+
     private val TAG = "UserActivity"
-    private var pbloading: ProgressBar? = null
-    private var user: User? = null
-    private var userPresenter: UserPresenter? = null
+
+    // UI variables, NB lateinit lets us initialise them in initGUI
+    private lateinit var pbloading: ProgressBar
+    private lateinit var imagePutBtn: Button
+
+    // Data variables
+    private lateinit var userPresenter: UserPresenter
+    // NB: user might be changing (projects and created_projects might change), always get it from the
+    //     BE before using his data
+    private lateinit var user: User
 
     // just a constant
     private companion object{
-        const val GALLERY_PHOTO_REQ = 1
+        const val PROFILE_PIC_SELECTION = 1
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // for getting/posting data
+        userPresenter = UserPresenter(this)
+
+        // initialises GUI elements
+        initGUI()
+
+        setListeners()
+
+        // from login or sign-up
+        var id : Int = 1
+        userPresenter.getUserData(id)
+/*
+        val user = User(4, "usr4", "usr4@mail.fi", null,
+            "/img1.png", mutableListOf("pr5"), mutableListOf("pr1"))
+        postUser(user)*/
+
+    }
+
+    private fun setListeners() {
+        imagePutBtn.setOnClickListener {
+            val pickGalleryIntent =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+
+            pickGalleryIntent.type = "image/*"
+            startActivityForResult(pickGalleryIntent, PROFILE_PIC_SELECTION)
+        }
+    }
+
+    private fun initGUI() {
+        pbloading = findViewById(R.id.pb_loading)
+        imagePutBtn = findViewById<Button>(R.id.imagePutter)
+    }
+
+    // to implement the profile image selection from the gallery
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK && requestCode == PROFILE_PIC_SELECTION){
+            pickAndUploadProfilePicture(data)
+        } else {
+            val t = Toast.makeText(applicationContext,
+                "No photo selected", Toast.LENGTH_SHORT)
+            t.show()
+        }
+    }
+
+    private fun pickAndUploadProfilePicture(data: Intent?) {
+        val iv = findViewById<ImageView>(R.id.userImage)
+        val imageUri = data?.data
+
+        val img: Bitmap = BitmapFactory.decodeStream(
+            contentResolver.openInputStream(imageUri!!)
+        )
+
+        // this function will store the image both locally and on the BE.
+        // local path -> user.localProfileImagePath
+        // remote path -> user.profileImagePath
+        userPresenter.storeProfileImage(img, user.userId,
+            user.displayName, this.applicationContext)
+
+        // user stores, not yet implemented
+        // storeImage(1, "usr1", img)
+        // sets image in ImageView
+        iv.setImageBitmap(img)
+
+        // TODO: cool way to scale an image
+        // val scaledImage: Bitmap = Bitmap.createScaledBitmap(img, iv.width, iv.height, true)
+    }
+
+    override fun setLocalProfileImagePath(localPath: String) {
+        user.localProfileImagePath = localPath
+        Log.d(TAG, "Image saved successfully in: $localPath")
     }
 
     override fun showProgress() {
-        pbloading?.visibility = View.VISIBLE
-
-
+        pbloading.visibility = View.VISIBLE
     }
 
     override fun hideProgress() {
-        pbloading?.visibility = View.GONE
+        pbloading.visibility = View.GONE
     }
 
-    override fun displayUserData(fetchedUser: User) {
-        user = fetchedUser
-        if (user != null) {
+    override fun refreshAndDisplayUserData(fetchedUser: User) {
+        this.user = fetchedUser
+        if (this.user != null) {
             Toast.makeText(this,
                 fetchedUser.displayName, Toast.LENGTH_LONG).show()
+
+            Log.d(TAG, this.user.toString() )
         }
     }
 
@@ -52,59 +139,4 @@ class MainActivity : AppCompatActivity(), UserContract.View {
             Toast.LENGTH_LONG).show()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        pbloading = ProgressBar(this)
-        userPresenter = UserPresenter(this)
-        // from login or sign-up
-        var id : Int = 1
-        userPresenter?.getUserData(id)
-
-        val imagePutBtn = findViewById<Button>(R.id.imagePutter)
-
-
-        imagePutBtn.setOnClickListener {
-            val pickGalleryIntent =
-                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-
-            pickGalleryIntent.type = "image/*"
-            startActivityForResult(pickGalleryIntent, GALLERY_PHOTO_REQ)
-        }
-
-
-        //getUser(1)
-/*
-        val user = User(4, "usr4", "usr4@mail.fi", null,
-            "/img1.png", mutableListOf("pr5"), mutableListOf("pr1"))
-        postUser(user)*/
-
-    }
-
-    // to implement the profile image selection from the gallery
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == Activity.RESULT_OK && requestCode == GALLERY_PHOTO_REQ){
-
-            val iv = findViewById<ImageView>(R.id.userImage)
-            val imageUri = data?.data
-
-            val img : Bitmap = BitmapFactory.decodeStream(contentResolver.
-                openInputStream(imageUri!!))
-
-            // user stores, not yet implemented
-            // uploadImage(1, "usr1", img)
-            // sets image in ImageView
-            iv.setImageBitmap(img)
-
-            // TODO: cool way to scale an image
-            // val scaledImage: Bitmap = Bitmap.createScaledBitmap(img, iv.width, iv.height, true)
-        } else {
-            val t = Toast.makeText(applicationContext,
-                "No photo selected", Toast.LENGTH_SHORT)
-            t.show()
-        }
-    }
 }

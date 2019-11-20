@@ -7,23 +7,33 @@ import android.graphics.Bitmap
 interface UserContract {
     interface Model{
 
-        interface OnFinishedListener {
-            fun onFinished(user: User)
+        interface OnGetFinishedListener {
+            fun onGetFinished(user: User)
 
-            fun onFailure(t: Throwable)
+            fun onGetFailure(t: Throwable)
         }
 
-        fun uploadImage(userId: Int, dispName: String,
-                        img: Bitmap?, applicationContext: Context)
+        interface  OnUploadFinishedListener{
+            fun OnUploadFailure(t: Throwable)
+
+            fun OnUploadFinished(localImagePath: String)
+
+        }
+
+        fun storeImage(uploadListener: OnUploadFinishedListener, userId: Int,
+                       dispName: String, img: Bitmap,
+                       applicationContext: Context)
 
         fun postUser(user: User)
 
-        fun getUser(listener: OnFinishedListener, userId: Int)
+        fun getUser(listenerGet: OnGetFinishedListener, userId: Int)
     }
 
     interface View{
 
-        fun displayUserData(fetchedUser: User)
+        fun setLocalProfileImagePath(localPath: String)
+
+        fun refreshAndDisplayUserData(fetchedUser: User)
 
         fun showProgress()
 
@@ -39,5 +49,7 @@ interface UserContract {
 
         fun getUserData(userId: Int)
 
+        fun storeProfileImage(profileImage: Bitmap, userId: Int,
+                              dispName: String, curContext: Context)
     }
 }

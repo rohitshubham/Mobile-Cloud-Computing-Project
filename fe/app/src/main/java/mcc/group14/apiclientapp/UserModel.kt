@@ -25,7 +25,7 @@ class UserModel : UserContract.Model {
     }
     val TAG = "UserModel"
 
-    override fun getUser(listener: UserContract.Model.OnFinishedListener,
+    override fun getUser(listenerGet: UserContract.Model.OnGetFinishedListener,
                          userId: Int) {
 
         var disposable = client.getUser(userId)
@@ -33,10 +33,10 @@ class UserModel : UserContract.Model {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> Log.v(TAG, "" + result)
-                    listener.onFinished(result)
+                    listenerGet.onGetFinished(result)
                 },
                 { error -> Log.e(TAG, error.message)
-                    listener.onFailure(error)
+                    listenerGet.onGetFailure(error)
                 }
             )
     }
@@ -52,8 +52,9 @@ class UserModel : UserContract.Model {
     }
 
 
-    override fun uploadImage(userId: Int, dispName: String,
-                             img: Bitmap?, applicationContext: Context) {
+    override fun storeImage(onUploadFinishedListener: UserContract.Model.OnUploadFinishedListener,
+                            userId: Int, dispName: String,
+                            img: Bitmap, applicationContext: Context) {
 
         var userId = RequestBody.create(
             MediaType.
@@ -64,39 +65,66 @@ class UserModel : UserContract.Model {
 
         var profilePic: MultipartBody.Part? = null
 
-        if (img != null) {
-            //val file: File = File()
-            val filesDir = applicationContext.filesDir
-            val file = File(filesDir, "profile_image-cache.png")
+        val file =
+                storeImageLocally(applicationContext, dispName,
+                    onUploadFinishedListener, img)
 
-            val bos = ByteArrayOutputStream()
+        uploadImage(file, profilePic, userId, userDisplayName, onUploadFinishedListener)
+    }
 
+    private fun uploadImage(
+        file: File,
+        profilePic: MultipartBody.Part?,
+        userId: RequestBody,
+        userDisplayName: RequestBody,
+        onUploadFinishedListener: UserContract.Model.OnUploadFinishedListener
+    ) {
+        var profilePic1 = profilePic
+        val requestFile: RequestBody = RequestBody.create(MediaType.parse("image/*"), file)
 
-            img.compress(Bitmap.CompressFormat.PNG, 0, bos)
-            val bitmapdata = bos.toByteArray()
+        profilePic1 = MultipartBody.Part.createFormData("profileImage", file.name, requestFile)
 
-            val fos = FileOutputStream(file)
-            fos.write(bitmapdata)
-            fos.flush()
-            fos.close()
-
-            val requestFile : RequestBody = RequestBody.
-                create(MediaType.parse("image/*"), file)
-
-            profilePic = MultipartBody.Part.
-                createFormData("profileImage", file.name, requestFile)
-        }
-        val call: Call<ResponseBody> = client.uploadProfilePicture(userId, userDisplayName, profilePic)
+        val call: Call<ResponseBody> =
+            client.uploadProfilePicture(userId, userDisplayName, profilePic1)
         call.enqueue(object : Callback<ResponseBody> {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.d(TAG,t.message)
+                onUploadFinishedListener.OnUploadFailure(t)
+                Log.d(TAG, t.message)
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                Log.d(TAG, response.body().toString())
+                Log.d(TAG, "Image successfully uploaded, response: ${response.body().toString()}")
             }
         })
+    }
+
+    private fun storeImageLocally(
+        applicationContext: Context,
+        dispName: String,
+        onUploadFinishedListener: UserContract.Model.OnUploadFinishedListener,
+        img: Bitmap
+    ): File {
+        //val file: File = File()
+        val filesDir = applicationContext.filesDir
+        // saves the file in the filesDir, TODO: check it
+        val file = File(filesDir, "$dispName.png")
+
+        val bos = ByteArrayOutputStream()
+
+        img.compress(Bitmap.CompressFormat.PNG, 0, bos)
+        val bitmapdata = bos.toByteArray()
+
+        // bitmap -> stream -> file
+        val fos = FileOutputStream(file)
+        fos.write(bitmapdata)
+        fos.flush()
+        fos.close()
+
+        // saves the localImagePath inside the user
+        onUploadFinishedListener.OnUploadFinished(file.absolutePath)
+
+        return file
     }
 
 }
