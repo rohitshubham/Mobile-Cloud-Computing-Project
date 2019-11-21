@@ -50,7 +50,7 @@ class UserPresenter (val userView: UserContract.View):
     }
 
     override fun onDestroy() {
-
+        // TODO: implement
     }
 
 }

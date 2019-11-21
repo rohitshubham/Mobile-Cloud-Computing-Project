@@ -19,7 +19,7 @@ import android.widget.Toast
 class MainActivity : AppCompatActivity(), UserContract.View {
 
 
-    private val TAG = "UserActivity"
+    private val TAG = "UserMAActivity"
 
     // UI variables, NB lateinit lets us initialise them in initGUI
     private lateinit var pbloading: ProgressBar
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), UserContract.View {
         setListeners()
 
         // from login or sign-up
-        var id : Int = 1
+        var id : Int = 2
         userPresenter.getUserData(id)
 /*
         val user = User(4, "usr4", "usr4@mail.fi", null,
@@ -125,6 +125,7 @@ class MainActivity : AppCompatActivity(), UserContract.View {
     override fun refreshAndDisplayUserData(fetchedUser: User) {
         this.user = fetchedUser
         if (this.user != null) {
+            Log.d(TAG, fetchedUser.toString())
             Toast.makeText(this,
                 fetchedUser.displayName, Toast.LENGTH_LONG).show()
 

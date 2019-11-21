@@ -7,7 +7,7 @@ data class User(
     var password: String?,
     // NB: profileImagePath is the path to the profile image in the BE
     val profileImagePath: String,
-    var projects: MutableList<String>,
-    var createdProjects: MutableList<String>,
+    var projects: MutableList<Project>,
+    var createdProjects: MutableList<Project>,
     var localProfileImagePath: String?
 )
