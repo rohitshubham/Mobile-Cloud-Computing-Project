@@ -50,4 +50,18 @@ class UserProject(models.Model):
     email_id = models.EmailField()
     project_id = models.TextField()
     is_project_administrator = models.BooleanField()
+
+
+class Task(models.Model):
+    STATUS_ENUM = [
+        ('P', 'Pending'),
+        ('O', 'On-Going'),
+        ('C', 'Complete')
+    ]   
+    description = models.TextField()   
+    deadline = models.DateField()
+    project_id = models.TextField()    
+    status = models.CharField(max_length= 1, choices= STATUS_ENUM, default= 'P')
     
+
+   

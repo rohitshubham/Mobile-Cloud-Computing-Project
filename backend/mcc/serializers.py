@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import UserAuth, User, Project, UserProject
+from .models import UserAuth, User, Project, UserProject, Task
 
 class UserAuthSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -22,3 +22,8 @@ class UserProjectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserProject
         fields = ['email_id', 'project_id', 'is_project_administrator']
+
+class TaskSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['description', 'deadline', 'project_id','status']

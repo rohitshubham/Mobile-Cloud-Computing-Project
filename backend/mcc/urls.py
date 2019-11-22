@@ -8,7 +8,8 @@ urlpatterns = [
     path('user/<str:email_id>', views.user_get, name=""),
     path('project/', views.project_save, name=''),
     path('project/<str:project_id>', views.project_details, name=''),
-    path('projects/<str:email_id>', views.projects_list, name='')
+    path('projects/<str:email_id>', views.projects_list, name=''),
+    path('task/',views.task_save,name='')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

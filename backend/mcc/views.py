@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from firebase_admin import credentials, auth, initialize_app, db, storage, firestore
-from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, UserProjectSerializer
+from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, UserProjectSerializer, TaskSerializer
 from .models import UserAuth, User, Project, UserProject
 
 #This is GK's key
@@ -209,3 +209,16 @@ def remove_team_member(project_id):
     except Exception as e:
         print(e)
     
+
+#=================================================================================
+
+@csrf_exempt
+@api_view(["POST"])
+def task_save(request):
+    serializer = TaskSerializer(data=request.data)
+    if serializer.is_valid():       
+        doc_ref = db.collection(u'tasks').document()
+        doc_ref.set(serializer.data)       
+        return Response({"success" : "created",
+                        "task_id": doc_ref.id}, status=status.HTTP_201_CREATED)    
+
