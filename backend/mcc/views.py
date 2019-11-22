@@ -146,18 +146,21 @@ def projects_list_helper(project):
 @csrf_exempt
 @api_view(['GET'])
 def projects_list(request,email_id):
-    try:
+    try: 
         # Create a reference to the projects collection
-        projects_ref = db.collection(u'projects')
+        projects_ref = db.collection(u'userProjects')
 
         # Create a query against the collection
-        docs = projects_ref.where(u'requester_email', u'==', email_id).stream()
+        docs = projects_ref.where(u'email_id', u'==', email_id).stream()        
+        
+        value = []
 
-        project_list = [  projects_list_helper(el) for el in docs ]
-
+        for x in docs:
+            data = x.to_dict()
+            value.append({"project_id" : data["project_id"], "is_project_administrator" : data["is_project_administrator"]})
          
-        return Response({"success": "Done",
-                         "project_list":project_list }, status=status.HTTP_200_OK)
+        return Response({"success": True,
+                         "project_list":value }, status=status.HTTP_200_OK)    
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
