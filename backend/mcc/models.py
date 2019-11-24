@@ -62,6 +62,7 @@ class Task(models.Model):
     deadline = models.DateField()
     project_id = models.TextField()    
     status = models.CharField(max_length= 1, choices= STATUS_ENUM, default= 'P')
+    creation_time = models.DateTimeField()
    
 
 class UserTask(models.Model):

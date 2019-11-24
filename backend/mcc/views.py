@@ -237,6 +237,7 @@ def remove_task_members(task_id):
 @api_view(["POST"])
 def task_save(request):
     try:
+        request.data['creation_time'] = datetime.now()
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():       
             doc_ref = db.collection(u'tasks').document()
