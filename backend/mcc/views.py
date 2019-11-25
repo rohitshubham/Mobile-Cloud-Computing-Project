@@ -11,6 +11,8 @@ from rest_framework.response import Response
 from firebase_admin import credentials, auth, initialize_app, db, storage, firestore
 from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, UserProjectSerializer, TaskSerializer, UserTaskSerializer
 from .models import UserAuth, User, Project, UserProject
+from .render import Render
+from django.utils import timezone
 
 #This is GK's key
 #cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
@@ -282,6 +284,59 @@ def task_save(request):
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
+
+
+
+
+
+#=======================PDF generation=============================
+
+
+@csrf_exempt
+@api_view(["GET"])
+def generate_report(request,project_id):
+    try:
+        actual_project = db.collection(u'projects').document(project_id).get()
+
+        project_dict = actual_project.to_dict()
+      
+
+        #Getting all the members
+        projects_ref = db.collection(u'userProjects')
+        docs = projects_ref.where(u'project_id',u'==', project_id).stream()
+        value = []
+        for x in docs:
+            data = x.to_dict()
+            #Getting Displayname via Firebase-admin
+            user = auth.get_user_by_email(data["email_id"])
+            value.append({"displayName" : user.display_name})
+        today = timezone.now()
+
+        #Getting the events
+        events_ref = db.collection(u'projectEvents')
+        events = events_ref.where(u'project_id',u'==', project_id).stream()
+
+
+        events_list = []
+        for x in events:
+            data = x.to_dict()         
+            events_list.append(data)
+
+        print(events_list)
+    
+
+        params = {
+            'today': today,
+            'members': value,
+            'project': project_dict ,
+            'events': events_list 
+        }
+        return Render.render('pdf.html', params)
+         
+    except Exception as e:    
+        print(e)
+        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 @csrf_exempt
 @api_view(["POST"])
 def add_member_to_task(request):
