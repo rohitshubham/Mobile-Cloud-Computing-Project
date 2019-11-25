@@ -10,8 +10,8 @@ urlpatterns = [
     path('project/<str:project_id>', views.project_details, name=''),
     path('projects/<str:email_id>', views.projects_list, name=''),
     path('project/generate_report/<str:project_id>',views.generate_report,name=''),
-    path('task/',views.task_save,name='')
-    
+    path('task/',views.task_save,name=''),
+    path('task/member/',views.add_member_to_task ,name='')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

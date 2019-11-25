@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from firebase_admin import credentials, auth, initialize_app, db, storage, firestore
-from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, UserProjectSerializer, TaskSerializer
+from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, UserProjectSerializer, TaskSerializer, UserTaskSerializer
 from .models import UserAuth, User, Project, UserProject
 from .render import Render
 from django.utils import timezone
@@ -217,15 +217,39 @@ def remove_team_member(project_id):
 
 #=================================================================================
 
+def save_list_task_members(members, project_id, requester_email):
+    list_members = members.split(",")
+    for member in list_members:
+        data = {'email_id' : member, 'project_id': project_id, 'is_project_administrator' :  member == requester_email  }
+        serializer_user_project = UserProjectSerializer(data = data)
+
+        db.collection(u'userProjects').document().set(serializer_user_project.initial_data)
+
+def remove_task_members(task_id):
+    try:
+        tasks_ref = db.collection(u'userTasks')
+        docs = tasks_ref.where(u'task_id',u'==', task_id).get()
+        for doc in docs:
+            task_id.document(doc.id).delete()    
+    except Exception as e:
+        print(e)
+
+
 @csrf_exempt
 @api_view(["POST"])
 def task_save(request):
-    serializer = TaskSerializer(data=request.data)
-    if serializer.is_valid():       
-        doc_ref = db.collection(u'tasks').document()
-        doc_ref.set(serializer.data)       
-        return Response({"success" : "created",
-                        "task_id": doc_ref.id}, status=status.HTTP_201_CREATED)    
+    try:
+        request.data['creation_time'] = datetime.now()
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():       
+            doc_ref = db.collection(u'tasks').document()
+            doc_ref.set(serializer.data)       
+            return Response({"success" : "created",
+                            "task_id": doc_ref.id}, status = status.HTTP_201_CREATED)
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
 
 
@@ -280,3 +304,39 @@ def generate_report(request,project_id):
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+@csrf_exempt
+@api_view(["POST"])
+def add_member_to_task(request):
+    try:
+        task_id = request.data["task_id"]
+        members = request.data["members"]
+        project_id = request.data["project_id"]
+        requester_email = request.data["requester_email"]
+
+        projects_ref = db.collection(u'userProjects')
+        docs = projects_ref.where(u'project_id',u'==', project_id).where(u'email_id', u'==', requester_email).get()
+        
+        for doc in docs:
+            data = doc.to_dict()
+            if data["is_project_administrator"] == "false":
+                return Response({"error": "not_allowed"}, status = status.HTTP_403_FORBIDDEN)
+
+
+        remove_task_members(task_id)
+        member_list = members.split(",")
+
+        for member in member_list:
+            data = {'email_id' : member, 'task_id': task_id, 'project_id' :  project_id  }
+            serializer_user_task = UserTaskSerializer(data = data)
+
+            db.collection(u'userTasks').document().set(serializer_user_task.initial_data)
+
+        return Response({"success" : "saved"}, status = status.HTTP_200_OK)
+
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+    
