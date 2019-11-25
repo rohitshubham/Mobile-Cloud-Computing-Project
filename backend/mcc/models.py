@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 # models.py
 class UserAuth(models.Model):
@@ -16,6 +17,7 @@ class User(models.Model):
         return self.displayName
 
 
+#todo
 class Project(models.Model):
     PROJECT_TYPES = [
         ('P', 'Personal'),
@@ -44,6 +46,9 @@ class Project(models.Model):
             u'creation_time' : str(self.creation_time).decode("utf-8")
         }
         return my_dict
+    
+    def get_project_type(self,t):
+        return self.PROJECT_TYPES.__getitem__(t)
 
 
 class UserProject(models.Model):
