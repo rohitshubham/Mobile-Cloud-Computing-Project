@@ -387,7 +387,7 @@ def add_member_to_task(request):
 
 @csrf_exempt
 @api_view(["POST"])
-def set_project_completed(request):
+def set_task_completed(request):
     try:
         task_id = request.data["task_id"]
         project_id = request.data["project_id"]
