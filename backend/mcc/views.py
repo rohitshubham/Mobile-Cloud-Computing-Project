@@ -26,6 +26,12 @@ default_app = initialize_app(cred,{
 bucket = storage.bucket()
 db = firestore.client()
 
+#========================================================================
+
+def add_project_event(project_id, message):
+    event = { "project_id" : project_id, "event" : message }
+    db.collection(u'projectEvents').add(event)
+
 
 @csrf_exempt
 @api_view(['POST', 'PUT'])
@@ -102,7 +108,7 @@ def project_save(request):
                 doc_ref = db.collection(u'projects').document()
                 doc_ref.set(serializer.data)
                 save_list_project_members(serializer.data["team_members"], doc_ref.id, request.data["requester_email"])
-
+                add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Project was created by {auth.get_user_by_email(request.data['requester_email']).display_name}.")
                 return Response({"success" : "created",
                                 "project_id": doc_ref.id}, status=status.HTTP_201_CREATED)
             return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
@@ -128,6 +134,7 @@ def project_save(request):
                 remove_team_member(project_id)
                 save_list_project_members(serializer.data["team_members"], project_id, request.data["requester_email"])
 
+                add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Project was edited by {auth.get_user_by_email(request.data['requester_email']).display_name}.")
                 return Response({"success" : "Updated",
                                 "project_now" : request.data}, status = status.HTTP_200_OK)
                                 
@@ -228,11 +235,31 @@ def remove_task_members(task_id):
         tasks_ref = db.collection(u'userTasks')
         docs = tasks_ref.where(u'task_id',u'==', task_id).get()
         for doc in docs:
-            task_id.document(doc.id).delete()    
+            tasks_ref.document(doc.id).delete()    
     except Exception as e:
         print(e)
 
+#If member count is sent as -1, we consider it as completed
+def change_task_status(task_id, project_id, member_count = -1):
 
+    task_name = db.collection('tasks').document(task_id).get().to_dict()["name"]
+    message = ""
+
+    if member_count == 0:
+        db.collection(u"tasks").document(task_id).update({"status" : "P"})
+        message =  "All Members removed. Status changed back to Pending"
+    elif member_count == -1:
+        db.collection(u"tasks").document(task_id).update({"status" : "C"})
+        message = "Status changed to Completed"
+    else:
+        db.collection(u"tasks").document(task_id).update({"status" : "O"})
+        message = "Members edited. Status changed to Pending"
+
+    add_project_event(project_id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - {task_name} - {message}")
+
+
+
+#ToDO: If we have time, add endpoint for editing the task
 @csrf_exempt
 @api_view(["POST"])
 def task_save(request):
@@ -241,7 +268,13 @@ def task_save(request):
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():       
             doc_ref = db.collection(u'tasks').document()
-            doc_ref.set(serializer.data)       
+            doc_ref.set(serializer.data)
+
+            requester_email  = db.collection(u'projects').document(serializer.data["project_id"]).get().to_dict()["requester_email"]
+
+            task_name = db.collection('tasks').document(doc_ref.id).get().to_dict()["name"]
+
+            add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Task {task_name} was created by {auth.get_user_by_email(requester_email).display_name}.")       
             return Response({"success" : "created",
                             "task_id": doc_ref.id}, status = status.HTTP_201_CREATED)
     except Exception as e:
@@ -261,6 +294,11 @@ def add_member_to_task(request):
         projects_ref = db.collection(u'userProjects')
         docs = projects_ref.where(u'project_id',u'==', project_id).where(u'email_id', u'==', requester_email).get()
         
+        #If the number of docs is zero then return forbidden
+        if sum(1 for _ in docs) == 0:
+            return Response({"error": "not_allowed"}, status = status.HTTP_403_FORBIDDEN)
+
+        #if there is doc but he is not the admin, return forbidden
         for doc in docs:
             data = doc.to_dict()
             if data["is_project_administrator"] == "false":
@@ -268,13 +306,23 @@ def add_member_to_task(request):
 
 
         remove_task_members(task_id)
-        member_list = members.split(",")
+        
+        if members:
+            member_list = members.split(",")
 
-        for member in member_list:
-            data = {'email_id' : member, 'task_id': task_id, 'project_id' :  project_id  }
-            serializer_user_task = UserTaskSerializer(data = data)
+            for member in member_list:
+                data = {'email_id' : member, 'task_id': task_id, 'project_id' :  project_id  }
+                serializer_user_task = UserTaskSerializer(data = data)
+                if serializer_user_task.is_valid():    
+                    db.collection(u'userTasks').document().set(serializer_user_task.initial_data)
+                else:
+                    return Response({"error": "unable_to save"}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-            db.collection(u'userTasks').document().set(serializer_user_task.initial_data)
+        # Change the status
+        tasks_ref = db.collection(u"userTasks")
+        task_members = tasks_ref.where(u'task_id',u"==", task_id).get()
+
+        change_task_status(task_id, project_id, sum(1 for _ in task_members)) 
 
         return Response({"success" : "saved"}, status = status.HTTP_200_OK)
 
@@ -282,6 +330,22 @@ def add_member_to_task(request):
         print(e)
         return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@csrf_exempt
+@api_view(["POST"])
+def set_project_completed(request):
+    try:
+        task_id = request.data["task_id"]
+        project_id = request.data["project_id"]
+        requester_email = request.data["requester_email"]
+
+        add_project_event(project_id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Status change to complete requested by {requester_email}.")
+
+
+        change_task_status(task_id, project_id)
+
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     

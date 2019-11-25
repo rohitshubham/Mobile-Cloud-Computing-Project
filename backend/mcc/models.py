@@ -60,6 +60,7 @@ class Task(models.Model):
     ]   
     description = models.TextField()   
     deadline = models.DateField()
+    name = models.TextField()
     project_id = models.TextField()    
     status = models.CharField(max_length= 1, choices= STATUS_ENUM, default= 'P')
     creation_time = models.DateTimeField()
