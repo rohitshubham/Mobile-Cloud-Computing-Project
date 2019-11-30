@@ -43,10 +43,12 @@ def user_save(request):
             user_name = request.data["display_name"]
             if user.display_name == user_name:
                 email_hash = str(hashlib.sha256(request.data["email"].encode('utf-8')).hexdigest())
-                return Response({"error" : "DisplayNameAlreadyExists",
-                                    "suggestion_1"  :  f"{user_name}_{email_hash[0:5]}",
-                                    "suggestion_2"  :  f"{user_name}_{email_hash[5:10]}",
-                                    "suggestion_3"  :  f"{user_name}_{email_hash[10:15]}"},
+                return Response({ "success" : "false", "error" : "DisplayNameAlreadyExists",
+                                    "payload": {
+                                        "suggestion_1"  :  f"{user_name}_{email_hash[0:5]}",
+                                        "suggestion_2"  :  f"{user_name}_{email_hash[5:10]}",
+                                        "suggestion_3"  :  f"{user_name}_{email_hash[10:15]}"}
+                                        },
                                 status=status.HTTP_409_CONFLICT)    
 
         try:
@@ -61,11 +63,11 @@ def user_save(request):
             # ToDO : Insert the photo into storage
             
         except auth.EmailAlreadyExistsError:
-            return Response({"error" : "EmailAlreadyExists"}, status=status.HTTP_409_CONFLICT)
+            return Response({"error" : "EmailAlreadyExists", "success" : "false"}, status=status.HTTP_409_CONFLICT)
         except Exception as e:
             print(e)
-            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response({"success" : "created"}, status=status.HTTP_201_CREATED)
+            return Response({"error" : 'InternalException', "success" : "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"success" : "true"}, status=status.HTTP_201_CREATED)
 
     if request.method == 'PUT':
         try:
@@ -73,10 +75,10 @@ def user_save(request):
             auth.update_user(uid = user.uid, password = request.data["password"])
             # ToDO : Update the photo
 
-            return Response({"success" : "updated"}, status= status.HTTP_200_OK)
+            return Response({"success" : "true"}, status= status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error" : 'InternalException', "success" : "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def save_list_project_members(members, project_id, requester_email):
@@ -92,11 +94,12 @@ def save_list_project_members(members, project_id, requester_email):
 @api_view(['GET'])
 def user_get(request, email_id):
     try:
-        user = auth.get_user_by_email(email_id)        
-        return Response({"email": user.email, "display_name" : user.display_name, "photo_url" : user.photo_url}, status=status.HTTP_200_OK)
+        user = auth.get_user_by_email(email_id)
+        data = {"email": user.email, "display_name" : user.display_name, "photo_url" : user.photo_url}        
+        return Response({"success": "true", "payload" : data}, status=status.HTTP_200_OK)
     except Exception as e:
         print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @csrf_exempt
 @api_view(['POST', 'PUT'])
@@ -111,12 +114,12 @@ def project_save(request):
                 doc_ref.set(serializer.data)
                 save_list_project_members(serializer.data["team_members"], doc_ref.id, request.data["requester_email"])
                 add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Project was created by {auth.get_user_by_email(request.data['requester_email']).display_name}.")
-                return Response({"success" : "created",
-                                "project_id": doc_ref.id}, status=status.HTTP_201_CREATED)
-            return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
+                return Response({"success" : "true",
+                                "payload" : {"project_id": doc_ref.id}}, status=status.HTTP_201_CREATED)
+            return Response({"error" : "Invalid project format", "success": "false"}, status = status.HTTP_206_PARTIAL_CONTENT)
         except Exception as e:
             print(e)
-            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     if request.method == 'PUT':
         #Saving it before removing 
         project_id = request.data['project_id']
@@ -137,13 +140,13 @@ def project_save(request):
                 save_list_project_members(serializer.data["team_members"], project_id, request.data["requester_email"])
 
                 add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Project was edited by {auth.get_user_by_email(request.data['requester_email']).display_name}.")
-                return Response({"success" : "Updated",
-                                "project_now" : request.data}, status = status.HTTP_200_OK)
+                return Response({"success" : "true",
+                                "payload" : request.data }, status = status.HTTP_200_OK)
                                 
-            return Response("Invalid project format", status = status.HTTP_206_PARTIAL_CONTENT)
+            return Response({"error" : "Invalid project format", "success": "false"}, status = status.HTTP_206_PARTIAL_CONTENT)
         except Exception as e:
             print(e)
-            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 #Just to add Project_id manually to each project object
@@ -168,11 +171,11 @@ def projects_list(request,email_id):
             data = x.to_dict()
             value.append({"project_id" : data["project_id"], "is_project_administrator" : data["is_project_administrator"]})
          
-        return Response({"success": True,
-                         "project_list":value }, status=status.HTTP_200_OK)    
+        return Response({"success": "true",
+                         "payload": value }, status=status.HTTP_200_OK)    
     except Exception as e:
         print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error" : 'InternalException' , "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @csrf_exempt
@@ -184,17 +187,17 @@ def project_details(request,project_id):
             doc = db.collection(u'projects').document(project_id).get()
 
             if not doc.exists:
-                 return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
+                 return Response({"error": "ProjectNotFound", "success": "false"}, status=status.HTTP_404_NOT_FOUND)
     
             project_dict = doc.to_dict()
             project_dict['project_id'] = project_id
             
             
-            return Response({"success": "Found",                        
-                            "project_info":project_dict }, status=status.HTTP_200_OK)
+            return Response({"success": "true",                        
+                            "payload" : project_dict }, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error" : 'InternalException' , "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     if request.method == 'DELETE':  
         try:
@@ -203,14 +206,14 @@ def project_details(request,project_id):
             doc = db.collection(u'projects').document(project_id)
 
             if not doc.get().exists:
-                 return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
+                 return Response({"error": "ProjectNotFound" , "success": "false"}, status=status.HTTP_404_NOT_FOUND)
 
             
             doc.delete()            
-            return Response({"success": "Deleted" }, status=status.HTTP_200_OK)
+            return Response({"success": "true"}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
        
 def remove_team_member(project_id):
     try:
@@ -277,11 +280,11 @@ def task_save(request):
             task_name = db.collection('tasks').document(doc_ref.id).get().to_dict()["name"]
 
             add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Task {task_name} was created by {auth.get_user_by_email(requester_email).display_name}.")       
-            return Response({"success" : "created",
-                            "task_id": doc_ref.id}, status = status.HTTP_201_CREATED)
+            return Response({"success" : "true",
+                            "payload": doc_ref.id}, status = status.HTTP_201_CREATED)
     except Exception as e:
         print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 
@@ -335,7 +338,7 @@ def generate_report(request,project_id):
          
     except Exception as e:    
         print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 @csrf_exempt
 @api_view(["POST"])
@@ -351,13 +354,13 @@ def add_member_to_task(request):
         
         #If the number of docs is zero then return forbidden
         if sum(1 for _ in docs) == 0:
-            return Response({"error": "not_allowed"}, status = status.HTTP_403_FORBIDDEN)
+            return Response({"error": "not_allowed", "success": "false"}, status = status.HTTP_403_FORBIDDEN)
 
         #if there is doc but he is not the admin, return forbidden
         for doc in docs:
             data = doc.to_dict()
             if data["is_project_administrator"] == "false":
-                return Response({"error": "not_allowed"}, status = status.HTTP_403_FORBIDDEN)
+                return Response({"error": "not_allowed", "success": "false"}, status = status.HTTP_403_FORBIDDEN)
 
 
         remove_task_members(task_id)
@@ -371,7 +374,7 @@ def add_member_to_task(request):
                 if serializer_user_task.is_valid():    
                     db.collection(u'userTasks').document().set(serializer_user_task.initial_data)
                 else:
-                    return Response({"error": "unable_to save"}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
+                    return Response({"error": "unable_to save", "success": "false"}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         # Change the status
         tasks_ref = db.collection(u"userTasks")
@@ -379,11 +382,11 @@ def add_member_to_task(request):
 
         change_task_status(task_id, project_id, sum(1 for _ in task_members)) 
 
-        return Response({"success" : "saved"}, status = status.HTTP_200_OK)
+        return Response({"success" : "true"}, status = status.HTTP_200_OK)
 
     except Exception as e:
         print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @csrf_exempt
 @api_view(["POST"])
@@ -398,9 +401,11 @@ def set_task_completed(request):
 
         change_task_status(task_id, project_id)
 
+        return Response({"success": "true"}, status = status.HTTP_200_OK)
+
     except Exception as e:
         print(e)
-        return Response({"error" : 'InternalException'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     
