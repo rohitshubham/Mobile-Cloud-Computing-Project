@@ -16,10 +16,9 @@ import android.widget.Toast
 
 
 // User Settings view
-class MainActivity : AppCompatActivity(), UserContract.View {
+class UserSettingsActivity : AppCompatActivity(), UserContract.View {
 
-
-    private val TAG = "UserMAActivity"
+    private val TAG = "UserSettingsActivity"
 
     // UI variables, NB lateinit lets us initialise them in initGUI
     private lateinit var pbloading: ProgressBar
@@ -38,7 +37,9 @@ class MainActivity : AppCompatActivity(), UserContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.user_settings)
+
+
 
         // for getting/posting data
         userPresenter = UserPresenter(this)
@@ -48,13 +49,25 @@ class MainActivity : AppCompatActivity(), UserContract.View {
 
         setListeners()
 
+        val userEmail = intent.getStringExtra("USER_EMAIL")
+        val userAuth = intent.getStringExtra("USER_AUTH")
+
+        this.hideProgress()
+        Log.d(TAG,"User email: $userEmail, userAuth: $userAuth")
         // from login or sign-up
-        var id : Int = 2
-        userPresenter.getUserData(id)
+//        var id : Int = 2
+//        userPresenter.getUserData(id)
+
+
 /*
         val user = User(4, "usr4", "usr4@mail.fi", null,
             "/img1.png", mutableListOf("pr5"), mutableListOf("pr1"))
         postUser(user)*/
+    }
+
+    private fun initGUI() {
+        pbloading = findViewById(R.id.pb_loading)
+        imagePutBtn = findViewById<Button>(R.id.imagePutter)
 
     }
 
@@ -66,11 +79,6 @@ class MainActivity : AppCompatActivity(), UserContract.View {
             pickGalleryIntent.type = "image/*"
             startActivityForResult(pickGalleryIntent, PROFILE_PIC_SELECTION)
         }
-    }
-
-    private fun initGUI() {
-        pbloading = findViewById(R.id.pb_loading)
-        imagePutBtn = findViewById<Button>(R.id.imagePutter)
     }
 
     // to implement the profile image selection from the gallery
