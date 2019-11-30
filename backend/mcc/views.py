@@ -169,7 +169,9 @@ def projects_list(request,email_id):
 
         for x in docs:
             data = x.to_dict()
-            value.append({"project_id" : data["project_id"], "is_project_administrator" : data["is_project_administrator"]})
+            project_id = data["project_id"]
+            project_name = db.collection(u'projects').document(project_id).get().to_dict()["name"]
+            value.append({"project_id" : project_id, "project_name" : project_name ,"is_project_administrator" : data["is_project_administrator"]})
          
         return Response({"success": "true",
                          "payload": value }, status=status.HTTP_200_OK)    
