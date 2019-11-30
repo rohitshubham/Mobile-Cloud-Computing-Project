@@ -66,6 +66,7 @@ class UserSettingsActivity : AppCompatActivity(), UserContract.View {
     }
 
     private fun initGUI() {
+        this.title = ("User settings")
         pbloading = findViewById(R.id.pb_loading)
         imagePutBtn = findViewById<Button>(R.id.imagePutter)
 

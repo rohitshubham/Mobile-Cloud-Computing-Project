@@ -7,14 +7,16 @@ import android.widget.Button
 
 
 // Projects activity
-class MainActivity : AppCompatActivity() {
+class ProjectsActivity : AppCompatActivity() {
 
     private lateinit var userEmail: String
     private lateinit var userAuth : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.projects)
+
+        this.title = "Your projects"
 
         userEmail = "user1@mail.org"
         userAuth = "abc123"
