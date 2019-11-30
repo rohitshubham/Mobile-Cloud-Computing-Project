@@ -8,9 +8,7 @@ class UserPresenter (val userView: UserContract.View):
     UserContract.Model.OnGetFinishedListener,
     UserContract.Model.OnUploadFinishedListener {
 
-
     val userModel = UserModel()
-
 
     override fun storeProfileImage(
         profileImage: Bitmap,
@@ -22,11 +20,9 @@ class UserPresenter (val userView: UserContract.View):
             dispName, profileImage, curContext)
     }
 
-
     override fun getUserData(userId: Int) {
         userModel.getUser(this, userId)
         userView.hideProgress()
-
     }
 
     override fun onGetFinished(user: User) {
@@ -50,7 +46,7 @@ class UserPresenter (val userView: UserContract.View):
     }
 
     override fun onDestroy() {
-
+        // TODO: implement
     }
 
 }
