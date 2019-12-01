@@ -10,14 +10,9 @@ import android.widget.EditText
 import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
 import mcc.group14.apiclientapp.data.ProjectDetail
 import android.app.Activity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
 
 
 class NewProjectActivity : AppCompatActivity() {
@@ -82,23 +77,29 @@ class NewProjectActivity : AppCompatActivity() {
                 // TODO: validate keyword
                 keywords = "k1, k2, k3",
                 deadline = "2019-05-08",
-                team_members = "usr1, usr2, usr3"
+                // always include userEmailRequester
+                team_members = "usr1@mail.org, usr2@mail.ru, $userEmail"
             )
 
             Log.d(TAG, "Project creation: $project")
+
+
 
             // posting the newly created project
             var disposable = projectApi.createProject(project)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { result -> Log.v(TAG, "" + result ) },
-                    { error -> Log.e(TAG, error.message ) }
+                    { result -> Log.v(TAG, "" + result )
+                        val returnIntent = Intent()
+                        setResult(Activity.RESULT_CANCELED, returnIntent)
+                        finish()
+                    },
+                    { error -> Log.e(TAG, error.message )
+                        Toast.makeText(applicationContext, "Network problem",
+                            Toast.LENGTH_SHORT)
+                    }
                 )
-
-            val returnIntent = Intent()
-            setResult(Activity.RESULT_CANCELED, returnIntent)
-            finish()
         }
     }
 

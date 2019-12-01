@@ -30,6 +30,7 @@ class ProjectsActivity : ListActivity() {
     private lateinit var userEmail: String
     private lateinit var userAuth : String
 
+    val projectApi = ProjectApiClient.create()
     private var projectList: MutableList<UserProject>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,46 +47,55 @@ class ProjectsActivity : ListActivity() {
         initUI()
 
         setListeners()
-
-        // 1. get list of projects
-        // 2. download a project on user tap
-
-        val projectApi = ProjectApiClient.create()
-
         // downloading the list of projects
-        var disposable = projectApi.getProjectsList(userEmail)
+        refreshProjectList()
+    }
+
+    private fun refreshProjectList() {
+        var disposable = this.projectApi.getProjectsList(userEmail)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).map {
                 if (it.success == "true") it.payload else throw Throwable("APIError")
             }
             .subscribe(
-                {
-                    result -> Log.d(TAG,"Project list received " +
-                        "$result")
-                    this.projectList = result
-                    val proj_names = mutableListOf<String>()
-                    for (proj in projectList.orEmpty()){
-                        proj_names.add(proj.project_name)
-                    }
-                    Log.d(TAG, proj_names.toString())
-
-                    // TODO: @Sasha beautify the listView more
-                    // info here:
-                    // https://www.vogella.com/tutorials/AndroidListView/article.html
-
-                    // inserting project names in listView
-                    val adapter = ArrayAdapter<String>(this,
-                        android.R.layout.simple_list_item_1, proj_names)
-                    listAdapter = adapter
+                { result ->
+                    Log.d(
+                        TAG, "Project list received " +
+                                "$result"
+                    )
+                    setListView(result)
                 },
-                {
-                        error -> Log.e(TAG, error.message)
-                    Toast.makeText(applicationContext,"Network error",
-                        Toast.LENGTH_SHORT)
+                { error ->
+                    Log.e(TAG, error.message)
+                    Toast.makeText(
+                        applicationContext, "Network error",
+                        Toast.LENGTH_SHORT
+                    )
 
                 }
             )
     }
+
+    private fun setListView(result: MutableList<UserProject>?) {
+        this.projectList = result
+        val proj_names = mutableListOf<String>()
+        for (proj in projectList.orEmpty()) {
+            proj_names.add(proj.project_name)
+        }
+        Log.d(TAG, proj_names.toString())
+
+        // TODO: @Sasha beautify the listView more
+        // info here:
+        // https://www.vogella.com/tutorials/AndroidListView/article.html
+
+        // inserting project names in listView
+        val adapter = ArrayAdapter<String>(
+            this,
+            android.R.layout.simple_list_item_1, proj_names
+        )
+        listAdapter = adapter
+    }
+
 
     /*TODO, @Max today:
     * 1. finish projects ->
@@ -114,11 +124,14 @@ class ProjectsActivity : ListActivity() {
         userSettBtn = findViewById<Button>(R.id.user_settings_btn)
     }
 
+    // use it for returning from other activities,
+    // NB: refresh only if needed
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == NEW_PROJECT_ACTIVITY){
             if (resultCode == Activity.RESULT_CANCELED){
+                this.refreshProjectList()
                 Toast.makeText(applicationContext,
                     "Project created successfully. $userAuth",
                     Toast.LENGTH_LONG).show()
