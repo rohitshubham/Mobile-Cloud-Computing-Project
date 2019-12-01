@@ -108,6 +108,7 @@ def project_save(request):
         try:
             request.data['creation_time'] = datetime.now()
             serializer = ProjectSerializer(data=request.data)
+            
             if serializer.is_valid():
                 #using doc_ref.id as project id
                 doc_ref = db.collection(u'projects').document()
@@ -211,8 +212,8 @@ def project_details(request,project_id):
 
             if not doc.get().exists:
                  return Response({"error": "ProjectNotFound" , "success": "false"}, status=status.HTTP_404_NOT_FOUND)
-
             
+            remove_team_member(project_id)            
             doc.delete()            
             return Response({"success": "true"}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -413,3 +414,5 @@ def set_task_completed(request):
 
 
     
+
+
