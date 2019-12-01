@@ -42,7 +42,7 @@ interface ProjectApiClient {
 
     @Headers("Content-Type: application/json;charset=utf-8")
     //@POST("project/")
-    @POST("?pipedream_response=3")
+    @POST("project/")
     fun createProject(@Body project: ProjectDetail): Observable<ProjectDetail>
 
     @Headers("Content-Type: application/json;charset=utf-8")

@@ -18,8 +18,21 @@ class LoginActivity : AppCompatActivity() {
 
         // opens projects activity
         login_btn.setOnClickListener{
+            // TODO: @Kirthi get the following from the user, userAuth is the cookie,
+            //  static cookie is also fine...
+
+            // Go to the dashboard (ProjectsActivity)
+            // Note: this is the way you pass stuff among activities, the only problem is that
+            // object passed like this must be serializable, that is why mAuth should prolly be
+            // static.
+            val userEmail = "news@aalto.fi"
+            val userAuth = "abc123"
+
             val intent =
-                Intent(this, ProjectsActivity::class.java)
+                Intent(this, ProjectsActivity::class.java).apply {
+                    putExtra("USER_EMAIL", userEmail)
+                    putExtra("USER_AUTH", userAuth)
+                }
             startActivity(intent)
         }
     }

@@ -1,5 +1,6 @@
 package mcc.group14.apiclientapp.views
 
+import android.app.Activity
 import android.app.ListActivity
 import android.content.Intent
 import android.os.Bundle
@@ -21,6 +22,8 @@ class ProjectsActivity : ListActivity() {
 
     val TAG = "ProjectActivity"
 
+    val NEW_PROJECT_ACTIVITY = 0
+
     private lateinit var userSettBtn: Button
     private lateinit var addProjectBtn: Button
 
@@ -33,11 +36,12 @@ class ProjectsActivity : ListActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.projects)
 
+
         this.title = "Your projects"
 
-        userEmail = "news@aalto.fi"
-        userAuth = "abc123"
-
+        // get the info from login/sign-up
+        userEmail = intent.getStringExtra("USER_EMAIL")
+        userAuth = intent.getStringExtra("USER_AUTH")
 
         initUI()
 
@@ -64,27 +68,40 @@ class ProjectsActivity : ListActivity() {
                         proj_names.add(proj.project_name)
                     }
                     Log.d(TAG, proj_names.toString())
-                    // TODO: @Sasha beatify the listView
+
+                    // TODO: @Sasha beautify the listView more
+                    // info here:
+                    // https://www.vogella.com/tutorials/AndroidListView/article.html
+
+                    // inserting project names in listView
                     val adapter = ArrayAdapter<String>(this,
                         android.R.layout.simple_list_item_1, proj_names)
                     listAdapter = adapter
                 },
                 {
                         error -> Log.e(TAG, error.message)
-                    Toast.makeText(applicationContext,"Error fetching the list of projects",
+                    Toast.makeText(applicationContext,"Network error",
                         Toast.LENGTH_SHORT)
 
                 }
             )
-/*
-
-            )*/
     }
+
+    /*TODO, @Max today:
+    * 1. finish projects ->
+    *     1.1 NewProjectActivity;
+    *     1.2 AddUserToProject;
+    *     1.3 AddTaskToProject.
+    * 2. finish users ->
+    *     2.1 UserSettingsActivity.
+    *
+    * */
 
     // we use this method to pass to the ProjectDetail
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
         val intent =
             Intent(this, ProjectDetailActivity::class.java)
+        // pass project_id and prject_name to PrjectDetailActivity
         intent.putExtra("PROJECT_ID",
             projectList.orEmpty()[position].project_id)
         intent.putExtra("PROJECT_NAME",
@@ -97,9 +114,26 @@ class ProjectsActivity : ListActivity() {
         userSettBtn = findViewById<Button>(R.id.user_settings_btn)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == NEW_PROJECT_ACTIVITY){
+            if (resultCode == Activity.RESULT_CANCELED){
+                Toast.makeText(applicationContext,
+                    "Project created successfully. $userAuth",
+                    Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     private fun setListeners() {
         addProjectBtn.setOnClickListener {
-            // call ProjectPresenter.addProjectToUser
+            val intent =
+                Intent(this, NewProjectActivity::class.java).apply {
+                    putExtra("USER_EMAIL", userEmail)
+                    putExtra("USER_AUTH", userAuth)
+                }
+            startActivityForResult(intent, NEW_PROJECT_ACTIVITY)
         }
 
         userSettBtn.setOnClickListener {
