@@ -1,9 +1,7 @@
-package mcc.group14.apiclientapp
+package mcc.group14.apiclientapp.api
 
-import android.util.Log
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import mcc.group14.apiclientapp.data.User
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -50,7 +48,4 @@ interface UsersApiClient{
                               @Part("name") name: RequestBody,
                               @Part photo: MultipartBody.Part?
     ):Call<ResponseBody>
-
-
-
 }

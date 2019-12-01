@@ -1,7 +1,10 @@
-package mcc.group14.apiclientapp
+package mcc.group14.apiclientapp.presenters
 
 import android.content.Context
 import android.graphics.Bitmap
+import mcc.group14.apiclientapp.data.User
+import mcc.group14.apiclientapp.contracts.UserContract
+import mcc.group14.apiclientapp.models.UserModel
 
 class UserPresenter (val userView: UserContract.View):
     UserContract.Presenter,

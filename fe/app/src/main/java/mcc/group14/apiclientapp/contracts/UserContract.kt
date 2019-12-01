@@ -1,7 +1,8 @@
-package mcc.group14.apiclientapp
+package mcc.group14.apiclientapp.contracts
 
 import android.content.Context
 import android.graphics.Bitmap
+import mcc.group14.apiclientapp.data.User
 
 
 interface UserContract {

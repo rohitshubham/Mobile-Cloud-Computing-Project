@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp
+package mcc.group14.apiclientapp.views
 
 import android.app.Activity
 import android.content.Intent
@@ -13,18 +13,23 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import mcc.group14.apiclientapp.R
+import mcc.group14.apiclientapp.data.User
+import mcc.group14.apiclientapp.contracts.UserContract
+import mcc.group14.apiclientapp.presenters.UserPresenter
 
 
 // User Settings view
 class UserSettingsActivity : AppCompatActivity(), UserContract.View {
 
+    // TODO: demolish MVP, put everything here and maybe utils class (image upload)
     private val TAG = "UserSettingsActivity"
 
     // UI variables, NB lateinit lets us initialise them in initGUI
     private lateinit var pbloading: ProgressBar
     private lateinit var imagePutBtn: Button
 
-    // Data variables
+    // Response variables
     private lateinit var userPresenter: UserPresenter
     // NB: user might be changing (projects and created_projects might change), always get it from the
     //     BE before using his data
@@ -78,7 +83,9 @@ class UserSettingsActivity : AppCompatActivity(), UserContract.View {
                 Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
 
             pickGalleryIntent.type = "image/*"
-            startActivityForResult(pickGalleryIntent, PROFILE_PIC_SELECTION)
+            startActivityForResult(pickGalleryIntent,
+                PROFILE_PIC_SELECTION
+            )
         }
     }
 

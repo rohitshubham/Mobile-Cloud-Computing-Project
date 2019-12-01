@@ -1,9 +1,10 @@
-package mcc.group14.apiclientapp
+package mcc.group14.apiclientapp.views
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import mcc.group14.apiclientapp.R
 
 // Sign-up activity
 class MainActivity : AppCompatActivity() {

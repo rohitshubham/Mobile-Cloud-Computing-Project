@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp
+package mcc.group14.apiclientapp.data
 
 data class User(
     val userId: Int,
@@ -7,7 +7,7 @@ data class User(
     var password: String,
     // NB: profileImagePath is the path to the profile image in the BE
     val profileImagePath: String? = null,
-    var projects: MutableList<Project>? = null,
-    var createdProjects: MutableList<Project>? = null,
+    var projects: MutableList<ProjectDetail>? = null,
+    var createdProjects: MutableList<ProjectDetail>? = null,
     var localProfileImagePath: String? = null
 )

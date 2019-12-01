@@ -1,10 +1,13 @@
-package mcc.group14.apiclientapp
+package mcc.group14.apiclientapp.models
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import mcc.group14.apiclientapp.data.User
+import mcc.group14.apiclientapp.contracts.UserContract
+import mcc.group14.apiclientapp.api.UsersApiClient
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
