@@ -20,15 +20,15 @@ class User(models.Model):
 #todo
 class Project(models.Model):
     PROJECT_TYPES = [
-        ('P', 'Personal'),
-        ('T', 'Team')
+        ('Personal', 'Personal'),
+        ('Team', 'Team')
     ]   
     name = models.CharField(max_length=100)
     team_members = models.TextField()
     deadline = models.DateField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     requester_email = models.EmailField()
-    project_type = models.CharField(max_length= 1, choices= PROJECT_TYPES, default= 'P')
+    project_type = models.CharField(max_length= 20, choices= PROJECT_TYPES, default= 'Personal')
     keywords = models.TextField()
     badge = models.TextField(null=True, blank=True) #Base64 image or if the badge is fixed, only save the badge URL.
     creation_time = models.DateTimeField()
@@ -59,15 +59,15 @@ class UserProject(models.Model):
 
 class Task(models.Model):
     STATUS_ENUM = [
-        ('P', 'Pending'),
-        ('O', 'On-Going'),
-        ('C', 'Complete')
+        ('Pending', 'Pending'),
+        ('On-going', 'On-Going'),
+        ('Complete', 'Complete')
     ]   
     description = models.TextField()   
     deadline = models.DateField()
     name = models.TextField()
     project_id = models.TextField()    
-    status = models.CharField(max_length= 1, choices= STATUS_ENUM, default= 'P')
+    status = models.CharField(max_length= 20, choices= STATUS_ENUM, default= 'Pending')
     creation_time = models.DateTimeField()
    
 
