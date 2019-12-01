@@ -25,12 +25,12 @@ class Project(models.Model):
     ]   
     name = models.CharField(max_length=100)
     team_members = models.TextField()
-    deadline = models.DateField()
-    description = models.TextField()
+    deadline = models.DateField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     requester_email = models.EmailField()
     project_type = models.CharField(max_length= 1, choices= PROJECT_TYPES, default= 'P')
     keywords = models.TextField()
-    badge = models.TextField() #Base64 image or if the badge is fixed, only save the badge URL.
+    badge = models.TextField(null=True, blank=True) #Base64 image or if the badge is fixed, only save the badge URL.
     creation_time = models.DateTimeField()
 
     def to_dict(self):
