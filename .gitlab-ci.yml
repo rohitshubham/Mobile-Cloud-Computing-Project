@@ -6,7 +6,7 @@
   build-backend:
     stage: build
     before_script:
-      - apt-get update && apt-get install -y docker
+      - apt-get update && apt-get install -y curl
       - curl -fsSL https://get.docker.com -o get-docker.sh
       - sudo sh get-docker.sh
     script:
