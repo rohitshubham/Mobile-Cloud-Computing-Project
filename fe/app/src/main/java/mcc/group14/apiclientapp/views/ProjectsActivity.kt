@@ -53,7 +53,7 @@ class ProjectsActivity : ListActivity() {
 
     private fun refreshProjectList() {
         var disposable = this.projectApi.getProjectsList(userEmail)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread()).map {
                 if (it.success == "true") it.payload else throw Throwable("APIError")
             }
@@ -70,7 +70,7 @@ class ProjectsActivity : ListActivity() {
                     Toast.makeText(
                         applicationContext, "Network error",
                         Toast.LENGTH_SHORT
-                    )
+                    ).show()
 
                 }
             )
@@ -130,10 +130,15 @@ class ProjectsActivity : ListActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == NEW_PROJECT_ACTIVITY){
-            if (resultCode == Activity.RESULT_CANCELED){
+            if (resultCode == Activity.RESULT_OK){
                 this.refreshProjectList()
+
                 Toast.makeText(applicationContext,
                     "Project created successfully. $userAuth",
+                    Toast.LENGTH_LONG).show()
+            }else {
+                Toast.makeText(applicationContext,
+                    "Error: project not created. $userAuth",
                     Toast.LENGTH_LONG).show()
             }
         }

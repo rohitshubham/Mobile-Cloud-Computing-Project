@@ -93,7 +93,7 @@ class NewProjectActivity : AppCompatActivity() {
                     Log.d(TAG,"$project")
                     // TODO: ++ post the complete project and terminate activity
                     // note post, uploads the current project and *terminates* this activity!
-
+                    postProject()
                 }
             }
         }
@@ -128,14 +128,17 @@ class NewProjectActivity : AppCompatActivity() {
             project_type = if (capturedIsPersonalCB) "T" else "P",
             requester_email = userEmail,
 
+            // always include userEmailRequester
+            // TODO: ++ implement AddMembersToProject
+            team_members = userEmail,
             // TODO: these data are got from OptionalProjectSettingsActivity
             badge = "DEFAULT_BADGE",
             // TODO: validate keywords
             keywords = "DEFAULT_KEYWORDS",
-            deadline = "DEFAULT_DEADLINE",
+            deadline = "DEFAULT_DEADLINE"
 
-            // always include userEmailRequester
-            team_members = "$userEmail"
+
+
         )
     }
 
@@ -145,9 +148,10 @@ class NewProjectActivity : AppCompatActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
-                    Log.v(TAG, "" + result)
+                    Log.v(TAG, "POSTED: $result")
                     val returnIntent = Intent()
-                    setResult(Activity.RESULT_CANCELED, returnIntent)
+                   // returnIntent.putExtra("ERROR", )
+                    setResult(Activity.RESULT_OK, returnIntent)
                     finish()
                 },
                 { error ->

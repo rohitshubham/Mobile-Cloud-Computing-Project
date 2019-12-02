@@ -3,4 +3,6 @@
     <string name="communication_error">An error occured</string>
     <string name="pick_time">Pick time</string>
     <string name="pick_date">Pick date</string>
+    <string name="keywords_et">At most 3 keyword (eg: word1,word2,word3)</string>
+    <string name="keywords_btn">Add keywords</string>
 </resources>
