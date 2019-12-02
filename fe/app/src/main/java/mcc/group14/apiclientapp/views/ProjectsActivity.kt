@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
@@ -30,13 +29,14 @@ class ProjectsActivity : ListActivity() {
     private lateinit var userEmail: String
     private lateinit var userAuth : String
 
+    private lateinit var projectsLW: ListView
+
     val projectApi = ProjectApiClient.create()
     private var projectList: MutableList<UserProject>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.projects)
-
 
         this.title = "Your projects"
 
@@ -84,22 +84,20 @@ class ProjectsActivity : ListActivity() {
         }
         Log.d(TAG, proj_names.toString())
 
-        // TODO: @Sasha beautify the listView more
+        // TODO: @Sasha beautify the listView
         // info here:
         // https://www.vogella.com/tutorials/AndroidListView/article.html
 
         // inserting project names in listView
-        val adapter = ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_list_item_1, proj_names
-        )
-        listAdapter = adapter
+        val adapter = ProjectListAdapter(this,
+            ArrayList(projectList.orEmpty()))
+        listView.adapter = adapter
+
     }
 
 
     /*TODO, @Max today:
     * 1. finish projects ->
-    *     1.1 NewProjectActivity;
     *     1.2 AddUserToProject;
     *     1.3 AddTaskToProject.
     * 2. finish users ->
@@ -134,11 +132,11 @@ class ProjectsActivity : ListActivity() {
                 this.refreshProjectList()
 
                 Toast.makeText(applicationContext,
-                    "Project created successfully. $userAuth",
+                    "Project created successfully.",
                     Toast.LENGTH_LONG).show()
             }else {
                 Toast.makeText(applicationContext,
-                    "Error: project not created. $userAuth",
+                    "Error: project not created.",
                     Toast.LENGTH_LONG).show()
             }
         }
