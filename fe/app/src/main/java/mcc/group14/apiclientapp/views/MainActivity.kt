@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         signup_btn.setOnClickListener{
 
             // TODO: @Kirthi get the following from the user, userAuth is the cookie,
-            //  static cookie is also fine...
+            //  go for sharedPreferences
             val userEmail = "news@aalto.fi"
             val userAuth = "abc123"
 

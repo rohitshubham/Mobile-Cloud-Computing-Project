@@ -19,7 +19,7 @@ class LoginActivity : AppCompatActivity() {
         // opens projects activity
         login_btn.setOnClickListener{
             // TODO: @Kirthi get the following from the user, userAuth is the cookie,
-            //  static cookie is also fine...
+            //  go for sharedPreferences
 
             // Go to the dashboard (ProjectsActivity)
             // Note: this is the way you pass stuff among activities, the only problem is that
