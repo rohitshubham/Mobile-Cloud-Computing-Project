@@ -1,15 +1,17 @@
 package mcc.group14.apiclientapp.views
 
 import android.app.Activity
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
+import android.util.Log
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.data.ProjectDetail
 import mcc.group14.apiclientapp.utils.ProjectImageHelper
@@ -18,12 +20,18 @@ import retrofit2.Response
 
 class OptionalProjectSettingsActivity :
     AppCompatActivity(),
-    LongRunningActivity{
+    LongRunningActivity,
+TimePickerDialog.OnTimeSetListener,
+    DatePickerDialog.OnDateSetListener
+{
+
+    val TAG = "OptionalProjectSettingsActivity"
 
     val PROFILE_PIC_SELECTION = 0
 
     lateinit var  pickProjectImageBtn : Button
     lateinit var pickProjectImageIV : ImageView
+    lateinit var createProjectBtn : Button
 
     lateinit var curProject: ProjectDetail
     lateinit var userEmail: String
@@ -47,7 +55,7 @@ class OptionalProjectSettingsActivity :
     private fun initUI() {
         pickProjectImageBtn = findViewById(R.id.project_img_btn)
         pickProjectImageIV = findViewById(R.id.project_img_iv)
-
+        createProjectBtn = findViewById(R.id.create_project_optional_set_btn)
     }
 
     override fun onLongProcessFailure(t: Throwable) {
@@ -57,6 +65,8 @@ class OptionalProjectSettingsActivity :
     override fun onLongProcessSuccess(result: Response<ResponseBody>) {
         // TODO: @Max get path to image, after agreement with be
         // this.curProject.badge = result.body() as
+        this.curProject.badge = "/img/my_project.png"
+        Log.d(TAG, "$curProject")
     }
 
 
@@ -64,7 +74,7 @@ class OptionalProjectSettingsActivity :
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK && requestCode == PROFILE_PIC_SELECTION){
-            pickAndUploadProfilePicture(data)
+            pickAndUploadProjectPicture(data)
         } else {
             val t = Toast.makeText(applicationContext,
                 "No photo selected", Toast.LENGTH_SHORT)
@@ -72,7 +82,7 @@ class OptionalProjectSettingsActivity :
         }
     }
 
-    private fun pickAndUploadProfilePicture(data: Intent?) {
+    private fun pickAndUploadProjectPicture(data: Intent?) {
         val iv = findViewById<ImageView>(R.id.userImage)
         val imageUri = data?.data
 
@@ -106,6 +116,41 @@ class OptionalProjectSettingsActivity :
                 PROFILE_PIC_SELECTION
             )
         }
+        // returns to NewProjectActivity
+        createProjectBtn.setOnClickListener{
+            val returnIntent = Intent()
+            setResult(Activity.RESULT_OK, returnIntent)
+            returnIntent.putExtra("PROJECT", curProject)
+            finish()
+        }
+    }
+
+    fun showDatePickerDialog(v: View) {
+        val newFragment = DatePickerFragment(this, this)
+        newFragment.show(supportFragmentManager, "datePicker")
+    }
+
+    override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
+        curProject.deadline = "$year-$month-$day"
+    }
+
+
+    fun showTimePickerDialog(v: View) {
+        TimePickerFragment(this).show(supportFragmentManager, "timePicker")
+    }
+
+    override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {
+        // Do something with the time chosen by the user
+        // TODO: -- remove second part of the first condition, just for testing
+        if (this.curProject.deadline == "" ||
+            this.curProject.deadline == "DEFAULT_DEADLINE"){
+            Toast.makeText(this, "Please first set a deadline date", Toast.LENGTH_LONG)
+        } else if (this.curProject.deadline.orEmpty().contains("\'T\'")){
+            Toast.makeText(this, "Time deadline already selected", Toast.LENGTH_LONG)
+        } else {
+            this.curProject.deadline += "\'T\'$hourOfDay:$minute"
+        }
     }
 
 }
+

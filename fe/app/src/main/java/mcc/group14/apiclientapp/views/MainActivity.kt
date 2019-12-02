@@ -1,10 +1,16 @@
 package mcc.group14.apiclientapp.views
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import mcc.group14.apiclientapp.R
+
+// TODO - legend:
+//    --: not urgent at all
+//    - : not very urgent
+//    + : quite urgent
+//    ++: very urgent
 
 // Sign-up activity
 class MainActivity : AppCompatActivity() {

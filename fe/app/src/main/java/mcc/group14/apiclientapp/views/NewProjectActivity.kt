@@ -1,19 +1,19 @@
 package mcc.group14.apiclientapp.views
 
+import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
 import mcc.group14.apiclientapp.data.ProjectDetail
-import android.app.Activity
-import mcc.group14.apiclientapp.R
 
 
 class NewProjectActivity : AppCompatActivity() {
@@ -84,11 +84,16 @@ class NewProjectActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        // terminates newProjectActivity and sends the
         if (requestCode == PROJECT_SETTINGS_ACTIVITY){
             if (resultCode == Activity.RESULT_OK){
                 data?.let {
                     project =  it.getSerializableExtra("PROJECT")
                             as ProjectDetail
+                    Log.d(TAG,"$project")
+                    // TODO: ++ post the complete project and terminate activity
+                    // note post, uploads the current project and *terminates* this activity!
+
                 }
             }
         }
@@ -124,12 +129,13 @@ class NewProjectActivity : AppCompatActivity() {
             requester_email = userEmail,
 
             // TODO: these data are got from OptionalProjectSettingsActivity
-            badge = "img.png",
-            // TODO: validate keyword
-            keywords = "k1, k2, k3",
-            deadline = "2019-05-08",
+            badge = "DEFAULT_BADGE",
+            // TODO: validate keywords
+            keywords = "DEFAULT_KEYWORDS",
+            deadline = "DEFAULT_DEADLINE",
+
             // always include userEmailRequester
-            team_members = "usr1@mail.org, usr2@mail.ru, $userEmail"
+            team_members = "$userEmail"
         )
     }
 
