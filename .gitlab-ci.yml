@@ -1,7 +1,7 @@
     image: ubuntu:18.04
     
     stages:
-      -build
+      - build
 
     build-backend:
       stage: build
