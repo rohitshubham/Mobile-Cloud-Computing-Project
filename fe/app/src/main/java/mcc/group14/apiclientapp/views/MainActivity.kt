@@ -19,11 +19,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        this.title = "Signup"
+        this.title = "Main"
 
         val signup_btn = findViewById<Button>(R.id.signup_btn)
         val login_btn = findViewById<Button>(R.id.login_btn)
 
+        /*
         // opens projects activity
         signup_btn.setOnClickListener{
 
@@ -42,11 +43,18 @@ class MainActivity : AppCompatActivity() {
                 }
             startActivity(intent)
         }
+        */
 
         // opens login activity
         login_btn.setOnClickListener{
             val intent =
                 Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+
+        signup_btn.setOnClickListener{
+            val intent =
+                Intent(this, SignupActivity::class.java)
             startActivity(intent)
         }
     }
