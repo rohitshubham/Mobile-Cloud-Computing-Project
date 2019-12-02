@@ -1,7 +1,7 @@
 image: docker:18-git
 
 services:
-  - docker:18-dind
+  - docker:18-dindy
 
 variables:
   DOCKER_TLS_CERTDIR: ""
@@ -14,4 +14,4 @@ build-backend:
   stage: build
   script:
     - docker build -t mcc/backend ./backend
-    - docker run -p 8080:8080   mcc/backend 
+    - docker run -d -p 8080:8080   mcc/backend 
