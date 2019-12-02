@@ -27,9 +27,8 @@ class MainActivity : AppCompatActivity() {
             val userAuth = "abc123"
 
             // Go to the dashboard (ProjectsActivity)
-            // Note: this is the way you pass stuff among activities, the only problem is that
-            // object passed like this must be serializable, that is why mAuth should prolly be
-            // static.
+            // Note: this is the way you pass stuff among activities, look at how I did it
+            // in NewProjectActivity (I made ProjectDetail Serializable and just passed the stuff around)
             val intent =
                 Intent(this, ProjectsActivity::class.java).apply {
                     putExtra("USER_EMAIL", userEmail)

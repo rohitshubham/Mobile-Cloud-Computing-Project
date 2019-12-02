@@ -44,8 +44,8 @@ interface UsersApiClient{
 
     @Multipart
     @POST("/")
-    fun uploadProfilePicture (@Part("userId") userId: RequestBody,
-                              @Part("name") name: RequestBody,
-                              @Part photo: MultipartBody.Part?
+    fun uploadPicture (@Part("userId") userId: RequestBody,
+                       @Part("name") name: RequestBody,
+                       @Part photo: MultipartBody.Part?
     ):Call<ResponseBody>
 }

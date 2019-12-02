@@ -112,7 +112,7 @@ class UserSettingsActivity : AppCompatActivity(), UserContract.View {
 
         // this function will store the image both locally and on the BE.
         // local path -> user.localProfileImagePath
-        // remote path -> user.profileImagePath
+        // remote pathn -> user.profileImagePath
         userPresenter.storeProfileImage(img, user.userId,
             user.displayName, this.applicationContext)
 

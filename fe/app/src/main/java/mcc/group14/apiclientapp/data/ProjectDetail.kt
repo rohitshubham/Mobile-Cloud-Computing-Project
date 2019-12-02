@@ -1,5 +1,7 @@
 package mcc.group14.apiclientapp.data
 
+import java.io.Serializable
+
 data class ProjectDetail(
     var name: String,
     var description: String,
@@ -19,4 +21,4 @@ data class ProjectDetail(
     // we do not need all the users' fields
 
     // in milliseconds
-    )
+    ) : Serializable

@@ -88,7 +88,7 @@ class UserModel : UserContract.Model {
         profilePic1 = MultipartBody.Part.createFormData("profileImage", file.name, requestFile)
 
         val call: Call<ResponseBody> =
-            client.uploadProfilePicture(userId, userDisplayName, profilePic1)
+            client.uploadPicture(userId, userDisplayName, profilePic1)
         call.enqueue(object : Callback<ResponseBody> {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
