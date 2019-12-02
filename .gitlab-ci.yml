@@ -1,14 +1,17 @@
-  image: ubuntu:18.04
-  
-  stages:
-    - build
+image: docker:18-git
 
-  build-backend:
-    stage: build
-    before_script:
-      - apt-get update && apt-get install -y curl
-      - curl -fsSL https://get.docker.com -o get-docker.sh
-      - sh get-docker.sh
-    script:
-      - docker build -t mcc/backend ./backend
-      - docker run -p 8080:8080   mcc/backend 
+services:
+  - docker:dind
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+
+
+stages:
+  - build
+
+build-backend:
+  stage: build
+  script:
+    - docker build -t mcc/backend ./backend
+    - docker run -p 8080:8080   mcc/backend 
