@@ -1,12 +1,12 @@
-    image: ubuntu:18.04
-    
-    stages:
-      - build
+image: gitlab/dind
+services:
+  - docker:dind
 
-    build-backend:
-      stage: build
-      before_script:
-      - apt-get update && apt-get install -y docker
-      script:
-        - docker build -t mcc/backend ./backend
-        - docker run -p 8080:8080   mcc/backend 
+stages:
+  - build
+
+build-backend:
+  stage: build
+  script:
+    - docker build -t mcc/backend ./backend
+    - docker run -p 8080:8080   mcc/backend 
