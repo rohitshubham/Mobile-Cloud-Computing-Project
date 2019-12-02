@@ -1,6 +1,2 @@
-runtime: python
+runtime: custom
 env: flex
-entrypoint: gunicorn -b :$PORT webServer.wsgi
-
-runtime_config:
-  python_version: 3.7
