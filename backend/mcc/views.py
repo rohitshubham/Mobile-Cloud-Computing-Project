@@ -13,6 +13,8 @@ from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, 
 from .models import UserAuth, User, Project, UserProject
 from .render import Render
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+
 
 #This is GK's key
 #cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
@@ -42,7 +44,7 @@ def user_save(request):
         for user in auth.list_users().iterate_all():
             user_name = request.data["display_name"]
             if user.display_name == user_name:
-                email_hash = str(hashlib.sha256(request.data["email"].encode('utf-8')).hexdigest())
+                email_hash = str(hashlib.sha256(request.data["email_id"].encode('utf-8')).hexdigest())
                 return Response({ "success" : "false", "error" : "DisplayNameAlreadyExists",
                                     "payload": {
                                         "suggestion_1"  :  f"{user_name}_{email_hash[0:5]}",
@@ -53,7 +55,7 @@ def user_save(request):
 
         try:
             user =  auth.create_user(
-                            email=request.data["email"],
+                            email=request.data["email_id"],
                             email_verified=False,
                             password=request.data["password"],
                             display_name=request.data["display_name"],
@@ -107,6 +109,14 @@ def project_save(request):
     if request.method == 'POST':  
         try:
             request.data['creation_time'] = datetime.now()
+
+            #Max wanted 2019-12-03'T'03:09, so accepting by doing following change
+            if 'deadline' in request.POST:
+                dl = request.data['deadline'].replace("'","")+":00"
+                print(dl)
+                print(parse_datetime(dl))
+                request.data['deadline'] = parse_datetime(dl)
+                print(request.data)
             serializer = ProjectSerializer(data=request.data)
             
             if serializer.is_valid():
