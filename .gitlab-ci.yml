@@ -39,7 +39,7 @@ build-frontend:
     - set -o pipefail
   script:
     - cd ./fe
-    - ./gradlew build
+    - ./gradlew assemble
 
 deploy-backend:
   image: google/cloud-sdk:alpine
