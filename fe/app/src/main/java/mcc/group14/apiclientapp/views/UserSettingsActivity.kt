@@ -4,23 +4,25 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import mcc.group14.apiclientapp.R
-import mcc.group14.apiclientapp.data.User
-import mcc.group14.apiclientapp.contracts.UserContract
-import mcc.group14.apiclientapp.presenters.UserPresenter
+import mcc.group14.apiclientapp.api.UsersApiClient
+import mcc.group14.apiclientapp.data.UserCredentials
+import mcc.group14.apiclientapp.utils.LongProcessListener
+import mcc.group14.apiclientapp.utils.LongRunningActivity
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 
 // User Settings view
-class UserSettingsActivity : AppCompatActivity(), UserContract.View {
+class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
 
     // TODO: demolish MVP, put everything here and maybe utils class (image upload)
     private val TAG = "UserSettingsActivity"
@@ -28,12 +30,18 @@ class UserSettingsActivity : AppCompatActivity(), UserContract.View {
     // UI variables, NB lateinit lets us initialise them in initGUI
     private lateinit var pbloading: ProgressBar
     private lateinit var imagePutBtn: Button
+    private lateinit var newPswET: EditText
+    private lateinit var newPswBtn: Button
 
-    // Response variables
-    private lateinit var userPresenter: UserPresenter
     // NB: user might be changing (projects and created_projects might change), always get it from the
     //     BE before using his data
-    private lateinit var user: User
+    private lateinit var userCredentials: UserCredentials
+
+    private val userApi = UsersApiClient.create()
+
+    // @TODO: @Max @Kirthi understand how to get user data from mAuth
+    lateinit var uid: String
+    lateinit var userEmail: String
 
     // just a constant
     private companion object{
@@ -44,25 +52,20 @@ class UserSettingsActivity : AppCompatActivity(), UserContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.user_settings)
 
-
-
-        // for getting/posting data
-        userPresenter = UserPresenter(this)
-
         // initialises GUI elements
         initGUI()
 
         setListeners()
 
-        val userEmail = intent.getStringExtra("USER_EMAIL")
-        val userAuth = intent.getStringExtra("USER_AUTH")
+        userEmail = intent.getStringExtra("USER_EMAIL")
+        // @TODO: ++ userAuth should be in sharedPreferences
+        uid = intent.getStringExtra("USER_AUTH")
+        val userPsw = "DEFAULT_PSW"
+
+        userCredentials = UserCredentials(userEmail, userPsw)
 
         this.hideProgress()
-        Log.d(TAG,"User email: $userEmail, userAuth: $userAuth")
-        // from login or sign-up
-//        var id : Int = 2
-//        userPresenter.getUserData(id)
-
+        Log.d(TAG,"User email: $userEmail, userAuth: $uid")
 
 /*
         val user = User(4, "usr4", "usr4@mail.fi", null,
@@ -73,7 +76,9 @@ class UserSettingsActivity : AppCompatActivity(), UserContract.View {
     private fun initGUI() {
         this.title = ("User settings")
         pbloading = findViewById(R.id.pb_loading)
-        imagePutBtn = findViewById<Button>(R.id.imagePutter)
+        imagePutBtn = findViewById(R.id.imagePutter)
+        newPswBtn = findViewById(R.id.new_psw_btn)
+        newPswET = findViewById(R.id.new_psw_et)
 
     }
 
@@ -87,6 +92,39 @@ class UserSettingsActivity : AppCompatActivity(), UserContract.View {
                 PROFILE_PIC_SELECTION
             )
         }
+        newPswBtn.setOnClickListener{
+            val capturedPsw = newPswET.text.toString()
+            if (capturedPsw != "") {
+                userCredentials.password = capturedPsw
+                postCredentials()
+            } else if (capturedPsw.length < 6){
+                Toast.makeText(applicationContext,
+                    "Password must be at least 6 chars", Toast.LENGTH_LONG).show()
+            }else{
+                Toast.makeText(applicationContext, "Insert a password",
+                    Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun postCredentials() {
+        val returnIntent = Intent()
+        var disposable = userApi.editPassword(userCredentials)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { result ->
+                    Log.v(TAG, "POSTED: $result")
+
+                    setResult(Activity.RESULT_OK, returnIntent)
+                    finish()
+                },
+                { error ->
+                    Log.e(TAG, "ERROR POSTING CREDENTIALS ${error.message}")
+                    setResult(Activity.RESULT_CANCELED, returnIntent)
+                    finish()
+                }
+            )
     }
 
     // to implement the profile image selection from the gallery
@@ -110,50 +148,40 @@ class UserSettingsActivity : AppCompatActivity(), UserContract.View {
             contentResolver.openInputStream(imageUri!!)
         )
 
-        // this function will store the image both locally and on the BE.
-        // local path -> user.localProfileImagePath
-        // remote pathn -> user.profileImagePath
-        userPresenter.storeProfileImage(img, user.userId,
-            user.displayName, this.applicationContext)
+        val imageHelper = UserImageHelper.instance
+        val listener = LongProcessListener(this)
 
-        // user stores, not yet implemented
-        // storeImage(1, "usr1", img)
-        // sets image in ImageView
+        imageHelper.storeImage(listener, userEmail, uid,
+            img, this.applicationContext)
+
         iv.setImageBitmap(img)
 
         // TODO: cool way to scale an image
         // val scaledImage: Bitmap = Bitmap.createScaledBitmap(img, iv.width, iv.height, true)
     }
 
-    override fun setLocalProfileImagePath(localPath: String) {
-        user.localProfileImagePath = localPath
+    override fun onLongProcessSuccess(result: Response<ResponseBody>) {
+        // TODO: ++ @Max get the path from BE
+        //user.photo_url = result.body()...
+    }
+
+    override fun onLongProcessFailure(t: Throwable) {
+        Toast.makeText(applicationContext,
+            "Could not upload the image", Toast.LENGTH_LONG).show()
+    }
+
+    fun setLocalProfileImagePath(localPath: String) {
+        // user.localProfileImagePath = localPath
         Log.d(TAG, "Image saved successfully in: $localPath")
     }
 
-    override fun showProgress() {
+    fun showProgress() {
         pbloading.visibility = View.VISIBLE
     }
 
-    override fun hideProgress() {
+    fun hideProgress() {
         pbloading.visibility = View.GONE
     }
 
-    override fun refreshAndDisplayUserData(fetchedUser: User) {
-        this.user = fetchedUser
-        if (this.user != null) {
-            Log.d(TAG, fetchedUser.toString())
-            Toast.makeText(this,
-                fetchedUser.displayName, Toast.LENGTH_LONG).show()
-
-            Log.d(TAG, this.user.toString() )
-        }
-    }
-
-    override fun onResponseFailure(t: Throwable) {
-        Log.e(TAG, t.message)
-        Toast.makeText(this,
-            getString(R.string.communication_error),
-            Toast.LENGTH_LONG).show()
-    }
-
 }
+

@@ -14,6 +14,8 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.data.ProjectDetail
+import mcc.group14.apiclientapp.utils.LongProcessListener
+import mcc.group14.apiclientapp.utils.LongRunningActivity
 import mcc.group14.apiclientapp.utils.ProjectImageHelper
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -217,8 +219,7 @@ TimePickerDialog.OnTimeSetListener,
     fun addKeywords(v: View){
         val keywordsET = findViewById<EditText>(R.id.keywords_et)
         val capturedKeywordsString = keywordsET.text.toString()
-        if ( capturedKeywordsString != "" &&
-            capturedKeywordsString != getString(R.string.keywords_et) ){
+        if ( capturedKeywordsString != "" ){
             val keywords = capturedKeywordsString.split(",")
             if (keywords.size > 3){
                 Toast.makeText(this, "Too many keywords inserted",

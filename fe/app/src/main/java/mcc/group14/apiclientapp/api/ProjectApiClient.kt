@@ -46,7 +46,7 @@ interface ProjectApiClient {
     @Headers("Content-Type: application/json;charset=utf-8")
     //@POST("project/")
     @POST("project/")
-    fun createProject(@Body project: ProjectDetail): Observable<ProjectDetail>
+    fun createProject(@Body project: ProjectDetail): Observable<Response<ProjectDetail>>
 
     @Headers("Content-Type: application/json;charset=utf-8")
     //@POST("project/")
@@ -55,7 +55,7 @@ interface ProjectApiClient {
 /*
     @Multipart
     @POST("/")
-    fun uploadProfilePicture (@Part("id") userId: RequestBody,
+    fun uploadProfilePicture (@Part("id") uid: RequestBody,
                               @Part("name") name: RequestBody,
                               @Part photo: MultipartBody.Part?
     ): Call<ResponseBody>

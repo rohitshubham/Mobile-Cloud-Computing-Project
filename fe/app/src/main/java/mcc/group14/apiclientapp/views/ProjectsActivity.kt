@@ -22,6 +22,8 @@ class ProjectsActivity : ListActivity() {
     val TAG = "ProjectActivity"
 
     val NEW_PROJECT_ACTIVITY = 0
+    val USER_SETTINGS_ACTIVITY = 1
+
 
     private lateinit var userSettBtn: Button
     private lateinit var addProjectBtn: Button
@@ -139,6 +141,14 @@ class ProjectsActivity : ListActivity() {
                     "Error: project not created.",
                     Toast.LENGTH_LONG).show()
             }
+        } else if (requestCode == USER_SETTINGS_ACTIVITY){
+            if (resultCode == Activity.RESULT_OK){
+                Toast.makeText(applicationContext, "User successfully edited",
+                    Toast.LENGTH_LONG).show()
+            } else{
+                Toast.makeText(applicationContext, "Error: user not edited",
+                    Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -158,7 +168,7 @@ class ProjectsActivity : ListActivity() {
                     putExtra("USER_EMAIL", userEmail)
                     putExtra("USER_AUTH", userAuth)
                 }
-            startActivity(intent)
+            startActivityForResult(intent, USER_SETTINGS_ACTIVITY)
         }
     }
 }

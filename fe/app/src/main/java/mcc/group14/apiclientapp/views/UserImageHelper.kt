@@ -1,14 +1,14 @@
-package mcc.group14.apiclientapp.utils
+package mcc.group14.apiclientapp.views
 
+import mcc.group14.apiclientapp.utils.FileHelper
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 
-class ProjectImageHelper: FileHelper() {
-
+class UserImageHelper : FileHelper() {
     companion object{
-        val instance = ProjectImageHelper()
+        val instance = UserImageHelper()
     }
 
     override fun upload(
@@ -16,8 +16,7 @@ class ProjectImageHelper: FileHelper() {
         userAuth: RequestBody,
         fileMP: MultipartBody.Part?
     ): Call<ResponseBody> {
-        return this.apiClient.
-            uploadProjectPicture(userEmail, userAuth, fileMP)
+        return this.apiClient.uploadUserPicture(userEmail, userAuth, fileMP)
     }
 
 }

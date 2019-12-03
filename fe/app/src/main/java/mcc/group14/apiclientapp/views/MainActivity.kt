@@ -29,7 +29,8 @@ class MainActivity : AppCompatActivity() {
 
             // TODO: @Kirthi get the following from the user, userAuth is the cookie,
             //  go for sharedPreferences
-            val userEmail = "news@aalto.fi"
+            val userEmail = "this@that.com"
+            // val userEmail = "news@aalto.fi"
             val userAuth = "abc123"
 
             // Go to the dashboard (ProjectsActivity)

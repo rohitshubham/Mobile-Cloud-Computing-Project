@@ -125,7 +125,7 @@ class NewProjectActivity : AppCompatActivity() {
         project = ProjectDetail(
             name = capturedName,
             description = capturedDescription,
-            project_type = if (capturedIsPersonalCB) "T" else "P",
+            project_type = if (capturedIsPersonalCB) "Team" else "Personal",
             requester_email = userEmail,
 
             // always include userEmailRequester
@@ -135,10 +135,7 @@ class NewProjectActivity : AppCompatActivity() {
             badge = "DEFAULT_BADGE",
             // TODO: validate keywords
             keywords = "DEFAULT_KEYWORDS",
-            deadline = "DEFAULT_DEADLINE"
-
-
-
+            deadline = "2019-08-15"
         )
     }
 
@@ -151,7 +148,9 @@ class NewProjectActivity : AppCompatActivity() {
                     Log.v(TAG, "POSTED: $result")
                     val returnIntent = Intent()
                    // returnIntent.putExtra("ERROR", )
-                    setResult(Activity.RESULT_OK, returnIntent)
+                    if (result.success.orEmpty().toBoolean()) {
+                        setResult(Activity.RESULT_OK, returnIntent)
+                    }
                     finish()
                 },
                 { error ->
@@ -169,7 +168,7 @@ class NewProjectActivity : AppCompatActivity() {
         capturedDescription: String
     ): Boolean {
         var missingField: String? = null
-        if (capturedName == "" || capturedName == "Project name") {
+        if (capturedName == "") {
             missingField = "name"
             Toast.makeText(
                 applicationContext,
@@ -177,7 +176,7 @@ class NewProjectActivity : AppCompatActivity() {
             ).show()
             return true
         }
-        if (capturedDescription == "" || capturedDescription == "Project description") {
+        if (capturedDescription == "") {
             missingField = "description"
             Toast.makeText(
                 applicationContext,

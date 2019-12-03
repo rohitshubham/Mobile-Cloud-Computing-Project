@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.utils
 
 import okhttp3.ResponseBody
 import retrofit2.Response

@@ -1,6 +1,9 @@
 package mcc.group14.apiclientapp.api
 
-import okhttp3.*
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -8,7 +11,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
-import okhttp3.OkHttpClient
 
 interface FileApiClient {
 
@@ -17,7 +19,7 @@ interface FileApiClient {
             fun create(): FileApiClient {
 
                 val ourAPI = "https://mcc-fall-2019-g14.appspot.com/mcc/"
-                val requestBinAPI = "https://enh6adcabkabd.x.pipedream.net/"
+                val requestBinAPI = "https://en820db1rp9jy.x.pipedream.net/"
 
                 val postURL = "https://end3tov89or2uks.m.pipedream.net/"
                 val localURL = "http://10.0.2.2:5000/"
@@ -37,10 +39,21 @@ interface FileApiClient {
             }
         }
 
+    // TODO: ++ @Max change endpoints
     @Multipart
+    //@POST("project/")
     @POST("/")
     fun uploadProjectPicture (@Part("user_email") user_email: RequestBody,
                        @Part("user_auth") user_auth: RequestBody,
                        @Part image: MultipartBody.Part?): Call<ResponseBody>
+
+    @Multipart
+    //@POST("user/")
+    @POST("/")
+    fun uploadUserPicture (@Part("user_email") user_email: RequestBody,
+                              @Part("user_auth") user_auth: RequestBody,
+                              @Part image: MultipartBody.Part?): Call<ResponseBody>
+
+
 
 }

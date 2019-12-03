@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import mcc.group14.apiclientapp.api.FileApiClient
-import mcc.group14.apiclientapp.views.LongProcessListener
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
