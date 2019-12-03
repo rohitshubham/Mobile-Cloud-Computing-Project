@@ -138,6 +138,7 @@ def project_save(request):
         del request.data['project_id']
         #ToDO: Check creation time logic -it shouldn't change
         request.data['creation_time'] = datetime.now()
+        request.data['last_modified'] = datetime.now()
         try:
             serializer = ProjectSerializer(data=request.data)
             if serializer.is_valid():
@@ -183,7 +184,7 @@ def projects_list(request,email_id):
             project_id = data["project_id"]
             project = db.collection(u'projects').document(project_id).get().to_dict()
             if project is not None:                
-                x = project["name"]
+                x = project
                 value.append({"project_id" : project_id, "project_name" : x ,"is_project_administrator" : data["is_project_administrator"]})
          
         return Response({"success": "true",
@@ -285,6 +286,7 @@ def change_task_status(task_id, project_id, member_count = -1):
 def task_save(request):
     try:
         request.data['creation_time'] = datetime.now()
+        request.data['last_modified'] = datetime.now()
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():       
             doc_ref = db.collection(u'tasks').document()
