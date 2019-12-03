@@ -59,4 +59,17 @@ class SignupActivity : AppCompatActivity() {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+    // todo
+    private fun isValidDisplayName(dp_name: String): Boolean {
+        return false
+    }
+
+    private fun checkEmailExists(email: String): Boolean {
+        return false
+    }
+
+    private fun checkDisplayNameExists(dp_name: String): Boolean {
+        return false
+    }
+
 }
