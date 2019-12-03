@@ -43,4 +43,4 @@ frontend-build:
   artifacts:
     expire_in: 2 days
     paths:
-    - ./app/build/outputs/
+    - ./fe/app/build/outputs/
