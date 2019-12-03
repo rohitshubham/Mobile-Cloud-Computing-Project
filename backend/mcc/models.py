@@ -24,8 +24,8 @@ class Project(models.Model):
         ('Team', 'Team')
     ]   
     name = models.CharField(max_length=100)
-    team_members = models.TextField()
-    deadline = models.DateField(null=True, blank=True)
+    team_members = models.TextField(null=True, blank=True)
+    deadline = models.DateTimeField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     requester_email = models.EmailField()
     project_type = models.CharField(max_length= 20, choices= PROJECT_TYPES, default= 'Personal')

@@ -14,9 +14,14 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['email', 'displayName','profilePicture']
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
+    
     class Meta:
-        model = Project
-        fields = ['name', 'team_members', 'deadline', 'description', 'requester_email', 'project_type', 'keywords', 'badge', 'creation_time', 'last_modified']
+        model = Project 
+        deadline = serializers.DateTimeField(allow_null=True)        
+        description = serializers.CharField(max_length=None, min_length=None, allow_null=True) 
+        badge = serializers.CharField(max_length=None, min_length=None, allow_null=True)      
+        fields = ['name', 'team_members', 'deadline', 'description', 'requester_email', 'project_type', 'keywords', 'badge', 'creation_time']
+        
 
 class UserProjectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
