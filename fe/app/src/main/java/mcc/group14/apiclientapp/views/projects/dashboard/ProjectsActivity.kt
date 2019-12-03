@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.views.projects.dashboard
 
 import android.app.Activity
 import android.app.ListActivity
@@ -8,12 +8,16 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ListView
+import android.widget.PopupMenu
 import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
 import mcc.group14.apiclientapp.data.UserProject
+import mcc.group14.apiclientapp.views.projects.ProjectDetailActivity
+import mcc.group14.apiclientapp.views.projects.create.NewProjectActivity
+import mcc.group14.apiclientapp.views.users.UserSettingsActivity
 
 
 // Projects activity
@@ -91,21 +95,13 @@ class ProjectsActivity : ListActivity() {
         // https://www.vogella.com/tutorials/AndroidListView/article.html
 
         // inserting project names in listView
-        val adapter = ProjectListAdapter(this,
-            ArrayList(projectList.orEmpty()))
+        val adapter = ProjectListAdapter(
+            this,
+            ArrayList(projectList.orEmpty())
+        )
         listView.adapter = adapter
 
     }
-
-
-    /*TODO, @Max today:
-    * 1. finish projects ->
-    *     1.2 AddUserToProject;
-    *     1.3 AddTaskToProject.
-    * 2. finish users ->
-    *     2.1 UserSettingsActivity.
-    *
-    * */
 
     // we use this method to pass to the ProjectDetail
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
@@ -171,4 +167,21 @@ class ProjectsActivity : ListActivity() {
             startActivityForResult(intent, USER_SETTINGS_ACTIVITY)
         }
     }
+
+    fun showPopUp(view: View) {
+        val popupMenu = PopupMenu(this, view)
+        val inflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.overflow_menu, popupMenu.menu)
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.add_user_item -> {
+                    Toast.makeText(this@ProjectsActivity, it.title, Toast.LENGTH_SHORT).show();
+                }
+            }
+            true
+        }
+    }
+
 }

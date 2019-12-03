@@ -16,7 +16,8 @@ interface ProjectApiClient {
             val httpClient = OkHttpClient.Builder()
             httpClient.addInterceptor(AuthInterceptor())
 
-            val ourApi = "https://mcc-fall-2019-g14.appspot.com/mcc/"
+            val realApi = "https://mcc-fall-2019-g14.appspot.com/mcc/"
+            val fakeApi = "http://10.0.2.2:8080/"
             val requestBinApi = "https://enh6adcabkabd.x.pipedream.net/"
 
             val postURL = "https://end3tov89or2uks.m.pipedream.net/"
@@ -26,7 +27,7 @@ interface ProjectApiClient {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
-                .baseUrl(ourApi)
+                .baseUrl(fakeApi)
                 .build()
 
             return retrofit.create(ProjectApiClient::class.java)

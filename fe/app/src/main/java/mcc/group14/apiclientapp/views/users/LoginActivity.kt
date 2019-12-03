@@ -1,10 +1,11 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.views.users
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import mcc.group14.apiclientapp.R
+import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsActivity
 
 class LoginActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.views.projects.create
 
 import android.app.Dialog
 import android.app.TimePickerDialog

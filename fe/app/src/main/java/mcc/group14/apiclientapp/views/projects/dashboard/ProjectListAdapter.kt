@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.views.projects.dashboard
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -17,6 +17,7 @@ class ProjectListAdapter(private val context: Context,
             = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View{
+
         val rowView = inflater.inflate(R.layout.project_list_row,
             parent, false)
 

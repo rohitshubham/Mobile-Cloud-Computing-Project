@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.views.projects
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

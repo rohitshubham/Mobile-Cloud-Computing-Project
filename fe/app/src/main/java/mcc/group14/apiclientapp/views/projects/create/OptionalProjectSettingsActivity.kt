@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.views.projects.create
 
 import android.app.Activity
 import android.app.DatePickerDialog
@@ -132,7 +132,8 @@ TimePickerDialog.OnTimeSetListener,
     }
 
     fun showDatePickerDialog(v: View) {
-        val newFragment = DatePickerFragment(this, this)
+        val newFragment =
+            DatePickerFragment(this, this)
         newFragment.show(supportFragmentManager, "datePicker")
     }
 
@@ -146,7 +147,8 @@ TimePickerDialog.OnTimeSetListener,
 
 
     fun showTimePickerDialog(v: View) {
-        TimePickerFragment(this).show(supportFragmentManager, "timePicker")
+        TimePickerFragment(this)
+            .show(supportFragmentManager, "timePicker")
     }
 
     override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {

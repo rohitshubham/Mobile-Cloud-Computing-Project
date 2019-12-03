@@ -1,4 +1,4 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.views.users
 
 import android.app.Activity
 import android.content.Intent
@@ -17,6 +17,7 @@ import mcc.group14.apiclientapp.api.UsersApiClient
 import mcc.group14.apiclientapp.data.UserCredentials
 import mcc.group14.apiclientapp.utils.LongProcessListener
 import mcc.group14.apiclientapp.utils.LongRunningActivity
+import mcc.group14.apiclientapp.utils.UserImageHelper
 import okhttp3.ResponseBody
 import retrofit2.Response
 

@@ -1,6 +1,5 @@
-package mcc.group14.apiclientapp.views
+package mcc.group14.apiclientapp.utils
 
-import mcc.group14.apiclientapp.utils.FileHelper
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody

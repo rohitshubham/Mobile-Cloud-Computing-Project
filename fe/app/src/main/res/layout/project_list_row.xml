@@ -35,6 +35,22 @@
             android:text="@string/last_modified_proj"
             android:textSize="10sp" />
     </LinearLayout>
+
+    <Space
+        android:layout_width="49dp"
+        android:layout_height="53dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/project_overflow"
+        android:layout_width="10dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:padding="0dp"
+        android:scaleType="center"
+        android:src="@drawable/icon_overflow"
+        android:onClick="showPopUp"/>
+
 </LinearLayout>
 
 
