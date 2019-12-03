@@ -5,6 +5,9 @@ services:
 
 variables:
   DOCKER_TLS_CERTDIR: ""
+  ANDROID_COMPILE_SDK: "28"
+  ANDROID_BUILD_TOOLS: "28.0.2"
+  ANDROID_SDK_TOOLS:   "4333796"
 
 
 stages:
@@ -20,10 +23,6 @@ build-backend:
 build-frontend:
   image: openjdk:8-jdk
   stage: build
-  variables:
-    ANDROID_COMPILE_SDK: "28"
-    ANDROID_BUILD_TOOLS: "28.0.2"
-    ANDROID_SDK_TOOLS:   "4333796"
   before_script:
     - apt-get --quiet update --yes
     - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
@@ -40,15 +39,22 @@ build-frontend:
     - set -o pipefail
   script:
     - cd ./fe
-    - ./gradlew assembleDebug
+    - ./gradlew build
+
+deploy-backend:
+  image: google/cloud-sdk:alpine
+  stage: deploy
+  script:
+    - cd ./backend
+    - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
+    - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+    - gcloud --quiet --project $PROJECT_ID app deploy app.yaml dispatch.yaml
+  after_script:
+      - rm /tmp/$CI_PIPELINE_ID.json
 
 deploy-frontend:
   image: openjdk:8-jdk
   stage: deploy
-  variables:
-    ANDROID_COMPILE_SDK: "28"
-    ANDROID_BUILD_TOOLS: "28.0.2"
-    ANDROID_SDK_TOOLS:   "4333796"
   before_script:
     - apt-get --quiet update --yes
     - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
