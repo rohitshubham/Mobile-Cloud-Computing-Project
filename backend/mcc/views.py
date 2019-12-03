@@ -183,9 +183,12 @@ def projects_list(request,email_id):
             data = x.to_dict()
             project_id = data["project_id"]
             project = db.collection(u'projects').document(project_id).get().to_dict()
-            if project is not None:                
-                x = project
-                value.append({"project_id" : project_id, "project_name" : x ,"is_project_administrator" : data["is_project_administrator"]})
+            if project is not None:  
+                project["project_id"] = project_id
+                project["is_project_administrator"]  =  data["is_project_administrator"]           
+                value.append(json.dumps(project))
+                
+                
          
         return Response({"success": "true",
                          "payload": value }, status=status.HTTP_200_OK)    
