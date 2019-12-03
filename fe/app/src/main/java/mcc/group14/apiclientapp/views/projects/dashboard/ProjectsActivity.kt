@@ -6,16 +6,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ListView
 import android.widget.PopupMenu
 import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat
+import ir.mirrajabi.searchdialog.core.SearchResultListener
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
 import mcc.group14.apiclientapp.data.UserProject
 import mcc.group14.apiclientapp.views.projects.ProjectDetailActivity
+import mcc.group14.apiclientapp.views.projects.SearchUser
 import mcc.group14.apiclientapp.views.projects.create.NewProjectActivity
 import mcc.group14.apiclientapp.views.users.UserSettingsActivity
 
@@ -28,14 +30,8 @@ class ProjectsActivity : ListActivity() {
     val NEW_PROJECT_ACTIVITY = 0
     val USER_SETTINGS_ACTIVITY = 1
 
-
-    private lateinit var userSettBtn: Button
-    private lateinit var addProjectBtn: Button
-
     private lateinit var userEmail: String
     private lateinit var userAuth : String
-
-    private lateinit var projectsLW: ListView
 
     val projectApi = ProjectApiClient.create()
     private var projectList: MutableList<UserProject>? = null
@@ -50,9 +46,6 @@ class ProjectsActivity : ListActivity() {
         userEmail = intent.getStringExtra("USER_EMAIL")
         userAuth = intent.getStringExtra("USER_AUTH")
 
-        initUI()
-
-        setListeners()
         // downloading the list of projects
         refreshProjectList()
     }
@@ -115,11 +108,6 @@ class ProjectsActivity : ListActivity() {
         startActivity(intent)
     }
 
-    private fun initUI() {
-        addProjectBtn = findViewById<Button>(R.id.new_project_btn)
-        userSettBtn = findViewById<Button>(R.id.user_settings_btn)
-    }
-
     // use it for returning from other activities,
     // NB: refresh only if needed
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -148,24 +136,22 @@ class ProjectsActivity : ListActivity() {
         }
     }
 
-    private fun setListeners() {
-        addProjectBtn.setOnClickListener {
-            val intent =
-                Intent(this, NewProjectActivity::class.java).apply {
-                    putExtra("USER_EMAIL", userEmail)
-                    putExtra("USER_AUTH", userAuth)
-                }
-            startActivityForResult(intent, NEW_PROJECT_ACTIVITY)
-        }
+    public fun startNewProjectActivity(v: View) {
+        val intent =
+            Intent(this, NewProjectActivity::class.java).apply {
+                putExtra("USER_EMAIL", userEmail)
+                putExtra("USER_AUTH", userAuth)
+            }
+        startActivityForResult(intent, NEW_PROJECT_ACTIVITY)
+    }
 
-        userSettBtn.setOnClickListener {
-            val intent =
-                Intent(this, UserSettingsActivity::class.java).apply {
-                    putExtra("USER_EMAIL", userEmail)
-                    putExtra("USER_AUTH", userAuth)
-                }
-            startActivityForResult(intent, USER_SETTINGS_ACTIVITY)
-        }
+    public fun onUserSettingsClick(v: View) {
+        val intent =
+            Intent(this, UserSettingsActivity::class.java).apply {
+                putExtra("USER_EMAIL", userEmail)
+                putExtra("USER_AUTH", userAuth)
+            }
+        startActivityForResult(intent, USER_SETTINGS_ACTIVITY)
     }
 
     fun showPopUp(view: View) {
@@ -177,11 +163,152 @@ class ProjectsActivity : ListActivity() {
         popupMenu.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.add_user_item -> {
-                    Toast.makeText(this@ProjectsActivity, it.title, Toast.LENGTH_SHORT).show();
+
+                    var ssdc = SimpleSearchDialogCompat(this@ProjectsActivity, "Search",
+                        "What are you looking for?", null,
+                        initData(), SearchResultListener {
+                                baseSearchDialogCompat,
+                                item, position ->
+
+                            Toast.makeText(this@ProjectsActivity,
+                                "${item.title} $position", Toast.LENGTH_LONG).show()
+
+                            baseSearchDialogCompat.dismiss()
+
+                        })
+                    ssdc.setSearchHint("Digit first 5 letters of display name")
+                    //ssdc.show()
+                    Toast.makeText(applicationContext,ssdc.searchBox.text, Toast.LENGTH_LONG).show()
                 }
             }
             true
         }
+    }
+
+    private fun initData(): ArrayList<SearchUser> {
+        val items = ArrayList<SearchUser>()
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        items.add(SearchUser("user1"))
+        items.add(SearchUser("user2"))
+        items.add(SearchUser("user3"))
+        items.add(SearchUser("user4"))
+        items.add(SearchUser("user5"))
+        items.add(SearchUser("user6"))
+        Log.d(TAG,"${items.size}")
+        return items
     }
 
 }
