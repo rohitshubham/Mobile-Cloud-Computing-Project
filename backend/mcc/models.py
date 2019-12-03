@@ -32,6 +32,7 @@ class Project(models.Model):
     keywords = models.TextField()
     badge = models.TextField(null=True, blank=True) #Base64 image or if the badge is fixed, only save the badge URL.
     creation_time = models.DateTimeField()
+    last_modified = models.DateTimeField()
 
     def to_dict(self):
         my_dict = {
@@ -43,7 +44,8 @@ class Project(models.Model):
             u'project_type' : str(self.project_type).decode("utf-8"),
             u'keywords' : str(self.keywords).decode("utf-8"),
             u'badge' : str(self.badge).decode("utf-8"),
-            u'creation_time' : str(self.creation_time).decode("utf-8")
+            u'creation_time' : str(self.creation_time).decode("utf-8"),
+            u'last_modified' : str(self.last_modified).decode("utf-8")
         }
         return my_dict
     
