@@ -2,6 +2,7 @@ package mcc.group14.apiclientapp.api
 import io.reactivex.Observable
 import mcc.group14.apiclientapp.data.ProjectDetail
 import mcc.group14.apiclientapp.data.UserProject
+import mcc.group14.apiclientapp.data.UserRegistration
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -35,6 +36,9 @@ interface ProjectApiClient {
 
         }
     }
+
+    @POST("user/")
+    fun createUser(@Body user: UserRegistration): Observable<UserRegistration>
 
     @GET("projects/{email}")
     fun getProjectsList(@Path("email") email: String):

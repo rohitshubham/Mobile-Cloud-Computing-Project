@@ -1,13 +1,20 @@
 package mcc.group14.apiclientapp.views.users
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsActivity
 
 class LoginActivity : AppCompatActivity() {
+    private var mAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,25 +23,43 @@ class LoginActivity : AppCompatActivity() {
         this.title = "Login"
 
         val login_btn = findViewById<Button>(R.id.login_btn)
-
-        // opens projects activity
         login_btn.setOnClickListener{
-            // TODO: @Kirthi get the following from the user, userAuth is the cookie,
-            //  go for sharedPreferences
+            val userEmail = findViewById<EditText>(R.id.email).text.toString()
+            val userPassword = findViewById<EditText>(R.id.password).text.toString()
 
-            // Go to the dashboard (ProjectsActivity)
-            // Note: this is the way you pass stuff among activities, the only problem is that
-            // object passed like this must be serializable, that is why mAuth should prolly be
-            // static.
-            val userEmail = "news@aalto.fi"
-            val userAuth = "abc123"
+            mAuth.signInWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener {task ->
+                // If login successful, get the userAuth(a token) and send it to the next activity (ProjectActivity)
+                val user = mAuth.currentUser
+                //var t1 = Toast.makeText(this@LoginActivity, "email:${userEmail} and password: ${userPassword}", Toast.LENGTH_LONG)
+                //t1.show()
+                if (task.isSuccessful && user != null) {
+                    val userAuth:String = user.uid
+                    var t = Toast.makeText(this@LoginActivity,  "Logged in ${userEmail}!", Toast.LENGTH_LONG)
+                    t.show()
+                    // add email and userAuth (UUID) to SharedPreferences
+                    val sharedprefs =  getSharedPreferences("USER_AUTH_DATA", Context.MODE_PRIVATE)
+                    var editor = sharedprefs.edit()
+                    editor.putString("user_email", userEmail)
+                    editor.putString("user_auth", userAuth)
+                    editor.commit()
 
-            val intent =
-                Intent(this, ProjectsActivity::class.java).apply {
-                    putExtra("USER_EMAIL", userEmail)
-                    putExtra("USER_AUTH", userAuth)
+                    // To retrieve these values from sharedprefs use
+                    // sharedprefs.getString("user_email","defaultName")
+                    // sharedprefs.getString("user_auth","defaultName")
+
+                    // Login successful, redirect to dashboard
+                    val intent =
+                        Intent(this, ProjectsActivity::class.java).apply {
+                            putExtra("USER_EMAIL", userEmail)
+                            putExtra("USER_AUTH", userAuth)
+                        }
+                    startActivity(intent)
+                } else {
+                    var t = Toast.makeText(this@LoginActivity,  "Could not log in. Please try again.", Toast.LENGTH_LONG)
+                    t.view.setBackgroundColor(Color.RED) // makes the failed login warning red for 'readability', can be modified @TODO Sasha
+                    t.show()
                 }
-            startActivity(intent)
+            }
         }
     }
 }
