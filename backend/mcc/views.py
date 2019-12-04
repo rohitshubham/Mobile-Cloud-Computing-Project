@@ -63,10 +63,11 @@ def user_save(request):
 
         try:
             file_obj = request.FILES.get('file', False)
-            profile_pic = ''
+            profile_pic = 'https://empty.com'
             e = ''
             if file_obj is not False:
                 e = file_obj.name.split('.')[-1]
+                profile_pic = ''
                 profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/'+request.data["email_id"]+'.'+e+'?authuser=1'
                 
             if request.data["display_name"] is not None:
