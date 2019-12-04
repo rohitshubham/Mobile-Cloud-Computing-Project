@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">ApiClientApp</string>
     <string name="communication_error">An error occured</string>
+    <string name="pick_time">Pick time</string>
+    <string name="pick_date">Pick date</string>
+    <string name="keywords_et">At most 3 keyword (eg: word1,word2,word3)</string>
+    <string name="keywords_btn">Add keywords</string>
+    <string name="last_modified_proj">Last modified: </string>
+    <string name="add_proj_member">Add member</string>
 </resources>
