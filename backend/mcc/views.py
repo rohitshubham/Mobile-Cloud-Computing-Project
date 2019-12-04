@@ -1,6 +1,7 @@
 import os
 import hashlib
 import json
+import re
 from datetime import datetime
 from django.core import serializers
 from django.conf import settings
@@ -16,15 +17,13 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
 
-#This is GK's key
-#cred = credentials.Certificate('/home/kibria/MCC/MCCPROJECT/test-mcc-bba43-firebase-adminsdk-1icxf-088bb1f3a5.json')
 
 
 cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
 
 # ToDO : Update the storage bucket ID
 default_app = initialize_app(cred,{
-    'storageBucket': 'mcc-fall-2019-g14.appspot.com' #change this
+    'storageBucket': 'mcc-fall-2019-g14.appspot.com' 
 })
 
 bucket = storage.bucket()
@@ -262,7 +261,64 @@ def remove_team_member(project_id):
             projects_ref.document(doc.id).delete()    
     except Exception as e:
         print(e)
-    
+
+
+#search a project using keyword
+@csrf_exempt
+@api_view(["POST","GET"])
+def search_project_by_keyword(request):
+    #For getting a list of keywords
+    if request.method == 'GET':
+        try:
+            docs = db.collection(u'projects').stream()
+            keywords = []
+            for doc in docs:
+                doc_dict = doc.to_dict()
+                proj_kwords = doc_dict['keywords'].split(',')
+                proj_kwords = set(proj_kwords)-set(keywords)
+                keywords = keywords + list(proj_kwords)
+                #print(u'{} => {}'.format(doc.id, doc.to_dict()))
+            sorted_keywords = sorted(keywords, key=str.casefold)            
+            return Response({"success": "true","payload":sorted_keywords}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    #Given a keyword returns the projects that matched with the keyword
+    if request.method == 'POST':
+        try:
+            search_keyword = request.data['search_keyword']
+            docs = db.collection(u'projects').stream()
+            matched_projects = []
+            for doc in docs:
+                doc_dict = doc.to_dict()
+                proj_kwords = doc_dict['keywords'].split(',')
+                if search_keyword in proj_kwords:
+                    matched_projects.append(doc_dict)
+            return Response({"success": "true","payload":matched_projects}, status=status.HTTP_200_OK)  
+
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+#search a project using name
+@csrf_exempt
+@api_view(["POST"])
+def search_project_by_name(request):
+    #Given a name or partial name, returns the projects that matched with the input
+    if request.method == 'POST':
+        try:
+            search_keyword = request.data['search_name']
+            docs = db.collection(u'projects').stream()
+            matched_projects = []
+            for doc in docs:
+                doc_dict = doc.to_dict()
+                if re.search(search_keyword, doc_dict['name'], re.IGNORECASE):
+                    matched_projects.append(doc_dict)
+            return Response({"success": "true","payload":matched_projects}, status=status.HTTP_200_OK)  
+
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #=================================================================================
 
