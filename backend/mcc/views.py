@@ -133,12 +133,13 @@ def project_save(request):
             request.data['creation_time'] = datetime.now()
             request.data['last_modified'] = datetime.now()
             #Max wanted 2019-12-03'T'03:09, so accepting by doing following change
-            if 'deadline' in request.POST:
-                dl = request.data['deadline'].replace("'","")+":00"
-                print(dl)
-                print(parse_datetime(dl))
-                request.data['deadline'] = parse_datetime(dl)
-                print(request.data)
+            if 'deadline' in request.PUT:
+                try:
+                    request.data['deadline'] = parse_datetime(dl)
+                except:
+                    dl = request.data['deadline'].replace("'","")+":00"
+                    request.data['deadline'] = parse_datetime(dl)
+                    
             serializer = ProjectSerializer(data=request.data)
             
             if serializer.is_valid():
@@ -160,6 +161,13 @@ def project_save(request):
         del request.data['project_id']        
         request.data['last_modified'] = datetime.now()
         try:
+            if 'deadline' in request.PUT:
+                try:
+                    request.data['deadline'] = parse_datetime(dl)
+                except:
+                    dl = request.data['deadline'].replace("'","")+":00"
+                    request.data['deadline'] = parse_datetime(dl)
+
             serializer = ProjectSerializer(data=request.data)
             if serializer.is_valid():
                 #using doc_ref.id as project id

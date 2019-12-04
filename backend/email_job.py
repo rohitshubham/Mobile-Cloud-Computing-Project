@@ -23,6 +23,7 @@ def send_mail_to_users(task_id, deadline, name):
     try:
         for userTask in userTasks:
             task_val = userTask.to_dict()
+            send_mail(task_val["email_id"], name, deadline)
     except Exception as e:
             print(e)
 
@@ -37,7 +38,7 @@ def find_and_mail():
         try:
             deadline = task_val["deadline"]
 
-            deadline_date = datetime.strptime(deadline, '%Y-%m-%d')
+            deadline_date = datetime.strptime(deadline, "%Y-%m-%dT%H:%M:%S")
 
             if (datetime.now() - deadline_date).days == 2 or (datetime.now() - deadline_date).days == 1:
                 if task_val["status"] is not "On-going" or task_val["status"] is not "O": 
