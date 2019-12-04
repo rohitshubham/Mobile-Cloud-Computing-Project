@@ -235,6 +235,7 @@ paths:
                   keywords: {x-oad-type: string, type: string}
                   badge: {x-oad-type: string, type: string}
                   creation_time: {x-oad-type: string, type: string}
+                  last_modified: {x-oad-type: string, type: string}
           x-oad-type: response
         '206':
           description: 'Update of Project Failed'
@@ -307,12 +308,16 @@ paths:
               description:
                 x-oad-type: string
                 type: string
+              creation_time:
+                x-oad-type: string
+                type: string
             required:
               - name
               - team_members
               - requester_email
               - project_type
               - project_id
+              - creation_time
           x-oad-type: parameter
     post:
       operationId: SaveNewProject

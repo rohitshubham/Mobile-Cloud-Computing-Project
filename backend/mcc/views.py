@@ -131,7 +131,7 @@ def project_save(request):
     if request.method == 'POST':  
         try:
             request.data['creation_time'] = datetime.now()
-
+            request.data['last_modified'] = datetime.now()
             #Max wanted 2019-12-03'T'03:09, so accepting by doing following change
             if 'deadline' in request.POST:
                 dl = request.data['deadline'].replace("'","")+":00"
@@ -157,9 +157,7 @@ def project_save(request):
         #Saving it before removing 
         project_id = request.data['project_id']
         #Removing it to pass the Serializer
-        del request.data['project_id']
-        #ToDO: Check creation time logic -it shouldn't change
-        request.data['creation_time'] = datetime.now()
+        del request.data['project_id']        
         request.data['last_modified'] = datetime.now()
         try:
             serializer = ProjectSerializer(data=request.data)
