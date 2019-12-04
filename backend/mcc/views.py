@@ -24,7 +24,7 @@ cred = credentials.Certificate(os.path.join(settings.BASE_DIR, 'key.json'))
 
 # ToDO : Update the storage bucket ID
 default_app = initialize_app(cred,{
-    'storageBucket': 'test-mcc-bba43.appspot.com' #change this
+    'storageBucket': 'mcc-fall-2019-g14.appspot.com' #change this
 })
 
 bucket = storage.bucket()
@@ -36,6 +36,14 @@ def add_project_event(project_id, message):
     event = { "project_id" : project_id, "event" : message }
     db.collection(u'projectEvents').add(event)
 
+
+def upload_blob(file_obj,filename):   
+    blob = bucket.blob(filename)
+    blob.upload_from_file(file_obj)
+    
+    
+   
+    
 
 @csrf_exempt
 @api_view(['POST', 'PUT'])
@@ -54,15 +62,27 @@ def user_save(request):
                                 status=status.HTTP_409_CONFLICT)    
 
         try:
+            file_obj = request.FILES.get('file', False)
+            profile_pic = ''
+            e = ''
+            if file_obj is not False:
+                e = file_obj.name.split('.')[-1]
+                profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/'+request.data["email_id"]+'.'+e+'?authuser=1'
+                
+             
             user =  auth.create_user(
                             email=request.data["email_id"],
                             email_verified=False,
                             password=request.data["password"],
                             display_name=request.data["display_name"],
-                            photo_url=f'https://profilePhoto/{request.data["email"]}',
+                            photo_url=profile_pic,
                             disabled=False)
 
             # ToDO : Insert the photo into storage
+            if file_obj is not False:
+                upload_blob(file_obj.file,request.data["email_id"]+'.'+e)
+
+           
             
         except auth.EmailAlreadyExistsError:
             return Response({"error" : "EmailAlreadyExists", "success" : "false"}, status=status.HTTP_409_CONFLICT)

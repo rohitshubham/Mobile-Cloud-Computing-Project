@@ -12,7 +12,8 @@ urlpatterns = [
     path('project/generate_report/<str:project_id>',views.generate_report,name=''),
     path('task/',views.task_save,name=''),
     path('task/member/',views.add_member_to_task ,name=''),
-    path('task/complete/', views.set_task_completed, name='')
+    path('task/complete/', views.set_task_completed, name=''),
+    path('test/bucket',views.upload_blob,name='')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
