@@ -91,7 +91,6 @@ class NewProjectActivity : AppCompatActivity() {
                     project =  it.getSerializableExtra("PROJECT")
                             as ProjectDetail
                     Log.d(TAG,"$project")
-                    // TODO: ++ post the complete project and terminate activity
                     // note post, uploads the current project and *terminates* this activity!
                     postProject()
                 }

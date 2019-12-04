@@ -4,6 +4,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/add_user_item"
+        android:id="@+id/add_user_overflow_item"
         android:title="@string/add_proj_member" />
 </menu>

@@ -2,51 +2,35 @@ package mcc.group14.apiclientapp.views.projects.dashboard
 
 import android.app.Activity
 import android.app.ListActivity
-import android.app.SearchManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.PopupMenu
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.widget.ListView
 import android.widget.ProgressBar
-import android.widget.SearchView
 import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import layout.SearchAdapter
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
-import mcc.group14.apiclientapp.api.UsersApiClient
 import mcc.group14.apiclientapp.data.UserProject
-import mcc.group14.apiclientapp.data.UserSearch
 import mcc.group14.apiclientapp.views.projects.ProjectDetailActivity
 import mcc.group14.apiclientapp.views.projects.create.NewProjectActivity
 import mcc.group14.apiclientapp.views.users.UserSettingsActivity
 
 
 // Projects activity
-class ProjectsActivity : ListActivity() {
+class ProjectsActivity : ListActivity(){
 
     val TAG = "ProjectsActivity"
 
     val NEW_PROJECT_ACTIVITY = 0
     val USER_SETTINGS_ACTIVITY = 1
+  //  val ADD_USERS_ACTIVITY = 2
 
     private lateinit var userEmail: String
     private lateinit var userAuth : String
-
-    // stuff for searching users
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var layoutManager: RecyclerView.LayoutManager
-    private var users: MutableList<UserSearch>? = null
-    private lateinit var adapter: SearchAdapter
-
-    private val usersApiClient: UsersApiClient = UsersApiClient.create()
 
     private lateinit var progressBar: ProgressBar
 
@@ -65,46 +49,13 @@ class ProjectsActivity : ListActivity() {
         userAuth = intent.getStringExtra("USER_AUTH")
 
         initUI()
-        //fetchUsers("a")
+
         // downloading the list of projects
+        refreshProjectList()
     }
 
     private fun initUI() {
-        progressBar = findViewById(R.id.user_search_prog)
-        recyclerView = findViewById(R.id.users_recycler)
-        layoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.setHasFixedSize(true)
-    }
-
-    public fun fetchUsers(capturedText: String){
-        var disposable = usersApiClient.searchForUsers(capturedText)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread()).map {
-                    if (it.success == "true") it.payload else throw Throwable("APIError")
-                }
-                .subscribe(
-                    { result ->
-                        progressBar.visibility = View.GONE
-                        users = result
-                        adapter = SearchAdapter(users, this)
-                        recyclerView.adapter = adapter
-                        adapter.notifyDataSetChanged()
-
-                        Log.d(TAG, "User list received $result")
-
-                    },
-                    { error ->
-                        progressBar.visibility = View.GONE
-                        Log.e(TAG, error.message)
-                        Toast.makeText(
-                            applicationContext, "Network error",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                    }
-                )
-
+        progressBar = findViewById(R.id.projects_listing_prog)
     }
 
     private fun refreshProjectList() {
@@ -121,7 +72,6 @@ class ProjectsActivity : ListActivity() {
                                 "$result"
                     )
                     setListView(result)
-                    fetchUsers("a")
                 },
                 { error ->
                     progressBar.visibility = View.GONE
@@ -214,36 +164,25 @@ class ProjectsActivity : ListActivity() {
         startActivityForResult(intent, USER_SETTINGS_ACTIVITY)
     }
 
+    // it manages click on the overflow menu (three dots on each project_list_row)
+    fun showPopUp(view: View) {
+        val popupMenu = PopupMenu(this, view)
+        val inflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.overflow_menu, popupMenu.menu)
+        popupMenu.show()
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        var inflater : MenuInflater = menuInflater
-        inflater.inflate(R.menu.search_menu, menu)
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.add_user_overflow_item -> {
+                    val intent: Intent =
+                        Intent(this,
+                            AddUsersToProjectActivity::class.java)
 
-        var searchManager: SearchManager = getSystemService(Context.SEARCH_SERVICE)
-                as SearchManager
-        var searchView : SearchView = menu?.findItem(
-            R.id.search_user_menu_item)?.actionView as SearchView
-        searchView.setSearchableInfo(
-            searchManager.getSearchableInfo(componentName)
-        )
-        searchView.setIconifiedByDefault(false)
-        searchView.setOnQueryTextListener( object : SearchView.OnQueryTextListener {
-
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query != null && query != "") {
-                    fetchUsers(query)
+                    startActivity(intent)
+                    false
                 }
-                return false
             }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null && newText != "") {
-                    fetchUsers(newText)
-                }
-                return false
-            }
-
-        })
-        return true
+            true
+        }
     }
 }

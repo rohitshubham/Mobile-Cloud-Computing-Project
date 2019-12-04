@@ -14,7 +14,7 @@ class SearchAdapter(var users: MutableList<UserSearch>?,
                     var context: Context):
     RecyclerView.Adapter<MyViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, p1: Int): MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         var view: View = LayoutInflater.from(parent.context).
             inflate(R.layout.recycler_item, parent, false)
 

@@ -21,7 +21,7 @@ interface UsersApiClient{
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(fakeApi)
+                .baseUrl(ourApi)
                 .build()
 
             return retrofit.create(UsersApiClient::class.java)
