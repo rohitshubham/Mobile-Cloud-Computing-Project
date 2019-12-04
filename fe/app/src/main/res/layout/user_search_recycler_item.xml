@@ -10,10 +10,11 @@
         android:paddingTop="10dp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:textColor="#111"
         android:text="Display Name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:onClick="onUserSearchRecyclerItemClick"/>
 
 </LinearLayout>

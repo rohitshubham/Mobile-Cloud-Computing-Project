@@ -3,6 +3,7 @@ import io.reactivex.Observable
 import mcc.group14.apiclientapp.data.ProjectDetail
 import mcc.group14.apiclientapp.data.UserProject
 import okhttp3.OkHttpClient
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,8 +17,8 @@ interface ProjectApiClient {
             val httpClient = OkHttpClient.Builder()
             httpClient.addInterceptor(AuthInterceptor())
 
-            val realApi = "https://mcc-fall-2019-g14.appspot.com/mcc/"
-            val fakeApi = "https://virtserver.swaggerhub.com/mcc-fall-group14/mcc-proj/1.0.0/"
+            val REAL_API = "https://mcc-fall-2019-g14.appspot.com/mcc/"
+            val MOCK_API = "https://virtserver.swaggerhub.com/mcc-fall-group14/mcc-proj/1.0.0/"
             val requestBinApi = "https://enh6adcabkabd.x.pipedream.net/"
 
             val postURL = "https://end3tov89or2uks.m.pipedream.net/"
@@ -27,7 +28,7 @@ interface ProjectApiClient {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
-                .baseUrl(fakeApi)
+                .baseUrl(REAL_API)
                 .build()
 
             return retrofit.create(ProjectApiClient::class.java)
@@ -37,8 +38,9 @@ interface ProjectApiClient {
 
     @GET("projects/{email}")
     fun getProjectsList(@Path("email") email: String):
-            //Observable<Response<MutableList<ProjectDetail>>>
-            Observable<Response<MutableList<UserProject>>>
+            Call<Response<MutableList<ProjectDetail>>>
+    //Observable<Response<MutableList<ProjectDetail>>>
+            //Observable<Response<MutableList<UserProject>>>
 
     /* Get one article by it's id */
     @GET("project/{project_id}")
@@ -52,8 +54,8 @@ interface ProjectApiClient {
 
     @Headers("Content-Type: application/json;charset=utf-8")
     //@POST("project/")
-    @PUT("?pipedream_response=3")
-    fun modifyProject(@Body project: ProjectDetail): Observable<ProjectDetail>
+    @PUT("project/")
+    fun modifyProject(@Body project: UserProject): Observable<Response<ProjectDetail>>
 /*
     @Multipart
     @POST("/")

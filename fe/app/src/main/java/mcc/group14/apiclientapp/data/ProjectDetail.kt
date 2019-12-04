@@ -16,11 +16,11 @@ data class ProjectDetail(
     var creation_time: String? = null,
     var badge: String? = null,
     var keywords: String? = null
-
-
-
-    // we just need the display name of the users so that we can GET their images
-    // we do not need all the users' fields
-
-    // in milliseconds
-    ) : Serializable
+    // TODO: add last_modified: String
+) : Serializable {
+    fun convertToUserProject(): UserProject{
+        return UserProject(name = name, description = description, project_type = project_type,
+            requester_email = requester_email, project_id = project_id, deadline = deadline,
+            team_members = team_members, badge = badge, keywords = keywords)
+    }
+}

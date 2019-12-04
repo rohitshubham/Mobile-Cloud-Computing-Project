@@ -10,14 +10,15 @@ import android.view.View
 import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.Toast
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
-import mcc.group14.apiclientapp.data.UserProject
+import mcc.group14.apiclientapp.api.Response
+import mcc.group14.apiclientapp.data.ProjectDetail
 import mcc.group14.apiclientapp.views.projects.ProjectDetailActivity
 import mcc.group14.apiclientapp.views.projects.create.NewProjectActivity
 import mcc.group14.apiclientapp.views.users.UserSettingsActivity
+import retrofit2.Call
+import retrofit2.Callback
 
 
 // Projects activity
@@ -27,7 +28,7 @@ class ProjectsActivity : ListActivity(){
 
     val NEW_PROJECT_ACTIVITY = 0
     val USER_SETTINGS_ACTIVITY = 1
-  //  val ADD_USERS_ACTIVITY = 2
+    val ADD_USERS_ACTIVITY = 2
 
     private lateinit var userEmail: String
     private lateinit var userAuth : String
@@ -35,8 +36,8 @@ class ProjectsActivity : ListActivity(){
     private lateinit var progressBar: ProgressBar
 
     val projectApi = ProjectApiClient.create()
-    //private var projectList: MutableList<ProjectDetail>? = null
-    private var projectList: MutableList<UserProject>? = null
+    private lateinit var projectsList: MutableList<ProjectDetail>
+    // private var projectsList: MutableList<UserProject>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +60,40 @@ class ProjectsActivity : ListActivity(){
     }
 
     private fun refreshProjectList() {
-        var disposable = this.projectApi.getProjectsList(userEmail)
+        // NOTE heavy calls solution: this is to make heavy calls with support of mainLooper.
+        // For more here https://stackoverflow.com/questions/37856571/retrofit-2-callback-issues-with-ui-thread
+        var call: Call<Response<MutableList<ProjectDetail>>> = projectApi.
+            getProjectsList(userEmail)
+
+        call.enqueue( object: Callback<Response<MutableList<ProjectDetail>>> {
+            override fun onFailure(call: Call<Response<MutableList<ProjectDetail>>>, t: Throwable) {
+
+                progressBar.visibility = View.GONE
+                Log.e(TAG, "Response not received, error ${t.message}")
+                Toast.makeText(
+                    applicationContext, "Network error",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            override fun onResponse(
+                call: Call<Response<MutableList<ProjectDetail>>>,
+                response: retrofit2.Response<Response<MutableList<ProjectDetail>>>
+            ) {
+                progressBar.visibility = View.GONE
+                if (response.isSuccessful &&
+                    response.body()?.success=="true"){
+                        Log.d(TAG, "Project list received " +
+                                "${response.body()}")
+                        setListView(response.body()?.payload)
+
+                } else {
+                    Log.d(TAG, "Error response received: " +
+                            "${response.body()}")
+                }
+            }
+        })
+        /*var disposable = this.projectApi.getProjectsList(userEmail)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread()).map {
                 if (it.success == "true") it.payload else throw Throwable("APIError")
@@ -82,16 +116,16 @@ class ProjectsActivity : ListActivity(){
                     ).show()
 
                 }
-            )
+            )*/
     }
 
-    //private fun setListView(result: MutableList<ProjectDetail>?) {
-    private fun setListView(result: MutableList<UserProject>?) {
-        this.projectList = result
+    private fun setListView(result: MutableList<ProjectDetail>?) {
+    //private fun setListView(result: MutableList<UserProject>?) {
+        this.projectsList = result!!
         val proj_names = mutableListOf<String>()
-        for (proj in projectList.orEmpty()) {
+        for (proj in projectsList.orEmpty()) {
             //proj_names.add(proj.name)
-            proj_names.add(proj.project_name)
+            proj_names.add(proj.name)
         }
         Log.d(TAG, proj_names.toString())
 
@@ -100,10 +134,9 @@ class ProjectsActivity : ListActivity(){
         // inserting project names in listView
         val adapter = ProjectListAdapter(
             this,
-            ArrayList(projectList.orEmpty())
+            ArrayList(projectsList.orEmpty())
         )
         listView.adapter = adapter
-
     }
 
     // we use this method to pass to the ProjectDetail
@@ -112,9 +145,10 @@ class ProjectsActivity : ListActivity(){
             Intent(this, ProjectDetailActivity::class.java)
         // pass project_id and prject_name to PrjectDetailActivity
         intent.putExtra("PROJECT_ID",
-            projectList.orEmpty()[position].project_id)
+            projectsList.orEmpty()[position].project_id)
         intent.putExtra("PROJECT_NAME",
-            projectList.orEmpty()[position].project_name)
+            //projectsList.orEmpty()[position].project_name)
+            projectsList.orEmpty()[position].name)
         startActivity(intent)
     }
 
@@ -143,7 +177,16 @@ class ProjectsActivity : ListActivity(){
                 Toast.makeText(applicationContext, "Error: user not edited",
                     Toast.LENGTH_LONG).show()
             }
+        } else if (requestCode == ADD_USERS_ACTIVITY){
+            if (resultCode == Activity.RESULT_OK){
+                Toast.makeText(applicationContext, "User successfully added",
+                    Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(applicationContext, "Error: user not added",
+                    Toast.LENGTH_LONG).show()
+            }
         }
+
     }
 
     public fun startNewProjectActivity(v: View) {
@@ -166,6 +209,11 @@ class ProjectsActivity : ListActivity(){
 
     // it manages click on the overflow menu (three dots on each project_list_row)
     fun showPopUp(view: View) {
+
+        val rowList = view.parent as View
+        val list = rowList.parent as ListView
+        val rowListInd:Int = list.getPositionForView(rowList)
+
         val popupMenu = PopupMenu(this, view)
         val inflater = popupMenu.menuInflater
         inflater.inflate(R.menu.overflow_menu, popupMenu.menu)
@@ -174,11 +222,20 @@ class ProjectsActivity : ListActivity(){
         popupMenu.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.add_user_overflow_item -> {
+
+                    val selectedProject = projectsList[rowListInd]
+                    Log.d(TAG,"You are adding a user to " +
+                            "${selectedProject.name}")
+
+                    val zippedSelProject =
+                        selectedProject.convertToUserProject()
+
                     val intent: Intent =
                         Intent(this,
-                            AddUsersToProjectActivity::class.java)
-
-                    startActivity(intent)
+                            AddUsersToProjectActivity::class.java).apply {
+                            putExtra("PROJECT", zippedSelProject)
+                        }
+                    startActivityForResult(intent, ADD_USERS_ACTIVITY)
                     false
                 }
             }

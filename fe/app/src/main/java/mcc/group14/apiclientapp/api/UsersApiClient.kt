@@ -13,15 +13,15 @@ interface UsersApiClient{
 
         fun create(): UsersApiClient {
 
-            val ourApi = "https://mcc-fall-2019-g14.appspot.com/mcc/"
-            val fakeApi = "https://virtserver.swaggerhub.com/mcc-fall-group14/mcc-proj/1.0.0/"
+            val REAL_API = "https://mcc-fall-2019-g14.appspot.com/mcc/"
+            val MOCK_API = "https://virtserver.swaggerhub.com/mcc-fall-group14/mcc-proj/1.0.0/"
             val requestBinApi = "https://enh6adcabkabd.x.pipedream.net/"
             val postURL = "https://end3tov89or2uks.m.pipedream.net/"
             val localURL = "http://10.0.2.2:5000/"
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(ourApi)
+                .baseUrl(REAL_API)
                 .build()
 
             return retrofit.create(UsersApiClient::class.java)

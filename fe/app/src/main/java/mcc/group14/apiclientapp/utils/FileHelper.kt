@@ -53,6 +53,8 @@ abstract class FileHelper {
         userAuthReq: RequestBody,
         onUploadListener: LongProcessListener
     ) {
+        // NOTE heavy calls solution: this is to make heavy calls with support of mainLooper.
+        // For more here https://stackoverflow.com/questions/37856571/retrofit-2-callback-issues-with-ui-thread
         var profilePicMP = profilePic
         val requestFile: RequestBody = RequestBody.
             create(MediaType.parse("image/*"), file)
