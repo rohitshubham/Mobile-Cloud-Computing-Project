@@ -69,14 +69,16 @@ def user_save(request):
                 e = file_obj.name.split('.')[-1]
                 profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/'+request.data["email_id"]+'.'+e+'?authuser=1'
                 
-             
-            user =  auth.create_user(
+            if request.data["display_name"] is not None:
+                user =  auth.create_user(
                             email=request.data["email_id"],
                             email_verified=False,
                             password=request.data["password"],
                             display_name=request.data["display_name"],
                             photo_url=profile_pic,
                             disabled=False)
+            else:
+                return Response({"error" : "DisplayNameNotProvided", "success" : "false"}, status=status.HTTP_400_BAD_REQUEST)
 
             # ToDO : Insert the photo into storage
             if file_obj is not False:
@@ -329,7 +331,26 @@ def task_save(request):
 
 
 
-
+@csrf_exempt
+@api_view(['GET'])
+def user_typeahead(request, search_path):
+    if len(search_path) < 3:
+        return Response({"success" : "false", "error" : "InsufficientQueryLength"}, status= status.HTTP_400_BAD_REQUEST)
+    try:
+        filtered_user = []
+        for user in auth.list_users().iterate_all():
+            if len(filtered_user) == 5:
+                break
+            if user.display_name is None:
+                continue
+            if search_path.lower() in user.display_name.lower():
+                filtered_user.append(user)
+        
+        users = [{"display_name" : x.display_name, "email_id" : x.email} for x in filtered_user]
+        return Response({"success" : "true", "payload" : users}, status = status.HTTP_200_OK)
+    except Exception as e:    
+        print(e)
+        return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 #=======================PDF generation=============================

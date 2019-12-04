@@ -1,0 +1,883 @@
+tags:
+  -
+    name: User
+    description: 'User operations'
+  -
+    name: Project
+    description: 'Project Operations'
+  -
+    name: Task
+    description: 'Task Operations'
+  -
+    name: Projects
+    description: 'Handles operations for multiple projects'
+paths:
+  '/user/{email_id}':
+    get:
+      operationId: getUser
+      summary: 'Get the users info using email_id'
+      description: 'Getting user **email**, **display_name**, **photo_url**'
+      tags:
+        - User
+      responses:
+        '200':
+          description: 'User info returned in payload'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                title: 'status of the query'
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: object
+                type: object
+                title: 'The User Object itself'
+                properties:
+                  email_id: {x-oad-type: string, type: string}
+                  display_name: {x-oad-type: string, type: string}
+                  photo_url: {x-oad-type: string, type: string}
+          x-oad-type: response
+        '500':
+          description: 'Internal Error'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+          x-oad-type: response
+      parameters:
+        -
+          name: email_id
+          in: path
+          description: 'The user is searched using this email_id'
+          required: true
+          type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  /user:
+    put:
+      operationId: UserUpdate
+      summary: 'Update the user posted in body'
+      tags:
+        - User
+      responses:
+        '200':
+          description: 'User Update Successful'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+          x-oad-type: response
+        '500':
+          description: 'User Update Error'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+          x-oad-type: response
+    post:
+      operationId: NewUserRegistration
+      summary: 'Create a new User'
+      tags:
+        - User
+      responses:
+        '201':
+          description: 'User Creation Successful'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+          x-oad-type: response
+        '400':
+          description: DisplayNameNotProvided
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - DisplayNameNotProvided
+          x-oad-type: response
+        '409':
+          description: DisplayNameAlreadyExists
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - DisplayNameAlreadyExists
+                  - EmailAlreadyExists
+              payload:
+                x-oad-type: object
+                type: object
+                properties:
+                  suggestion_1: {x-oad-type: string, type: string}
+                  suggestion_2: {x-oad-type: string, type: string}
+                  suggestion_3: {x-oad-type: string, type: string}
+            required:
+              - success
+              - error
+          x-oad-type: response
+        '500':
+          description: 'User Creation Internal Server Error'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+          x-oad-type: response
+    parameters:
+      -
+        name: UserObject
+        in: body
+        description: 'The user object to be stored or updated. This should contain email_id, display_name, password. The profile photo should be passed  as multipart. We handle that separately.'
+        required: true
+        schema:
+          x-oad-type: object
+          type: object
+          properties:
+            email_id:
+              x-oad-type: string
+              type: string
+            display_name:
+              x-oad-type: string
+              type: string
+            password:
+              x-oad-type: string
+              type: string
+        x-oad-type: parameter
+    x-oad-type: operation
+  /project:
+    put:
+      operationId: UpdateProject
+      summary: 'Update a project'
+      tags:
+        - Project
+      responses:
+        '200':
+          description: 'Project Update Successful'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: object
+                type: object
+                properties:
+                  name: {x-oad-type: string, type: string}
+                  team_members: {x-oad-type: string, type: string}
+                  deadline: {x-oad-type: string, type: string}
+                  description: {x-oad-type: string, type: string}
+                  requester_email: {x-oad-type: string, type: string}
+                  project_type: {x-oad-type: string, type: string, enum: [Personal, Team]}
+                  keywords: {x-oad-type: string, type: string}
+                  badge: {x-oad-type: string, type: string}
+                  creation_time: {x-oad-type: string, type: string}
+          x-oad-type: response
+        '206':
+          description: 'Update of Project Failed'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'Invalid project format'
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+      parameters:
+        -
+          name: UpdateProject
+          in: body
+          required: true
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              name:
+                x-oad-type: string
+                type: string
+              team_members:
+                x-oad-type: string
+                type: string
+                description: 'Team member should always contain the admin aka requester email'
+              project_id:
+                x-oad-type: string
+                type: string
+              badge:
+                x-oad-type: string
+                type: string
+              requester_email:
+                x-oad-type: string
+                type: string
+              keywords:
+                x-oad-type: string
+                type: string
+              project_type:
+                x-oad-type: string
+                type: string
+              deadline:
+                x-oad-type: string
+                type: string
+              description:
+                x-oad-type: string
+                type: string
+            required:
+              - name
+              - team_members
+              - requester_email
+              - project_type
+              - project_id
+          x-oad-type: parameter
+    post:
+      operationId: SaveNewProject
+      summary: 'Create a new project'
+      tags:
+        - Project
+      responses:
+        '201':
+          description: 'Project Creation Successful'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: object
+                type: object
+                properties:
+                  project_id: {x-oad-type: string, type: string}
+          x-oad-type: response
+        '206':
+          description: 'Invalid project format'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'Invalid project format'
+              'success:false':
+                x-oad-type: string
+                type: string
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+      parameters:
+        -
+          name: ProjectObject
+          in: body
+          required: true
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              name:
+                x-oad-type: string
+                type: string
+              team_members:
+                x-oad-type: string
+                type: string
+                description: 'Team member should always contain the admin aka requester email. Example value: `"rohit@raj.com,abc@pqr.com"`'
+              deadline:
+                x-oad-type: string
+                type: string
+              description:
+                x-oad-type: string
+                type: string
+              requester_email:
+                x-oad-type: string
+                type: string
+              project_type:
+                x-oad-type: string
+                type: string
+              keywords:
+                x-oad-type: string
+                type: string
+              badge:
+                x-oad-type: string
+                type: string
+            required:
+              - name
+              - team_members
+              - requester_email
+              - project_type
+              - keywords
+          x-oad-type: parameter
+    x-oad-type: operation
+  '/project/{project_id}':
+    get:
+      operationId: getProject
+      summary: 'Get the project using ID'
+      tags:
+        - Project
+      responses:
+        '200':
+          description: 'The project query succeeded and the project is in payload'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: object
+                type: object
+                properties:
+                  name: {x-oad-type: string, type: string}
+                  team_members: {x-oad-type: string, type: string}
+                  deadline: {x-oad-type: string, type: string}
+                  description: {x-oad-type: string, type: string}
+                  requester_email: {x-oad-type: string, type: string}
+                  project_type: {x-oad-type: string, type: string}
+                  keywords: {x-oad-type: string, type: string}
+                  badge: {x-oad-type: string, type: string}
+                  creation_time: {x-oad-type: string, type: string}
+                  last_modified: {x-oad-type: string, type: string}
+          x-oad-type: response
+        '404':
+          description: 'Project not found'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - ProjectNotFound
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+      parameters:
+        -
+          name: project_id
+          in: path
+          description: 'The project identifier'
+          required: true
+          type: string
+          x-oad-type: parameter
+    delete:
+      operationId: DeleteProject
+      summary: 'Delete the project using ID'
+      tags:
+        - Project
+      responses:
+        '200':
+          description: 'Project Deletion successful'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+          x-oad-type: response
+        '404':
+          description: 'Project Not found'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - ProjectNotFound
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+      parameters:
+        -
+          name: project_id
+          in: path
+          required: true
+          type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  '/projects/{email_id}':
+    get:
+      operationId : GetAllProjectsForThisEmail
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: 'Found projects matching emailing id'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: array
+                type: array
+                items:
+                  x-oad-type: object
+                  type: object
+                  properties: {project_id: {x-oad-type: string, type: string}, project_name: {x-oad-type: string, type: string}, is_project_administrator: {x-oad-type: string, type: string}}
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+      parameters:
+        -
+          name: email_id
+          in: path
+          required: true
+          type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  '/project/report/{project_id}':
+    get:
+      operationId: getProjectReport
+      tags:
+        - Project
+      responses:
+        '200':
+          description: 'PDF file returned'
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+      parameters:
+        -
+          name: project_id
+          in: path
+          required: true
+          type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  /task:
+    post:
+      operationId: saveTask
+      summary: 'Create new Task'
+      tags:
+        - Task
+      responses:
+        '201':
+          description: 'Task created successfully'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: string
+                type: string
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+    x-oad-type: operation
+  /task/member:
+    post:
+      operationId : GetMemberForTask
+      summary: 'Add/Update task members'
+      tags:
+        - Task
+      responses:
+        '200':
+          description: 'Team member added/updated'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+          x-oad-type: response
+        '403':
+          description: not_allowed
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - not_allowed
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+          x-oad-type: response
+    parameters:
+      -
+        name: TaskMembers
+        in: body
+        description: 'The task along with all the members. '
+        required: true
+        schema:
+          x-oad-type: object
+          type: object
+          properties:
+            task_id:
+              x-oad-type: string
+              type: string
+            members:
+              x-oad-type: string
+              type: string
+            project_id:
+              x-oad-type: string
+              type: string
+            requester_email:
+              x-oad-type: string
+              type: string
+        x-oad-type: parameter
+    x-oad-type: operation
+  /task/complete:
+    post:
+      operationId: taskCompletePost
+      summary: 'Set a task status to complete'
+      tags:
+        - Task
+      responses:
+        '200':
+          description: 'Status change success'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+          x-oad-type: response
+        '500':
+          description: InternalException
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+    parameters:
+      -
+        name: TaskCompleteParams
+        in: body
+        required: true
+        schema:
+          x-oad-type: object
+          type: object
+          properties:
+            task_id:
+              x-oad-type: string
+              type: string
+            project_id:
+              x-oad-type: string
+              type: string
+            requester_email:
+              x-oad-type: string
+              type: string
+        x-oad-type: parameter
+    x-oad-type: operation
+  '/project/user/{search_path}':
+    get:
+      operationId : GetsTheDisplayNameForServicePath
+      summary: 'Searches displayname and returns users for the typehead service'
+      tags:
+        - Project
+      responses:
+        '200':
+          description: 'JSON Response with 5 users who match the display name'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: array
+                type: array
+                items:
+                  x-oad-type: object
+                  type: object
+                  properties: {display_name: {x-oad-type: string, type: string}, email_id: {x-oad-type: string, type: string}}
+          x-oad-type: response
+        '400':
+          description: 'The search_path length hould be more than 3 chars'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InsufficientQueryLength
+          x-oad-type: response
+        '500':
+          description: 'Internal server error'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalException
+          x-oad-type: response
+      parameters:
+        -
+          name: search_path
+          in: path
+          required: true
+          type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+info:
+  title: 'MCC Group 14 API Reference'
+  version: 1.0.0
+host: mcc-fall-2019-g14.appspot.com
+basePath: /mcc
+schemes:
+  - https
+produces:
+  - application/json
+swagger: '2.0'
