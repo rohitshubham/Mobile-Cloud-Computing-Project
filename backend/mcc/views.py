@@ -206,7 +206,7 @@ def projects_list(request,email_id):
             if project is not None:  
                 project["project_id"] = project_id
                 project["is_project_administrator"]  =  data["is_project_administrator"]           
-                value.append(json.dumps(project))
+                value.append(project)
                 
                 
          
