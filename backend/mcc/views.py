@@ -63,7 +63,7 @@ def user_save(request):
                             photo_url=f'https://profilePhoto/{request.data["email"]}',
                             disabled=False)
             else:
-                return Response({"error" : "DISPLAYNAMENOTPROVIDED", "success" : "false"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error" : "DisplayNameNotProvided", "success" : "false"}, status=status.HTTP_400_BAD_REQUEST)
 
             # ToDO : Insert the photo into storage
             
