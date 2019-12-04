@@ -2,8 +2,8 @@ package mcc.group14.apiclientapp.views.users
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsActivity
 

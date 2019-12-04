@@ -1,5 +1,6 @@
 package mcc.group14.apiclientapp.views.projects.create
 
+/*
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
@@ -19,4 +20,4 @@ class TimePickerFragment(var listener: TimePickerDialog.OnTimeSetListener) :
             DateFormat.is24HourFormat(activity))
 
     }
-}
+}*/

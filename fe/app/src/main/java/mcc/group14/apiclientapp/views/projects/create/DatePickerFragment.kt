@@ -1,10 +1,13 @@
-package mcc.group14.apiclientapp.views.projects.create
 
+package mcc.group14.apiclientapp.views.projects.create
+/*
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
+
+
+
 import java.util.*
 
 // TODO: -- @Max no need to pass an activity, see TimePickerFragment; solve the strange error.
@@ -25,4 +28,4 @@ class DatePickerFragment (var activity: Activity,
         return rst
     }
 
-}
+}*/

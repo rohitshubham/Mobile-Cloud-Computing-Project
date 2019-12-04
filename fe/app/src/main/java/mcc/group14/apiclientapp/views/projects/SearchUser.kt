@@ -8,6 +8,4 @@ class SearchUser(private var mTitle: String?): Searchable{
         return mTitle!!
     }
 
-
-
 }

@@ -11,6 +11,7 @@ import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.data.UserProject
 
 class ProjectListAdapter(private val context: Context,
+                         //private val dataSource: ArrayList<ProjectDetail>): BaseAdapter(){
                          private val dataSource: ArrayList<UserProject>): BaseAdapter(){
 
     private val inflater: LayoutInflater
@@ -35,7 +36,8 @@ class ProjectListAdapter(private val context: Context,
                 as ImageView
 
         // 1
-        val project = getItem(position) as UserProject
+//        val project = getItem(position) as ProjectDetail
+          val project = getItem(position) as UserProject
 
         // 2
         titleTextView.text = project.project_name

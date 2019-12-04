@@ -8,10 +8,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.data.ProjectDetail
 import mcc.group14.apiclientapp.utils.LongProcessListener
@@ -132,9 +132,11 @@ TimePickerDialog.OnTimeSetListener,
     }
 
     fun showDatePickerDialog(v: View) {
-        val newFragment =
-            DatePickerFragment(this, this)
-        newFragment.show(supportFragmentManager, "datePicker")
+
+// TODO: find the way to develop it with v7
+        //val newFragment =
+        //    DatePickerFragment(this, this)
+        // newFragment.show(supportFragmentManager, "datePicker")
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
@@ -147,8 +149,9 @@ TimePickerDialog.OnTimeSetListener,
 
 
     fun showTimePickerDialog(v: View) {
-        TimePickerFragment(this)
-            .show(supportFragmentManager, "timePicker")
+      // TODO: implement it with v7
+        //  TimePickerFragment(this)
+      //    .show(supportFragmentManager, "timePicker")
     }
 
     override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {

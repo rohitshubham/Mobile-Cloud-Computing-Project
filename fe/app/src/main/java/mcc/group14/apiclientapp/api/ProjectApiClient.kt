@@ -17,7 +17,7 @@ interface ProjectApiClient {
             httpClient.addInterceptor(AuthInterceptor())
 
             val realApi = "https://mcc-fall-2019-g14.appspot.com/mcc/"
-            val fakeApi = "http://10.0.2.2:8080/"
+            val fakeApi = "https://virtserver.swaggerhub.com/mcc-fall-group14/mcc-proj/1.0.0/"
             val requestBinApi = "https://enh6adcabkabd.x.pipedream.net/"
 
             val postURL = "https://end3tov89or2uks.m.pipedream.net/"
@@ -37,6 +37,7 @@ interface ProjectApiClient {
 
     @GET("projects/{email}")
     fun getProjectsList(@Path("email") email: String):
+            //Observable<Response<MutableList<ProjectDetail>>>
             Observable<Response<MutableList<UserProject>>>
 
     /* Get one article by it's id */

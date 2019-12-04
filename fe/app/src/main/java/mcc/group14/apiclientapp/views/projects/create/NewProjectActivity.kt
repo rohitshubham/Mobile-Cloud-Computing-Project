@@ -3,12 +3,12 @@ package mcc.group14.apiclientapp.views.projects.create
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import mcc.group14.apiclientapp.R
@@ -127,6 +127,7 @@ class NewProjectActivity : AppCompatActivity() {
             description = capturedDescription,
             project_type = if (capturedIsPersonalCB) "Team" else "Personal",
             requester_email = userEmail,
+            is_project_administrator = "true",
 
             // always include userEmailRequester
             // TODO: ++ implement AddMembersToProject
