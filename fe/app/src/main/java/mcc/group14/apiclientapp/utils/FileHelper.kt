@@ -11,6 +11,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -21,74 +22,82 @@ abstract class FileHelper {
     val TAG = "FileHelper"
     var apiClient = FileApiClient.create()
 
-    fun storeImage(onUploadListener: LongProcessListener,
-                   userEmail: String, userAuth: String,
-                   img: Bitmap, applicationContext: Context) {
+    private val TMP_FILENAME = "tmp-file.png"
 
-        var userEmailReq = RequestBody.create(
-            MediaType.
-                parse("multipart/form-data"), userEmail.toString())
+    fun storeImageAndParams(
+        onUploadListener: LongProcessListener,
+        params: String, // params string
+        img: Bitmap,
+        applicationContext: Context) {
 
-        var userAuthReq = RequestBody.create(MediaType.
-            parse("multipart/form-data"), userAuth)
-
-        var profilePic: MultipartBody.Part? = null
+        var params = RequestBody.create(MediaType.
+            parse("multipart/form-data"), params)
 
         val file =
-            storeImageLocally(applicationContext, userAuth, img)
-                //onUploadListener, )
+            storeImageLocallyAndGetFile(applicationContext, img)
+        //onUploadListener, )
 
-        uploadImage(file, profilePic, userEmailReq, userAuthReq, onUploadListener)
+        uploadFileAndParams(file, params, onUploadListener)
     }
 
-    protected abstract fun upload(
-        userEmail: RequestBody, userAuth: RequestBody,
-        fileMP: MultipartBody.Part?)
-            : Call<ResponseBody>
-
-    private fun uploadImage(
+    private fun uploadFileAndParams(
         file: File,
-        profilePic: MultipartBody.Part?,
-        userEmailReq: RequestBody,
-        userAuthReq: RequestBody,
+        params: RequestBody?,
         onUploadListener: LongProcessListener
     ) {
         // NOTE heavy calls solution: this is to make heavy calls with support of mainLooper.
         // For more here https://stackoverflow.com/questions/37856571/retrofit-2-callback-issues-with-ui-thread
-        var profilePicMP = profilePic
+
         val requestFile: RequestBody = RequestBody.
             create(MediaType.parse("image/*"), file)
 
-        profilePicMP = MultipartBody.Part.
-            createFormData("profileImage", file.name, requestFile)
+        var profilePicMP = MultipartBody.Part.
+            createFormData("file", file.name, requestFile)
 
         val call: Call<ResponseBody> =
-            this.upload(userEmailReq, userAuthReq, profilePicMP)
+            this.uploadWithParams(params, profilePicMP)
         call.enqueue(object : Callback<ResponseBody> {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-//                onUploadListener.onLongProcessFailure(t)
                 Log.d(TAG, t.message)
+                deleteTmpFile(file)
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                Log.d(TAG, "Image successfully uploaded, response: ${response.body().toString()}")
-                // get image path from response back the image path
+                Log.d(TAG, "Image successfully uploaded, response: " +
+                        "${response.body()}")
                 onUploadListener.onLongProcessSuccess(response)
+                deleteTmpFile(file)
             }
         })
     }
 
-    private fun storeImageLocally(
+    protected abstract fun uploadWithParams(userPassword: RequestBody?,
+                                            fileMP: MultipartBody.Part?)
+            : Call<ResponseBody>
+
+
+    private fun deleteTmpFile(file: File) {
+        var deletionSuccessful = file.delete()
+
+        if (!deletionSuccessful) {
+            Log.e(
+                TAG, "Deletion of file ${file.absolutePath} " +
+                        "not successful."
+            )
+        }
+    }
+
+    // Saves images as png
+    private fun storeImageLocallyAndGetFile(
         applicationContext: Context,
-        dispName: String,
-        // onUploadFinishedListener: UserContract.Model.OnUploadFinishedListener,
+         // onUploadFinishedListener: UserContract.Model.OnUploadFinishedListener,
         img: Bitmap
     ): File {
         //val file: File = File()
         val filesDir = applicationContext.filesDir
-        // saves the file in the filesDir, TODO: check it
-        val file = File(filesDir, "$dispName.png")
+
+        val file = File(filesDir, TMP_FILENAME)
 
         val bos = ByteArrayOutputStream()
 
@@ -100,10 +109,8 @@ abstract class FileHelper {
         fos.write(bitmapdata)
         fos.flush()
         fos.close()
-
         // saves the localImagePath inside the user
         // onUploadFinishedListener.OnUploadFinished(file.absolutePath)
-
         return file
     }
 }

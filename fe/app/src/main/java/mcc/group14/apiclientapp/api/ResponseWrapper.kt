@@ -1,6 +1,6 @@
 package mcc.group14.apiclientapp.api
 
-data class Response<T> (
+data class ResponseWrapper<T> (
     var success: String?,
     // this will be payload
     var payload : T?,

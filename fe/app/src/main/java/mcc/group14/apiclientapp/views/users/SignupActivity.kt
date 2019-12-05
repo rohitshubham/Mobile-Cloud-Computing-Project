@@ -28,6 +28,7 @@ class SignupActivity : AppCompatActivity() {
     private var mAuth = FirebaseAuth.getInstance()
     val projectApi = ProjectApiClient.create()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
@@ -197,6 +198,7 @@ class SignupActivity : AppCompatActivity() {
                 val mdToast = MDToast.makeText(this@SignupActivity, "Please make sure that the Email is valid and Display name is not empty.\n Passwords must be at least 8 characters long and should match", MDToast.LENGTH_LONG, MDToast.TYPE_ERROR)
                 mdToast.show()
             }
+
         }
     }
 

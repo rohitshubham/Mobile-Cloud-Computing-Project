@@ -11,13 +11,10 @@ class ProjectImageHelper: FileHelper() {
         val instance = ProjectImageHelper()
     }
 
-    override fun upload(
-        userEmail: RequestBody,
-        userAuth: RequestBody,
+    override fun uploadWithParams(
+        params: RequestBody?,
         fileMP: MultipartBody.Part?
     ): Call<ResponseBody> {
-        return this.apiClient.
-            uploadProjectPicture(userEmail, userAuth, fileMP)
+        return this.apiClient.uploadBadge(params, fileMP)
     }
-
 }

@@ -153,7 +153,7 @@ class AddUsersToProjectActivity : AppCompatActivity() {
             .subscribe(
                 { result ->
                     setResult(Activity.RESULT_OK, returnIntent)
-                    Log.d(TAG, "Response body $result")
+                    Log.d(TAG, "ResponseWrapper body $result")
                     finish()
                 },
                 { error ->
