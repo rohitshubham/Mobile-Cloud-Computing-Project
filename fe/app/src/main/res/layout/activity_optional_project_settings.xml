@@ -7,64 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".views.projects.create.OptionalProjectSettingsActivity">
 
-    <!--
-
-    <Button
-        android:id="@+id/deadline_picker_date_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pick_date"
-        android:onClick="showDatePickerDialog"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.176"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.167" />
-
-    <Button
-        android:id="@+id/deadline_picker_time_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="showTimePickerDialog"
-        android:text="@string/pick_time"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.816"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.167"></Button>
--->
-
-    <TextView
-        android:id="@+id/deadline_time_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/pick_time"
-        android:onClick="showTimePickerDialog"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.733"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.196" />
-
-    <TextView
-        android:id="@+id/deadline_date_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/pick_date"
-        android:onClick="showDatePickerDialog"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.201"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.196" />
-
     <Button
         android:id="@+id/project_img_btn"
         android:layout_width="wrap_content"
@@ -93,25 +35,13 @@
         android:id="@+id/create_project_optional_set_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create project"
+        android:text="Done"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.881" />
-
-    <TextView
-        android:id="@+id/deadline_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Deadline"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.45"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.134" />
 
     <Button
         android:id="@+id/keywords_btn"
@@ -121,10 +51,10 @@
         android:text="@string/keywords_btn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.874"
+        app:layout_constraintHorizontal_bias="0.916"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.301" />
+        app:layout_constraintVertical_bias="0.377" />
 
     <EditText
         android:id="@+id/keywords_et"
@@ -137,10 +67,25 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.06"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.296" />
+        app:layout_constraintVertical_bias="0.374" />
+
+    <EditText
+        android:id="@+id/pick_deadline_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:onClick="onDateTimePick"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.157"
+        tools:text="@string/pick_deadline" />
 
 
 </android.support.constraint.ConstraintLayout>
