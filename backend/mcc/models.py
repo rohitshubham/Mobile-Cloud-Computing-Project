@@ -29,7 +29,7 @@ class Project(models.Model):
     description = models.TextField(null=True, blank=True)
     requester_email = models.EmailField()
     project_type = models.CharField(max_length= 20, choices= PROJECT_TYPES, default= 'Personal')
-    keywords = models.TextField()
+    keywords = models.TextField(null=True, blank=True)
     badge = models.TextField(null=True, blank=True) #Base64 image or if the badge is fixed, only save the badge URL.
     creation_time = models.DateTimeField()
     last_modified = models.DateTimeField()
