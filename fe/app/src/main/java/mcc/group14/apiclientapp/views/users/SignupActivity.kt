@@ -1,5 +1,6 @@
 package mcc.group14.apiclientapp.views.users
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -8,16 +9,20 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.JsonParser
+import com.valdesekamdem.library.mdtoast.MDToast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
 import mcc.group14.apiclientapp.data.UserRegistration
+import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsActivity
 import mcc.group14.apiclientapp.views.users.LoginActivity
 import retrofit2.HttpException
+import java.lang.Exception
 
 class SignupActivity : AppCompatActivity() {
     private var mAuth = FirebaseAuth.getInstance()
@@ -27,16 +32,28 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
+
+
         this.title = "Signup"
 
-        val signupBtn = findViewById<Button>(R.id.signup_btn)
-        signupBtn.setOnClickListener{
-            val userEmail = findViewById<EditText>(R.id.email).text.toString()
-            val userPassword = findViewById<EditText>(R.id.password).text.toString()
-            val retypedPassword = findViewById<EditText>(R.id.retyped_password).text.toString()
-            val userDisplayName = findViewById<EditText>(R.id.display_name).text.toString()
+        val signupBtn = findViewById<Button>(R.id.btn_signup)
+        val signInText = findViewById<TextView>(R.id.signIn_text)
 
-            if (isValidSignup(userEmail, userPassword, retypedPassword)) {
+
+        signInText.setOnClickListener{
+            val intent =
+                Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+
+
+        signupBtn.setOnClickListener{
+            val userEmail = findViewById<EditText>(R.id.txt_email_signup).text.toString()
+            val userPassword = findViewById<EditText>(R.id.txt_password_signup).text.toString()
+            val retypedPassword = findViewById<EditText>(R.id.txt_password_confirm).text.toString()
+            val userDisplayName = findViewById<EditText>(R.id.txt_displayName).text.toString()
+
+            if (isValidSignup(userEmail, userPassword, retypedPassword,userDisplayName)) {
                 /*
                 mAuth.createUserWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener {task ->
                     if (task.isSuccessful) { // Show success msg and Redirect to login if signup succeeds
@@ -65,11 +82,80 @@ class SignupActivity : AppCompatActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         {
-                                result -> Log.d(TAG, "signup successful, " + result.toString())
-                                var t = Toast.makeText(this@SignupActivity,  "Registration successful!", Toast.LENGTH_LONG)
-                                t.show()
-                                val intent = Intent(this, LoginActivity::class.java)
-                                startActivity(intent)
+                                result -> Log.d(TAG, "Signup successful, " + result.toString())
+
+                                val mdToast = MDToast.makeText(this@SignupActivity, "Registration successful!", 3, MDToast.TYPE_SUCCESS)
+                                mdToast.show()
+                                //Sign up done, now log in the user
+                                try {
+                                    mAuth.signInWithEmailAndPassword(userEmail, userPassword)
+                                        .addOnCompleteListener { task ->
+                                            // If login successful, get the userAuth(a token) and send it to the next activity (ProjectActivity)
+                                            val user = mAuth.currentUser
+                                            //var t1 = Toast.makeText(this@LoginActivity, "email:${userEmail} and password: ${userPassword}", Toast.LENGTH_LONG)
+                                            //t1.show()
+                                            if (task.isSuccessful && user != null) {
+                                                val userAuth: String = user.uid
+
+                                                val mdToast = MDToast.makeText(
+                                                    this@SignupActivity,
+                                                    "Logged in as ${user.displayName}!",
+                                                    2,
+                                                    MDToast.TYPE_SUCCESS
+                                                )
+                                                mdToast.show()
+
+                                                // add email and userAuth (UUID) to SharedPreferences
+                                                val sharedprefs =
+                                                    getSharedPreferences("USER_AUTH_DATA", Context.MODE_PRIVATE)
+                                                var editor = sharedprefs.edit()
+                                                editor.putString("user_email", userEmail)
+                                                editor.putString("user_auth", userAuth)
+                                                editor.commit()
+
+                                                // To retrieve these values from sharedprefs use
+                                                // sharedprefs.getString("user_email","defaultName")
+                                                // sharedprefs.getString("user_auth","defaultName")
+
+                                                // Login successful, redirect to dashboard
+                                                val intent =
+                                                    Intent(this, ProjectsActivity::class.java).apply {
+                                                        putExtra("USER_EMAIL", userEmail)
+                                                        putExtra("USER_AUTH", userAuth)
+                                                    }
+                                                startActivity(intent)
+                                            } else {
+                                                val mdToast = MDToast.makeText(
+                                                    this@SignupActivity,
+                                                    "Could not log in. Please try again.",
+                                                    3,
+                                                    MDToast.TYPE_ERROR
+                                                )
+                                                mdToast.show()
+
+                                                //======================Could not log in. So let him log in by himself
+                                                val intent = Intent(this, LoginActivity::class.java)
+                                                startActivity(intent)
+
+                                            }
+                                        }
+                                }catch (e: Exception){
+                                    //======================Some exception occured. So let him log in by himself
+                                    val mdToast = MDToast.makeText(
+                                        this@SignupActivity,
+                                        "Could not log in. Please try again.",
+                                        3,
+                                        MDToast.TYPE_ERROR
+                                    )
+                                    mdToast.show()
+
+                                    //======================Could not log in. So let him log in by himself
+                                    val intent = Intent(this, LoginActivity::class.java)
+                                    startActivity(intent)
+                                }
+
+
+
                         },
                         {
                                 error -> Log.d(TAG, "sign up failed, " + error.message.toString())
@@ -78,38 +164,44 @@ class SignupActivity : AppCompatActivity() {
                                     val errorJsonString = error.response().errorBody()?.string()
                                     val response = JsonParser().parse(errorJsonString).asJsonObject
 
+
                                     if (response.get("error").asString == "DisplayNameAlreadyExists") {
                                         //Log.d(TAG, response.get("payload").toString()
                                         //val suggestions = response.get("payload").asJsonObject
                                         val suggestions_obj = response.get("payload").asJsonObject
-                                        val suggestions_msg = "${suggestions_obj.get("suggestion_1").asString}, " +
-                                                "${suggestions_obj.get("suggestion_2").asString} or " +
-                                                "${suggestions_obj.get("suggestion_3").asString}"
+                                        val suggestions_msg = "1. ${suggestions_obj.get("suggestion_1").asString}\n" +
+                                                "2. ${suggestions_obj.get("suggestion_2").asString}\n" +
+                                                "3. ${suggestions_obj.get("suggestion_3").asString}\n"
 
-                                        error_msg = "The display name \"${userDisplayName}\" is taken. Try ${suggestions_msg}"
+                                        error_msg = "The display name \"${userDisplayName}\" is taken.\nYou can try one of the following\n${suggestions_msg}"
                                     } else if (response.get("error").asString == "DisplayNameNotProvided") {
                                         error_msg = "Please provide a display name"
                                     }
 
-                                    var t = Toast.makeText(this@SignupActivity, error_msg, Toast.LENGTH_LONG)
-                                    t.view.setBackgroundColor(Color.RED)
-                                    t.show()
+                                    val mdToast = MDToast.makeText(
+                                        this@SignupActivity,
+                                        error_msg,
+                                        15,
+                                        MDToast.TYPE_ERROR
+                                    )
+                                    mdToast.show()
+
+
+
                                 }
 
                         }
                     )
 
             } else {
-                var t = Toast.makeText(this@SignupActivity,  "Please make sure email and passwords are valid. Passwords must be at least 8 characters long and should match", Toast.LENGTH_LONG)
-                //var t = Toast.makeText(this@SignupActivity,  "${userEmail}===${isValidPassword(userPassword)}", Toast.LENGTH_LONG)
-                t.view.setBackgroundColor(Color.RED)
-                t.show()
+                val mdToast = MDToast.makeText(this@SignupActivity, "Please make sure that the Email is valid and Display name is not empty.\n Passwords must be at least 8 characters long and should match", MDToast.LENGTH_LONG, MDToast.TYPE_ERROR)
+                mdToast.show()
             }
         }
     }
 
-    private fun isValidSignup(email: String, password: String, retyped_password: String):Boolean {
-        return password == retyped_password && isValidPassword(password) && isValidEmail(email)
+    private fun isValidSignup(email: String, password: String, retyped_password: String,userDisplayName:String):Boolean {
+        return password == retyped_password && isValidPassword(password) && isValidEmail(email)  && isValidDisplayName(userDisplayName)
     }
 
     private fun isValidPassword(pw: String): Boolean {
@@ -122,7 +214,7 @@ class SignupActivity : AppCompatActivity() {
 
     // todo
     private fun isValidDisplayName(dp_name: String): Boolean {
-        return false
+        return ""!=dp_name
     }
 
     private fun checkEmailExists(email: String): Boolean {

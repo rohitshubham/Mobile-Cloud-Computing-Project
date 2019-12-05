@@ -1,75 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.users.SignupActivity">
+    android:background="@drawable/bg">
 
-    <EditText
-        android:id="@+id/email"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="194dp"
-        android:layout_marginBottom="492dp"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="70dp" />
+        android:orientation="vertical"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/input_group">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:text="MCC Group 14"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"/>
 
-    <EditText
-        android:id="@+id/password"
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/input_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="284dp"
-        android:layout_marginBottom="402dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
+        android:orientation="vertical"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="50dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
 
-    <EditText
-        android:id="@+id/retyped_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="329dp"
-        android:layout_marginBottom="357dp"
-        android:ems="10"
-        android:hint="Re-enter Password"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
+        <EditText
+            android:id="@+id/txt_displayName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_top"
+            android:hint="Display Name"
+            android:inputType="textPersonName"
+            android:padding="15dp" />
 
-    <Button
-        android:id="@+id/signup_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="161dp"
-        android:layout_marginTop="409dp"
-        android:layout_marginEnd="162dp"
-        android:layout_marginBottom="274dp"
-        android:text="Signup"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/txt_email_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_middle"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:padding="15dp" />
 
-    <EditText
-        android:id="@+id/display_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="240dp"
-        android:layout_marginBottom="447dp"
-        android:ems="10"
-        android:hint="Display name"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
+        <EditText
+            android:id="@+id/txt_password_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_middle"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="15dp" />
 
-</android.support.constraint.ConstraintLayout>
+        <EditText
+            android:id="@+id/txt_password_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bottom"
+            android:hint="Confirm Password"
+            android:inputType="textPassword"
+            android:padding="15dp" />
+
+
+        <Button
+            android:id="@+id/btn_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:text="SIGN UP"
+            android:textAllCaps="false"
+            android:textColor="#FE5295"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/signIn_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:padding="10dp"
+            android:text="Already Have an Account?  Sign in"
+            android:textAllCaps="true"
+            android:textSize="13dp"
+            android:textStyle="bold"
+            android:textColor="#FAD0E1"
+            android:fontFamily="sans-serif"/>
+
+    </LinearLayout>
+</RelativeLayout>

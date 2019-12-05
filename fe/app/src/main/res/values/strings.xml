@@ -1,11 +1,14 @@
 <resources>
-    <string name="app_name">ApiClientApp</string>
-    <string name="communication_error">An error occured</string>
+    <string name="app_name">MCC Group 14</string>
+    <string name="communication_error">An error occurred</string>
     <string name="pick_time">Pick time</string>
     <string name="pick_date">Pick date</string>
-    <string name="keywords_et">At most 3 keyword (eg: word1,word2,word3)</string>
+    <string name="keywords_et">At most 3 keyword (eg: word1, word2, word3)</string>
     <string name="keywords_btn">Add keywords</string>
     <string name="last_modified_proj">Last modified: </string>
     <string name="add_proj_member">Add member</string>
     <string name="pick_deadline">Pick a deadline</string>
+    <string name="email_field">Email</string>
+    <string name="password_field">Password</string>
+    <string name="btn_sign_in">SIGN IN</string>
 </resources>
