@@ -1,6 +1,7 @@
 package mcc.group14.apiclientapp.views.users
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -25,7 +26,6 @@ import retrofit2.Response
 // User Settings view
 class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
 
-    // TODO: demolish MVP, put everything here and maybe utils class (image upload)
     private val TAG = "UserSettingsActivity"
 
     // UI variables, NB lateinit lets us initialise them in initGUI
@@ -40,7 +40,6 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
 
     private val userApi = UsersApiClient.create()
 
-    // @TODO: @Max @Kirthi understand how to get user data from mAuth
     lateinit var uid: String
     lateinit var userEmail: String
 
@@ -58,20 +57,18 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
 
         setListeners()
 
-        userEmail = intent.getStringExtra("USER_EMAIL")
-        // @TODO: ++ userAuth should be in sharedPreferences
-        uid = intent.getStringExtra("USER_AUTH")
-        val userPsw = "DEFAULT_PSW"
+        val sharedprefs =  getSharedPreferences("USER_AUTH_DATA",
+            Context.MODE_PRIVATE)
+        userEmail = sharedprefs.
+            getString("user_email","defaultName")!!
+        uid = sharedprefs.
+            getString("user_auth","defaultName")!!
 
-        userCredentials = UserCredentials(userEmail, userPsw)
+        userCredentials = UserCredentials(userEmail)
 
         this.hideProgress()
         Log.d(TAG,"User email: $userEmail, userAuth: $uid")
 
-/*
-        val user = User(4, "usr4", "usr4@mail.fi", null,
-            "/img1.png", mutableListOf("pr5"), mutableListOf("pr1"))
-        postUser(user)*/
     }
 
     private fun initGUI() {
@@ -152,8 +149,8 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
         val imageHelper = UserImageHelper.instance
         val listener = LongProcessListener(this)
 
-        imageHelper.storeImage(listener, userEmail, uid,
-            img, this.applicationContext)
+        imageHelper.storeImage(listener, userEmail,
+            userCredentials.password, img, this.applicationContext)
 
         iv.setImageBitmap(img)
 

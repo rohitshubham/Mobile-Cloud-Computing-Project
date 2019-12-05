@@ -23,6 +23,7 @@ class SignupActivity : AppCompatActivity() {
     private var mAuth = FirebaseAuth.getInstance()
     val projectApi = ProjectApiClient.create()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
@@ -105,6 +106,7 @@ class SignupActivity : AppCompatActivity() {
                 t.view.setBackgroundColor(Color.RED)
                 t.show()
             }
+
         }
     }
 

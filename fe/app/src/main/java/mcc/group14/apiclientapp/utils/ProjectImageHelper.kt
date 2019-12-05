@@ -12,12 +12,12 @@ class ProjectImageHelper: FileHelper() {
     }
 
     override fun upload(
-        userEmail: RequestBody,
-        userAuth: RequestBody,
+        userEmail: RequestBody?,
+        userPassword: RequestBody?,
         fileMP: MultipartBody.Part?
     ): Call<ResponseBody> {
         return this.apiClient.
-            uploadProjectPicture(userEmail, userAuth, fileMP)
+            uploadProjectPicture(userEmail, userPassword, fileMP)
     }
 
 }

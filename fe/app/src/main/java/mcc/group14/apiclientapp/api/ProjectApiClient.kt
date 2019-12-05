@@ -42,24 +42,24 @@ interface ProjectApiClient {
 
     @GET("projects/{email}")
     fun getProjectsList(@Path("email") email: String):
-            Call<Response<MutableList<ProjectDetail>>>
-    //Observable<Response<MutableList<ProjectDetail>>>
-            //Observable<Response<MutableList<UserProject>>>
+            Call<ResponseWrapper<MutableList<ProjectDetail>>>
+    //Observable<ResponseWrapper<MutableList<ProjectDetail>>>
+            //Observable<ResponseWrapper<MutableList<UserProject>>>
 
     /* Get one article by it's id */
     @GET("project/{project_id}")
     fun getProjectDetail(@Path("project_id") project_id: String):
-            Observable<Response<ProjectDetail>>
+            Observable<ResponseWrapper<ProjectDetail>>
 
     @Headers("Content-Type: application/json;charset=utf-8")
     //@POST("project/")
     @POST("project/")
-    fun createProject(@Body project: ProjectDetail): Observable<Response<ProjectDetail>>
+    fun createProject(@Body project: ProjectDetail): Observable<ResponseWrapper<ProjectDetail>>
 
     @Headers("Content-Type: application/json;charset=utf-8")
     //@POST("project/")
     @PUT("project/")
-    fun modifyProject(@Body project: UserProject): Observable<Response<ProjectDetail>>
+    fun modifyProject(@Body project: UserProject): Observable<ResponseWrapper<ProjectDetail>>
 /*
     @Multipart
     @POST("/")

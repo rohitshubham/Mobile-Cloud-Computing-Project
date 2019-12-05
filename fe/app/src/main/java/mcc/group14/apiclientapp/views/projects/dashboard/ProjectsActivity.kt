@@ -12,7 +12,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
-import mcc.group14.apiclientapp.api.Response
+import mcc.group14.apiclientapp.api.ResponseWrapper
 import mcc.group14.apiclientapp.data.ProjectDetail
 import mcc.group14.apiclientapp.views.projects.ProjectDetailActivity
 import mcc.group14.apiclientapp.views.projects.create.NewProjectActivity
@@ -62,14 +62,14 @@ class ProjectsActivity : ListActivity(){
     private fun refreshProjectList() {
         // NOTE heavy calls solution: this is to make heavy calls with support of mainLooper.
         // For more here https://stackoverflow.com/questions/37856571/retrofit-2-callback-issues-with-ui-thread
-        var call: Call<Response<MutableList<ProjectDetail>>> = projectApi.
+        var call: Call<ResponseWrapper<MutableList<ProjectDetail>>> = projectApi.
             getProjectsList(userEmail)
 
-        call.enqueue( object: Callback<Response<MutableList<ProjectDetail>>> {
-            override fun onFailure(call: Call<Response<MutableList<ProjectDetail>>>, t: Throwable) {
+        call.enqueue( object: Callback<ResponseWrapper<MutableList<ProjectDetail>>> {
+            override fun onFailure(call: Call<ResponseWrapper<MutableList<ProjectDetail>>>, t: Throwable) {
 
                 progressBar.visibility = View.GONE
-                Log.e(TAG, "Response not received, error ${t.message}")
+                Log.e(TAG, "ResponseWrapper not received, error ${t.message}")
                 Toast.makeText(
                     applicationContext, "Network error",
                     Toast.LENGTH_SHORT
@@ -77,19 +77,19 @@ class ProjectsActivity : ListActivity(){
             }
 
             override fun onResponse(
-                call: Call<Response<MutableList<ProjectDetail>>>,
-                response: retrofit2.Response<Response<MutableList<ProjectDetail>>>
+                call: Call<ResponseWrapper<MutableList<ProjectDetail>>>,
+                responseWrapper: retrofit2.Response<ResponseWrapper<MutableList<ProjectDetail>>>
             ) {
                 progressBar.visibility = View.GONE
-                if (response.isSuccessful &&
-                    response.body()?.success=="true"){
+                if (responseWrapper.isSuccessful &&
+                    responseWrapper.body()?.success=="true"){
                         Log.d(TAG, "Project list received " +
-                                "${response.body()}")
-                        setListView(response.body()?.payload)
+                                "${responseWrapper.body()}")
+                        setListView(responseWrapper.body()?.payload)
 
                 } else {
                     Log.d(TAG, "Error response received: " +
-                            "${response.body()}")
+                            "${responseWrapper.body()}")
                 }
             }
         })
