@@ -13,7 +13,7 @@ import retrofit2.http.*
 interface ProjectApiClient {
     companion object {
 
-        fun create(): ProjectApiClient {
+        @JvmStatic fun create(): ProjectApiClient {
 
             val httpClient = OkHttpClient.Builder()
             httpClient.addInterceptor(AuthInterceptor())

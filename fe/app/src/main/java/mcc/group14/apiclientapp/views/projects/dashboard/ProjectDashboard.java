@@ -1,41 +1,34 @@
 package mcc.group14.apiclientapp.views.projects.dashboard;
 
 import android.content.Context;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import java.util.ArrayList;
-import android.app.Activity;
-import android.app.ListActivity;
+import java.util.LinkedList;
+
+
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.widget.PopupMenu;
+
 import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
+
 import mcc.group14.apiclientapp.R;
-import mcc.group14.apiclientapp.api.ProjectApiClient;
-import mcc.group14.apiclientapp.api.Response;
+import mcc.group14.apiclientapp.api.APIInterfaceJava;
+import mcc.group14.apiclientapp.api.ProjectAPIJava;
 import mcc.group14.apiclientapp.data.ProjectDetail;
-import mcc.group14.apiclientapp.views.projects.ProjectDetailActivity;
-import mcc.group14.apiclientapp.views.projects.create.NewProjectActivity;
+
+import mcc.group14.apiclientapp.data.ProjectsResponse;
 import mcc.group14.apiclientapp.views.users.LoginActivity;
-import mcc.group14.apiclientapp.views.users.UserSettingsActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
-
-
-
-import mcc.group14.apiclientapp.R;
+import retrofit2.Response;
 
 
 public class ProjectDashboard extends AppCompatActivity {
@@ -43,9 +36,9 @@ public class ProjectDashboard extends AppCompatActivity {
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView recyclerView;
-    private static ArrayList<DataModel> data;
+    private static ProjectsResponse data;
     static View.OnClickListener myOnClickListener;
-    private static ArrayList<Integer> removedItems;
+    private static ArrayList<ProjectCard> passToAdapter;
     private String userEmail,userAuth;
 
     @Override
@@ -70,22 +63,52 @@ public class ProjectDashboard extends AppCompatActivity {
         userEmail = intent.getStringExtra("USER_EMAIL");
         userAuth = intent.getStringExtra("USER_AUTH");
 
+        //ProjectApiClient apiClient = ProjectApiClient.create();
+
+        //LinkedList<ProjectDetail> usrProjects = new LinkedList<>();
+
+        APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
+
+        Call<ProjectsResponse> call = apiInterface.doGetListProjects(userEmail);
+        call.enqueue(new Callback<ProjectsResponse>() {
+            @Override
+            public void onResponse(Call<ProjectsResponse> call, Response<ProjectsResponse> response) {
+
+
+                Log.d("TAG",response.code()+"");
+
+
+                data = response.body();
+                passToAdapter = new ArrayList<>();
+                for(ProjectsResponse.Payload d:data.payload ){
+                    ProjectCard pCard = new ProjectCard();
+                    pCard.projectName = d.name;
+                    pCard.lastModified = d.last_modified;
+                    pCard.projectType = d.project_type;
+                    pCard.badge = d.badge;
+                    passToAdapter.add(pCard);
+                }
+
+                //Log.d("Some",data.toString());
+
+                adapter = new CustomAdapter(passToAdapter);
+                recyclerView.setAdapter(adapter);
+
+
+            }
+
+            @Override
+            public void onFailure(Call<ProjectsResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
+
 
         //================================================================
 
-        data = new ArrayList<>();
-        for (int i = 0; i < MyData.nameArray.length; i++) {
-            data.add(new DataModel(
-                    MyData.nameArray[i],
-                    MyData.versionArray[i],
-                    MyData.id_[i]
-            ));
-        }
 
-        removedItems = new ArrayList<Integer>();
 
-        adapter = new CustomAdapter(data);
-        recyclerView.setAdapter(adapter);
+
     }
 
 
@@ -106,37 +129,11 @@ public class ProjectDashboard extends AppCompatActivity {
 
         }
 
-        private void removeItem(View v) {
-            int selectedItemPosition = recyclerView.getChildPosition(v);
-            RecyclerView.ViewHolder viewHolder
-                    = recyclerView.findViewHolderForPosition(selectedItemPosition);
-            TextView textViewName
-                    = (TextView) viewHolder.itemView.findViewById(R.id.textViewName);
-            String selectedName = (String) textViewName.getText();
-            int selectedItemId = -1;
-            for (int i = 0; i < MyData.nameArray.length; i++) {
-                if (selectedName.equals(MyData.nameArray[i])) {
-                    selectedItemId = MyData.id_[i];
-                }
-            }
-            removedItems.add(selectedItemId);
-            data.remove(selectedItemPosition);
-            adapter.notifyItemRemoved(selectedItemPosition);
-        }
+
     }
 
 
 
 
-    private void addRemovedItemToList() {
-        int addItemAtListPosition = 3;
-        data.add(addItemAtListPosition, new DataModel(
-                MyData.nameArray[removedItems.get(0)],
-                MyData.versionArray[removedItems.get(0)],
-                MyData.id_[removedItems.get(0)]
 
-        ));
-        adapter.notifyItemInserted(addItemAtListPosition);
-        removedItems.remove(0);
-    }
 }

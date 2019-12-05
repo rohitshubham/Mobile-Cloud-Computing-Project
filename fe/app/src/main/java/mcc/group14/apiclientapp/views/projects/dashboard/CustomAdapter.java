@@ -7,29 +7,36 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import mcc.group14.apiclientapp.R;
+import mcc.group14.apiclientapp.data.ProjectDetail;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
-    private ArrayList<DataModel> dataSet;
+    private ArrayList<ProjectCard> dataSet;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView textViewName;
-        TextView textViewVersion;
+        TextView textViewLastModified;
+        TextView textViewProjectType;
         ImageView imageViewIcon;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             this.textViewName = (TextView) itemView.findViewById(R.id.textViewName);
-            this.textViewVersion = (TextView) itemView.findViewById(R.id.textViewVersion);
+            this.textViewLastModified = (TextView) itemView.findViewById(R.id.textViewLastModified);
+            this.textViewProjectType = (TextView) itemView.findViewById(R.id.textViewProjectType);
             this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }
 
-    public CustomAdapter(ArrayList<DataModel> data) {
+    public CustomAdapter(ArrayList<ProjectCard> data) {
         this.dataSet = data;
     }
 
@@ -47,13 +54,22 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-
         TextView textViewName = holder.textViewName;
-        TextView textViewVersion = holder.textViewVersion;
-        ImageView imageView = holder.imageViewIcon;
+        TextView textViewLastModified = holder.textViewLastModified;
+        TextView textViewProjectType = holder.textViewProjectType;
+        ImageView imageViewIcon = holder.imageViewIcon;
 
-        textViewName.setText(dataSet.get(listPosition).getName());
-        textViewVersion.setText(dataSet.get(listPosition).getVersion());
+        textViewName.setText(dataSet.get(listPosition).projectName);
+        String[] dateTime=new String[2];
+        if(dataSet.get(listPosition).lastModified != null)
+            dateTime  = dataSet.get(listPosition).lastModified.split("T");
+        else
+            dateTime[0] = "NA";
+
+
+        //Just showing the date
+        textViewLastModified.setText(dateTime[0]);
+        textViewProjectType.setText(dataSet.get(listPosition).projectType);
 
     }
 

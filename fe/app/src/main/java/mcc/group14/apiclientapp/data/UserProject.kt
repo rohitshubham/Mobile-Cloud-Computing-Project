@@ -16,6 +16,7 @@ data class UserProject (
     // var creation_time: String? = null,
     var badge: String? = null,
     var keywords: String? = null,
-    var creation_time: String?
+    var creation_time: String?,
+    var last_modified: String?
     // TODO: add last_modified: String
 ): Serializable
