@@ -44,6 +44,8 @@ build-frontend:
 deploy-backend:
   image: google/cloud-sdk:alpine
   stage: deploy
+  only:
+    - master
   script:
     - cd ./backend
     - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
@@ -56,6 +58,8 @@ deploy-backend:
 deploy-frontend:
   image: openjdk:8-jdk
   stage: deploy
+  only:
+    - master
   before_script:
     - apt-get --quiet update --yes
     - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
