@@ -21,7 +21,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         description = serializers.CharField(max_length=None, min_length=None, allow_null=True) #Why are these charfield and not text fields?
         badge = serializers.CharField(max_length=None, min_length=None, allow_null=True)
         keywords = serializers.CharField(max_length=None, min_length=None, allow_null=True)      
-        fields = ['name', 'team_members', 'deadline', 'description', 'requester_email', 'project_type', 'keywords', 'badge', 'creation_time']
+        fields = ['name', 'team_members', 'deadline', 'description', 'requester_email', 'project_type', 'keywords', 'badge', 'creation_time', 'last_modified']
         
 
 class UserProjectSerializer(serializers.HyperlinkedModelSerializer):
