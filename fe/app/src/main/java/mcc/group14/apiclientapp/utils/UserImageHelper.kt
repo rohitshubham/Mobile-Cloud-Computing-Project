@@ -10,12 +10,11 @@ class UserImageHelper : FileHelper() {
         val instance = UserImageHelper()
     }
 
-    override fun upload(
-        userEmail: RequestBody?,
-        userPassword: RequestBody?,
+    override fun uploadWithParams(
+        params: RequestBody?,
         fileMP: MultipartBody.Part?
     ): Call<ResponseBody> {
-        return this.apiClient.uploadUserPicture(userEmail, userPassword, fileMP)
+        return this.apiClient.uploadUserPictureAndParams(params, fileMP)
     }
 
 }

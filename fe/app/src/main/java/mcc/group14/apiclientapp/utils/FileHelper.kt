@@ -21,45 +21,28 @@ abstract class FileHelper {
 
     val TAG = "FileHelper"
     var apiClient = FileApiClient.create()
+
     private val TMP_FILENAME = "tmp-file.png"
 
-    fun storeImage(onUploadListener: LongProcessListener,
-                   userEmail: String?, userPass: String?,
-                   img: Bitmap, applicationContext: Context) {
+    fun storeImageAndParams(
+        onUploadListener: LongProcessListener,
+        params: String, // params string
+        img: Bitmap,
+        applicationContext: Context) {
 
-        var userEmailReq: RequestBody? = null
-
-        if (userEmail != null){
-            userEmailReq = RequestBody.create(
-            MediaType.
-                parse("multipart/form-data"), userEmail.orEmpty())
-        }
-
-        var userPassReq: RequestBody? = null
-        if(userPass != null) {
-
-            userPassReq = RequestBody.create(MediaType.
-                parse("multipart/form-data"), userPass)
-        }
-
-        //var profilePic: MultipartBody.Part? = null
+        var params = RequestBody.create(MediaType.
+            parse("multipart/form-data"), params)
 
         val file =
             storeImageLocallyAndGetFile(applicationContext, img)
-                //onUploadListener, )
+        //onUploadListener, )
 
-        uploadImage(file, userEmailReq, userPassReq, onUploadListener)
+        uploadFileAndParams(file, params, onUploadListener)
     }
 
-    protected abstract fun upload(
-        userEmail: RequestBody?, userPassword: RequestBody?,
-        fileMP: MultipartBody.Part?)
-            : Call<ResponseBody>
-
-    private fun uploadImage(
+    private fun uploadFileAndParams(
         file: File,
-        userEmailReq: RequestBody?,
-        userPassReq: RequestBody?,
+        params: RequestBody?,
         onUploadListener: LongProcessListener
     ) {
         // NOTE heavy calls solution: this is to make heavy calls with support of mainLooper.
@@ -72,11 +55,10 @@ abstract class FileHelper {
             createFormData("file", file.name, requestFile)
 
         val call: Call<ResponseBody> =
-            this.upload(userEmailReq, userPassReq, profilePicMP)
+            this.uploadWithParams(params, profilePicMP)
         call.enqueue(object : Callback<ResponseBody> {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-//                onUploadListener.onLongProcessFailure(t)
                 Log.d(TAG, t.message)
                 deleteTmpFile(file)
             }
@@ -84,12 +66,16 @@ abstract class FileHelper {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Log.d(TAG, "Image successfully uploaded, response: " +
                         "${response.body()}")
-                // get image path from response back the image path
                 onUploadListener.onLongProcessSuccess(response)
                 deleteTmpFile(file)
             }
         })
     }
+
+    protected abstract fun uploadWithParams(userPassword: RequestBody?,
+                                            fileMP: MultipartBody.Part?)
+            : Call<ResponseBody>
+
 
     private fun deleteTmpFile(file: File) {
         var deletionSuccessful = file.delete()

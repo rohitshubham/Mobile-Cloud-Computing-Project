@@ -20,6 +20,7 @@ import java.time.LocalDateTime
 import android.widget.TimePicker
 import android.widget.DatePicker
 import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog
+import com.google.gson.Gson
 import mcc.group14.apiclientapp.R
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -151,7 +152,10 @@ class OptionalProjectSettingsActivity :
         val imageHelper = ProjectImageHelper.instance
         val listener = LongProcessListener(this)
 
-        imageHelper.storeImage(listener, userEmail, userAuth,
+        val paramsBody = Gson().toJson(curProject)
+
+
+        imageHelper.storeImageAndParams(listener, paramsBody,
             img, this.applicationContext)
 
         // user stores, not yet implemented

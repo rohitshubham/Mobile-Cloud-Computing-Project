@@ -31,6 +31,7 @@ interface UsersApiClient{
 
         }
 
+        // TODO: @Max
         // this should be used to integrate the authorization look at:
         // https://stackoverflow.com/questions/53504324/retrieve-sharedpreferences-in-retrofit2-interface
         /*class ServiceInterceptor(String email, String user): Interceptor {
@@ -43,17 +44,6 @@ interface UsersApiClient{
             }*/
     }
 
-/* Get one article by it's id *//*
-
-    @GET("user/{uid}")
-    fun getUser(@Path("uid") userId: Int): Observable<User>
-
-    @Headers("Content-Type: application/json;charset=utf-8")
-    //@POST("user/")
-    @POST("?pipedream_response=3")
-    fun addUser(@Body user: User): Observable<User>
-*/
-
     @Headers("Content-Type: application/json;charset=utf-8")
     //@POST("user/")
     @PUT("user/")
@@ -64,12 +54,4 @@ interface UsersApiClient{
     @GET("project/user/{search_path}")
     fun searchForUsers(@Path("search_path") search_path: String):
             Observable<ResponseWrapper<MutableList<UserSearch>>>
-
-
-    /*@Multipart
-    @POST("/")
-    fun uploadPicture (@Part("uid") userId: RequestBody,
-                       @Part("name") name: RequestBody,
-                       @Part photo: MultipartBody.Part?
-    ):Call<ResponseBody>*/
 }

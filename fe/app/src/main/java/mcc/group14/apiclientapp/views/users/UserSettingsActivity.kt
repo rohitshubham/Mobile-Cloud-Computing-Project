@@ -11,8 +11,10 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.*
+import com.google.gson.Gson
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.projects.*
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.UsersApiClient
 import mcc.group14.apiclientapp.data.UserCredentials
@@ -149,9 +151,14 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
         val imageHelper = UserImageHelper.instance
         val listener = LongProcessListener(this)
 
-        imageHelper.storeImage(listener, userEmail,
-            userCredentials.password, img, this.applicationContext)
+        val jsonParams = Gson().toJson(userCredentials)
 
+        imageHelper.storeImageAndParams(listener,
+            jsonParams, img, this.applicationContext)
+
+        /*imageHelper.storeImage(listener, userEmail,
+            userCredentials.password, img, this.applicationContext)
+*/
         iv.setImageBitmap(img)
 
         // TODO: cool way to scale an image
