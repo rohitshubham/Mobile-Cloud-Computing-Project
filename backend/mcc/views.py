@@ -62,13 +62,7 @@ def user_save(request):
                                 status=status.HTTP_409_CONFLICT)    
 
         try:
-            file_obj = request.FILES.get('file', False)
             profile_pic = 'https://empty.com'
-            e = ''
-            if file_obj is not False:
-                e = file_obj.name.split('.')[-1]
-                profile_pic = ''
-                profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/'+request.data["email_id"]+'.'+e+'?authuser=1'
                 
             if request.data["display_name"] is not None:
                 user =  auth.create_user(
@@ -79,13 +73,7 @@ def user_save(request):
                             photo_url=profile_pic,
                             disabled=False)
             else:
-                return Response({"error" : "DisplayNameNotProvided", "success" : "false"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # ToDO : Insert the photo into storage
-            if file_obj is not False:
-                upload_blob(file_obj.file,request.data["email_id"]+'.'+e)
-
-           
+                return Response({"error" : "DisplayNameNotProvided", "success" : "false"}, status=status.HTTP_400_BAD_REQUEST)           
             
         except auth.EmailAlreadyExistsError:
             return Response({"error" : "EmailAlreadyExists", "success" : "false"}, status=status.HTTP_409_CONFLICT)
@@ -97,8 +85,21 @@ def user_save(request):
     if request.method == 'PUT':
         try:
             user = auth.get_user_by_email(request.data["email_id"])
-            auth.update_user(uid = user.uid, password = request.data["password"])
-            # ToDO : Update the photo
+            
+            file_obj = request.FILES.get('file', False)
+
+            if file_obj is not False:
+                ext = file_obj.name.split('.')[-1]
+                profile_pic = ''
+                profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/' + request.data["email_id"] + '.'+ext+'?authuser=1'
+                auth.update_user(uid = user.uid, profile_pic = profile_pic)
+                upload_blob(file_obj.file, request.data["email_id"]+'.'+ext)
+
+            
+            if 'password' in request.data:
+                auth.update_user(uid = user.uid, password = request.data["password"])
+
+
 
             return Response({"success" : "true"}, status= status.HTTP_200_OK)
         except Exception as e:
@@ -140,17 +141,41 @@ def project_save(request):
                 except:
                     dl = request.data['deadline'].replace("'","")+":00"
                     request.data['deadline'] = parse_datetime(dl)
-                    
+            
+            #check if the project with same exists for this user
+            projects_present = db.collection('projects').where("name", "==", request.data["name"]).where("requester_email", "==", request.data["requester_email"]).stream()
+
+            for project_present in projects_present:
+                return Response({"success" : "false", "error" : "ProjectAlreadyExists"}, status= status.HTTP_409_CONFLICT)
+
+            file_obj = request.FILES.get('file', False)
+            badge = 'https://empty.com'
+            ext = ''
+            if file_obj is not False:
+                ext = file_obj.name.split('.')[-1]
+                badge = ''
+                badge = f'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/{request.data["requester_email"]}_{request.data["name"]}.{ext}?authuser=1'
+
+            request.data["badge"] = badge
+
             serializer = ProjectSerializer(data=request.data)
             
             if serializer.is_valid():
+                
                 #using doc_ref.id as project id
                 doc_ref = db.collection(u'projects').document()
                 doc_ref.set(serializer.data)
                 save_list_project_members(serializer.data["team_members"], doc_ref.id, request.data["requester_email"])
                 add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Project was created by {auth.get_user_by_email(request.data['requester_email']).display_name}.")
+                
+                
+                if file_obj is not False:
+                    ext = file_obj.name.split('.')[-1]
+                    upload_blob(file_obj.file, f'{request.data["requester_email"]}_{request.data["name"]}.{ext}')
+
                 return Response({"success" : "true",
                                 "payload" : {"project_id": doc_ref.id}}, status=status.HTTP_201_CREATED)
+
             return Response({"error" : "Invalid project format", "success": "false"}, status = status.HTTP_206_PARTIAL_CONTENT)
         except Exception as e:
             print(e)
@@ -159,7 +184,7 @@ def project_save(request):
         #Saving it before removing 
         project_id = request.data['project_id']
         #Removing it to pass the Serializer
-        del request.data['project_id']        
+        del request.data['project_id']
         request.data['last_modified'] = datetime.now()
         try:
             if 'deadline' in request.data:
@@ -169,10 +194,15 @@ def project_save(request):
                     dl = request.data['deadline'].replace("'","")+":00"
                     request.data['deadline'] = parse_datetime(dl)
 
+            file_obj = request.FILES.get('file', False)
+
+            doc_ref = db.collection(u'projects').document(project_id)
+            document = doc_ref.get().to_dict()
+            request.data["badge"] = document["badge"]
+
             serializer = ProjectSerializer(data=request.data)
             if serializer.is_valid():
-                #using doc_ref.id as project id
-                doc_ref = db.collection(u'projects').document(project_id)
+                
                 doc_ref.update(serializer.data)
 
                 #Manually adding project id
@@ -181,6 +211,12 @@ def project_save(request):
                 save_list_project_members(serializer.data["team_members"], project_id, request.data["requester_email"])
 
                 add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Project was edited by {auth.get_user_by_email(request.data['requester_email']).display_name}.")
+                
+                if file_obj is not False:
+                    ext = file_obj.name.split('.')[-1]
+                    upload_blob(file_obj.file, f'{request.data["requester_email"]}_{request.data["name"]}.{ext}')
+
+                del request.data["file"]
                 return Response({"success" : "true",
                                 "payload" : request.data }, status = status.HTTP_200_OK)
                                 
