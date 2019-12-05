@@ -413,7 +413,6 @@ paths:
               - team_members
               - requester_email
               - project_type
-              - keywords
           x-oad-type: parameter
     x-oad-type: operation
   '/project/{project_id}':

@@ -15,6 +15,7 @@ from .serializers import UserAuthSerializer, UserSerializer, ProjectSerializer, 
 from .models import UserAuth, User, Project, UserProject
 from .render import Render
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 
 
@@ -133,7 +134,7 @@ def project_save(request):
             request.data['creation_time'] = datetime.now()
             request.data['last_modified'] = datetime.now()
             #Max wanted 2019-12-03'T'03:09, so accepting by doing following change
-            if 'deadline' in request.PUT:
+            if 'deadline' in request.data:
                 try:
                     request.data['deadline'] = dateutil.parser.parse(request.data['deadline'])
                 except:
