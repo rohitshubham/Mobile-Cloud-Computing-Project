@@ -47,9 +47,8 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
 
-
-    // for add user search bar
-    implementation 'com.github.mirrajabi:search-dialog:1.2.4'
+    // date-time picker
+    implementation 'com.github.florent37:SingleDateAndTimePicker:v2.0.4'
 
     // the four packages below are needed for handling connections to BE
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
