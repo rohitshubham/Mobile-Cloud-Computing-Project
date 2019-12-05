@@ -148,7 +148,7 @@ class AddUsersToProjectActivity : AppCompatActivity() {
         projectApiClient.modifyProject(project)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread()).map {
-                if (it.success == "true") it.payload else throw Throwable("APIError")
+                if (it.success == "true") it.payload else throw Throwable(it.error)
             }
             .subscribe(
                 { result ->

@@ -1,8 +1,6 @@
 package mcc.group14.apiclientapp.views.projects.create
 
 import android.app.Activity
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -12,7 +10,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.*
-import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.data.ProjectDetail
 import mcc.group14.apiclientapp.utils.LongProcessListener
 import mcc.group14.apiclientapp.utils.LongRunningActivity
@@ -20,14 +17,19 @@ import mcc.group14.apiclientapp.utils.ProjectImageHelper
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.time.LocalDateTime
+import android.widget.TimePicker
+import android.widget.DatePicker
+import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog
+import mcc.group14.apiclientapp.R
+import java.time.format.DateTimeFormatter
+import java.util.*
+import java.time.ZoneId.systemDefault
+
 
 class OptionalProjectSettingsActivity :
     AppCompatActivity(),
-    LongRunningActivity,
-TimePickerDialog.OnTimeSetListener,
-    DatePickerDialog.OnDateSetListener
+    LongRunningActivity // this is required for image uploading
 {
-
     val TAG = "OptionalProjectSettingsActivity"
 
     val PROFILE_PIC_SELECTION = 0
@@ -43,7 +45,7 @@ TimePickerDialog.OnTimeSetListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_optional_project_settings)
+        setContentView(mcc.group14.apiclientapp.R.layout.activity_optional_project_settings)
 
         curProject = intent.getSerializableExtra("PROJECT")
                 as ProjectDetail
@@ -60,7 +62,58 @@ TimePickerDialog.OnTimeSetListener,
         pickProjectImageBtn = findViewById(R.id.project_img_btn)
         pickProjectImageIV = findViewById(R.id.project_img_iv)
         createProjectBtn = findViewById(R.id.create_project_optional_set_btn)
-        deadlineDateTV = findViewById(R.id.deadline_date_tv)
+        deadlineDateTV = findViewById(R.id.pick_deadline_iv)
+    }
+
+    public fun onDateTimePick(view: View){
+        // TODO: -- @Sasha personalise the time-date picker
+        // to personalise it https://github.com/florent37/SingleDateAndTimePicker
+        SingleDateAndTimePickerDialog.Builder(view.context)
+            .defaultDate(Date())
+            .minDateRange(Date())
+            //.bottomSheet()
+            .curved()
+            .minutesStep(15)
+            //.displayHours(false)
+            //.displayMinutes(false)
+            //.todayText("aujourd'hui")
+            .displayListener {
+                //retrieve the SingleDateAndTimePicker
+            }
+
+            .title("Select a deadline")
+            .listener(object : SingleDateAndTimePickerDialog.Listener {
+                override fun onDateSelected(date: Date) {
+                    Log.d(TAG, date.toString())
+
+                    if (isFuture(date)){
+                        setDate(date)
+                    } else {
+                        Toast.makeText(applicationContext, "Invalid deadline",
+                            Toast.LENGTH_LONG).show()
+                    }
+                }
+            }).display()
+    }
+
+    private fun setDate(date: Date) {
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss'.000000Z'")
+        val localTime = convertToLocalDateViaInstant(date)
+        var formattedBEDate = localTime.format(formatter)
+
+        formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy, hh:mm:ss")
+        var formattedFEDate = localTime.format(formatter)
+
+        deadlineDateTV.text = formattedFEDate
+        curProject.deadline = formattedBEDate
+    }
+
+    private fun isFuture(date: Date) = date >= Date()
+
+    fun convertToLocalDateViaInstant(dateToConvert: Date): LocalDateTime {
+        return dateToConvert.toInstant()
+            .atZone(systemDefault())
+            .toLocalDateTime()
     }
 
     override fun onLongProcessFailure(t: Throwable) {
@@ -88,7 +141,7 @@ TimePickerDialog.OnTimeSetListener,
     }
 
     private fun pickAndUploadProjectPicture(data: Intent?) {
-        val iv = findViewById<ImageView>(R.id.userImage)
+        val iv = findViewById<ImageView>(mcc.group14.apiclientapp.R.id.userImage)
         val imageUri = data?.data
 
         val img: Bitmap = BitmapFactory.decodeStream(
@@ -131,98 +184,8 @@ TimePickerDialog.OnTimeSetListener,
         }
     }
 
-    fun showDatePickerDialog(v: View) {
-
-// TODO: find the way to develop it with v7
-        //val newFragment =
-        //    DatePickerFragment(this, this)
-        // newFragment.show(supportFragmentManager, "datePicker")
-    }
-
-    override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
-        var dayString = addPadding(day)
-        val actualMonth = month + 1
-        var monthString = addPadding(actualMonth)
-        deadlineDateTV.text = "$dayString/$monthString/$year"
-        curProject.deadline = "$year-$monthString-$dayString"
-    }
-
-
-    fun showTimePickerDialog(v: View) {
-      // TODO: implement it with v7
-        //  TimePickerFragment(this)
-      //    .show(supportFragmentManager, "timePicker")
-    }
-
-    override fun onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int) {
-        // Do something with the time chosen by the user
-        // TODO: -- remove second part of the first condition, just for testing
-        if (this.curProject.deadline == "" ||
-            this.curProject.deadline == "DEFAULT_DEADLINE"){
-            Toast.makeText(this, "Please first set a deadline date",
-                Toast.LENGTH_LONG).show()
-
-        } else if (this.curProject.deadline.orEmpty().contains("\'T\'")){
-            Toast.makeText(this, "Time deadline already selected",
-                Toast.LENGTH_LONG).show()
-
-        } else {
-            updateOnlyFutureDeadline(hourOfDay, minute)
-        }
-    }
-
-    private fun updateOnlyFutureDeadline(hourOfDay: Int, minute: Int) {
-        val curDT = LocalDateTime.now()
-
-        if (isDeadlineToday(curDT)) {
-            // updates if and only if deadline is future
-            if (isPastTime(minute, hourOfDay, curDT)) {
-                Toast.makeText(
-                    this,
-                    "Past time selected", Toast.LENGTH_LONG
-                ).show()
-            } else {
-                updateDeadlineTime(hourOfDay, minute)
-            }
-        } else {
-            // the date keeper prevent the user from inserting previous date than today's
-            updateDeadlineTime(hourOfDay, minute)
-        }
-    }
-
-    private fun isDeadlineToday(
-        curDT: LocalDateTime
-    ): Boolean {
-
-        val insertedDeadlineDate = deadlineDateTV.text.toString().split('/')
-        val curDay = curDT.dayOfMonth.toString()
-        val curMonth = curDT.month.value.toString()
-        val curYear = curDT.year.toString()
-
-        return insertedDeadlineDate[0] == curDay &&
-                insertedDeadlineDate[1] == curMonth &&
-                insertedDeadlineDate[2] == curYear
-    }
-
-    private fun isPastTime(
-        minute: Int,
-        hourOfDay: Int,
-        curDT: LocalDateTime
-    ) = (hourOfDay < curDT.hour) ||
-            (hourOfDay == curDT.hour && minute > curDT.minute)
-
-    private fun updateDeadlineTime(hourOfDay: Int, minute: Int) {
-        var minString = addPadding(minute)
-        var hourString = addPadding(hourOfDay)
-        val deadlineTimeTV = findViewById<TextView>(R.id.deadline_time_tv)
-        deadlineTimeTV.text = "$hourString:$minString"
-        this.curProject.deadline += "\'T\'$hourString:$minString"
-    }
-
-    private fun addPadding(toBePadded: Int) = if (toBePadded < 10) "0$toBePadded" else "$toBePadded"
-
     fun addKeywords(v: View){
-        val keywordsET = findViewById<EditText>(R.id.keywords_et)
+        val keywordsET = findViewById<EditText>(mcc.group14.apiclientapp.R.id.keywords_et)
         val capturedKeywordsString = keywordsET.text.toString()
         if ( capturedKeywordsString != "" ){
             val keywords = capturedKeywordsString.split(",")
@@ -238,8 +201,6 @@ TimePickerDialog.OnTimeSetListener,
             Toast.makeText(this,"Insert keywords",
                 Toast.LENGTH_LONG).show()
         }
-
     }
-
 }
 
