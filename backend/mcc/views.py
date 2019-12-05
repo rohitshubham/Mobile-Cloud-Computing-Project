@@ -3,6 +3,7 @@ import hashlib
 import json
 import re
 from datetime import datetime
+import dateutil.parser
 from django.core import serializers
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -133,9 +134,9 @@ def project_save(request):
             request.data['creation_time'] = datetime.now()
             request.data['last_modified'] = datetime.now()
             #Max wanted 2019-12-03'T'03:09, so accepting by doing following change
-            if 'deadline' in request.PUT:
+            if 'deadline' in request.data:
                 try:
-                    request.data['deadline'] = parse_datetime(dl)
+                    request.data['deadline'] = dateutil.parser.parse(request.data['deadline'])
                 except:
                     dl = request.data['deadline'].replace("'","")+":00"
                     request.data['deadline'] = parse_datetime(dl)
@@ -161,9 +162,9 @@ def project_save(request):
         del request.data['project_id']        
         request.data['last_modified'] = datetime.now()
         try:
-            if 'deadline' in request.PUT:
+            if 'deadline' in request.data:
                 try:
-                    request.data['deadline'] = parse_datetime(dl)
+                    request.data['deadline'] = dateutil.parser.parse(request.data['deadline'])
                 except:
                     dl = request.data['deadline'].replace("'","")+":00"
                     request.data['deadline'] = parse_datetime(dl)

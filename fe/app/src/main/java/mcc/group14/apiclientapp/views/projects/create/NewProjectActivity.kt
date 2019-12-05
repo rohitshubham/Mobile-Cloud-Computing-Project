@@ -131,11 +131,8 @@ class NewProjectActivity : AppCompatActivity() {
             // always include userEmailRequester
             // TODO: ++ implement AddMembersToProject
             team_members = userEmail,
-            // TODO: these data are got from OptionalProjectSettingsActivity
-            badge = "DEFAULT_BADGE",
-            // TODO: validate keywords
-            keywords = "DEFAULT_KEYWORDS",
-            deadline = "2019-08-15"
+            // NB: this should be removed
+            keywords = "DEFAULT_KEYWORDS"
         )
     }
 
