@@ -571,4 +571,31 @@ def set_task_completed(request):
 
     
 
+@csrf_exempt
+@api_view(["GET"])
+def task_retrive(request,project_id):
+    try: 
+        # Create a reference to the projects collection
+        projects_ref = db.collection(u'userTasks')
 
+        # Create a query against the collection
+        docs = projects_ref.where(u'project_id', u'==', project_id).stream()        
+        
+        value = []
+
+        for x in docs:
+            data = x.to_dict()
+            task_id = data["task_id"]
+            task = db.collection(u'tasks').document(task_id).get().to_dict()
+            if task is not None:  
+                task["task_id"] = task_id
+                task["email_id"]  =  data["email_id"]           
+                value.append(task)
+                
+                
+         
+        return Response({"success": "true",
+                         "payload": value }, status=status.HTTP_200_OK)    
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException' , "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
