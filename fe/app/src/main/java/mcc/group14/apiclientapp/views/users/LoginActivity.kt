@@ -15,6 +15,7 @@ import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsActivity
 import com.valdesekamdem.library.mdtoast.MDToast
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectDashboard
+import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsDashboardMainActivity
 import java.lang.Exception
 
 class LoginActivity : AppCompatActivity() {
@@ -83,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
 
                             // Login successful, redirect to dashboard
                             val intent =
-                                Intent(this, ProjectDashboard::class.java).apply {
+                                Intent(this, ProjectsDashboardMainActivity::class.java).apply {
                                     putExtra("USER_EMAIL", userEmail)
                                     putExtra("USER_AUTH", userAuth)
                                 }
