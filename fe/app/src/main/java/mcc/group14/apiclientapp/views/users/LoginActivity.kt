@@ -5,16 +5,15 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsActivity
 import com.valdesekamdem.library.mdtoast.MDToast
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectDashboard
+import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsDashboardMainActivity
 import java.lang.Exception
 
 class LoginActivity : AppCompatActivity() {
@@ -28,8 +27,9 @@ class LoginActivity : AppCompatActivity() {
 
         val loginBtn = findViewById<Button>(R.id.btn_login)
         val signUpText = findViewById<TextView>(R.id.signUp_text)
-
-
+        val spinner = findViewById<ProgressBar>(R.id.progressBar3)
+        loginBtn.visibility = View.VISIBLE
+        spinner.visibility = View.INVISIBLE;
         signUpText.setOnClickListener{
             val intent =
                 Intent(this, SignupActivity::class.java)
@@ -41,7 +41,8 @@ class LoginActivity : AppCompatActivity() {
 
             val userEmail = findViewById<EditText>(R.id.txt_email_signin).text.toString()
             val userPassword = findViewById<EditText>(R.id.txt_password_login).text.toString()
-
+            loginBtn.visibility = View.INVISIBLE;
+            spinner.visibility = View.VISIBLE;
 
             //Validating email
             if (!userEmail.trim().matches(Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))){
@@ -83,10 +84,12 @@ class LoginActivity : AppCompatActivity() {
 
                             // Login successful, redirect to dashboard
                             val intent =
-                                Intent(this, ProjectDashboard::class.java).apply {
+                                Intent(this, ProjectsDashboardMainActivity::class.java).apply {
                                     putExtra("USER_EMAIL", userEmail)
                                     putExtra("USER_AUTH", userAuth)
                                 }
+                            loginBtn.visibility = View.VISIBLE
+                            spinner.visibility = View.INVISIBLE
                             startActivity(intent)
                         } else {
                             val mdToast = MDToast.makeText(
@@ -101,6 +104,9 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
             }catch (e:Exception){
+                loginBtn.visibility = View.VISIBLE
+                spinner.visibility = View.INVISIBLE
+
                 val mdToast = MDToast.makeText(this@LoginActivity, "Oops! Something went wrong!", 3, MDToast.TYPE_ERROR)
                 mdToast.show()
             }

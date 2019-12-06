@@ -5,4 +5,6 @@ public class ProjectCard {
     public String lastModified;
     public String projectType;
     public String badge;
+    public String project_id;
+    public String team_member;
 }

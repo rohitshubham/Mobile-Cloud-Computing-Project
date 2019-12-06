@@ -7,10 +7,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.util.Patterns
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.JsonParser
 import com.valdesekamdem.library.mdtoast.MDToast
@@ -33,10 +31,9 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-
-
+        val spinner = findViewById<ProgressBar>(R.id.progressBar2)
         this.title = "Signup"
-
+        spinner.visibility = View.INVISIBLE;
         val signupBtn = findViewById<Button>(R.id.btn_signup)
         val signInText = findViewById<TextView>(R.id.signIn_text)
 
@@ -76,6 +73,7 @@ class SignupActivity : AppCompatActivity() {
                     display_name = userDisplayName,
                     password = userPassword
                 )
+                spinner.visibility = View.VISIBLE;
                 //this.projectApi.createUser(user_registration)
                 val TAG = "CreateUser"
                 var disposable = projectApi.createUser(user_registration)
@@ -83,8 +81,9 @@ class SignupActivity : AppCompatActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         {
-                                result -> Log.d(TAG, "Signup successful, " + result.toString())
 
+                                result -> Log.d(TAG, "Signup successful, " + result.toString())
+                                spinner.visibility = View.INVISIBLE;
                                 val mdToast = MDToast.makeText(this@SignupActivity, "Registration successful!", 3, MDToast.TYPE_SUCCESS)
                                 mdToast.show()
                                 //Sign up done, now log in the user
@@ -141,6 +140,7 @@ class SignupActivity : AppCompatActivity() {
                                             }
                                         }
                                 }catch (e: Exception){
+                                    spinner.visibility = View.INVISIBLE;
                                     //======================Some exception occured. So let him log in by himself
                                     val mdToast = MDToast.makeText(
                                         this@SignupActivity,
@@ -195,6 +195,7 @@ class SignupActivity : AppCompatActivity() {
                     )
 
             } else {
+                spinner.visibility = View.INVISIBLE;
                 val mdToast = MDToast.makeText(this@SignupActivity, "Please make sure that the Email is valid and Display name is not empty.\n Passwords must be at least 8 characters long and should match", MDToast.LENGTH_LONG, MDToast.TYPE_ERROR)
                 mdToast.show()
             }

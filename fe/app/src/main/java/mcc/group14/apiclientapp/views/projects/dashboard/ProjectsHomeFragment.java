@@ -1,5 +1,12 @@
 package mcc.group14.apiclientapp.views.projects.dashboard;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import android.content.Context;
 
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +15,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -17,6 +25,7 @@ import java.util.LinkedList;
 import android.content.Intent;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import mcc.group14.apiclientapp.R;
 import mcc.group14.apiclientapp.api.APIInterfaceJava;
@@ -30,7 +39,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import mcc.group14.apiclientapp.views.projects.tasks.TaskDashboard;
 
-public class ProjectDashboard extends AppCompatActivity {
+import mcc.group14.apiclientapp.R;
+
+public class ProjectsHomeFragment extends Fragment {
 
     private static RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -40,30 +51,40 @@ public class ProjectDashboard extends AppCompatActivity {
     private static ArrayList<ProjectCard> passToAdapter;
     private String userEmail,userAuth;
 
-    //---------------------------------------
-
-
-
-
-    //==================================
+    private Context mContext;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.project_dashboard);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
 
-        myOnClickListener = new MyOnClickListener(this);
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
+    }
 
-        recyclerView = findViewById(R.id.my_recycler_view);
+
+
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_project_home, container, false);
+
+        myOnClickListener = new MyOnClickListener(mContext);
+        ProgressBar spinner = (ProgressBar) view.findViewById(R.id.progressBar);
+        recyclerView = view.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(this);
+        layoutManager = new LinearLayoutManager(mContext);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         //======================Read Data================================
 
-        Intent intent = getIntent();
+        Intent intent = getActivity().getIntent();
 
         // get the info from login/sign-up
         userEmail = intent.getStringExtra("USER_EMAIL");
@@ -72,14 +93,15 @@ public class ProjectDashboard extends AppCompatActivity {
 
 
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
+        try{
+            Call<ProjectsResponse> call = apiInterface.doGetListProjects(userEmail);
 
-        Call<ProjectsResponse> call = apiInterface.doGetListProjects(userEmail);
-        call.enqueue(new Callback<ProjectsResponse>() {
-            @Override
-            public void onResponse(Call<ProjectsResponse> call, Response<ProjectsResponse> response) {
+            call.enqueue(new Callback<ProjectsResponse>() {
+                @Override
+                public void onResponse(Call<ProjectsResponse> call, Response<ProjectsResponse> response) {
 
 
-                Log.d("TAG",response.code()+"");
+                    Log.d("TAG",response.code()+"");
 
 
                 data = response.body();
@@ -90,27 +112,35 @@ public class ProjectDashboard extends AppCompatActivity {
                     pCard.lastModified = d.last_modified;
                     pCard.projectType = d.project_type;
                     pCard.badge = d.badge;
+                    pCard.project_id = d.project_id;
+                    pCard.team_member = d.team_members;
                     passToAdapter.add(pCard);
                 }
+                    spinner.setVisibility(View.INVISIBLE);
 
-                //Log.d("Some",data.toString());
-
-                //adapter = new CustomAdapter(passToAdapter,);
+                adapter = new CustomAdapter(passToAdapter,mContext);
                 recyclerView.setAdapter(adapter);
 
+                }
 
-            }
+                @Override
+                public void onFailure(Call<ProjectsResponse> call, Throwable t) {
+                    call.cancel();
+                    spinner.setVisibility(View.INVISIBLE);
+                    Toast.makeText(mContext, "Oops! Something went wrong. Please try again", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        catch (Exception e){
+            spinner.setVisibility(View.INVISIBLE);
+            Toast.makeText(mContext, "Oops! Something went wrong. Please try again", Toast.LENGTH_LONG).show();
+        }
 
-            @Override
-            public void onFailure(Call<ProjectsResponse> call, Throwable t) {
-                call.cancel();
-            }
-        });
 
 
         //================================================================
 
-
+        return view;
 
 
     }
@@ -129,15 +159,12 @@ public class ProjectDashboard extends AppCompatActivity {
             //removeItem(v);
 
             Intent taskActivity = new Intent(context, TaskDashboard.class);
+
             context.startActivity(taskActivity);
 
         }
 
 
     }
-
-
-
-
 
 }
