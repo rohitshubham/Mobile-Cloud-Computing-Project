@@ -109,12 +109,14 @@ public class ProjectsHomeFragment extends Fragment {
                     pCard.lastModified = d.last_modified;
                     pCard.projectType = d.project_type;
                     pCard.badge = d.badge;
+                    pCard.project_id = d.project_id;
+                    pCard.team_member = d.team_members;
                     passToAdapter.add(pCard);
                 }
 
                 //Log.d("Some",data.toString());
 
-                adapter = new CustomAdapter(passToAdapter);
+                adapter = new CustomAdapter(passToAdapter,mContext);
                 recyclerView.setAdapter(adapter);
 
 

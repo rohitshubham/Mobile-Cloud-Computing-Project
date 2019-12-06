@@ -95,7 +95,7 @@ public class ProjectDashboard extends AppCompatActivity {
 
                 //Log.d("Some",data.toString());
 
-                adapter = new CustomAdapter(passToAdapter);
+                //adapter = new CustomAdapter(passToAdapter,);
                 recyclerView.setAdapter(adapter);
 
 

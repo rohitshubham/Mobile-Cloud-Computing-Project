@@ -1,6 +1,9 @@
 package mcc.group14.apiclientapp.views.projects.dashboard;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,15 +11,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 
 import mcc.group14.apiclientapp.R;
+import mcc.group14.apiclientapp.views.projects.tasks.TaskDashboard;
 
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
     private ArrayList<ProjectCard> dataSet;
+    Context currContext;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -24,6 +30,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         TextView textViewLastModified;
         TextView textViewProjectType;
         ImageView imageViewIcon;
+
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -34,8 +41,9 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         }
     }
 
-    public CustomAdapter(ArrayList<ProjectCard> data) {
+    public CustomAdapter(ArrayList<ProjectCard> data, Context currContext) {
         this.dataSet = data;
+        this.currContext = currContext;
     }
 
     @Override
@@ -44,7 +52,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.project_dashboard_cards, parent, false);
 
-        view.setOnClickListener(ProjectDashboard.myOnClickListener);
+        //view.setOnClickListener(ProjectsHomeFragment.myOnClickListener);
 
         MyViewHolder myViewHolder = new MyViewHolder(view);
         return myViewHolder;
@@ -68,6 +76,68 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         //Just showing the date
         textViewLastModified.setText(dateTime[0]);
         textViewProjectType.setText(dataSet.get(listPosition).projectType);
+
+        holder.imageViewIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+
+                Intent in = new Intent(currContext, TaskDashboard.class);
+                in.putExtra("PROJECT_ID",dataSet.get(listPosition).project_id);
+                in.putExtra("PROJECT_NAME",dataSet.get(listPosition).projectName);
+                in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
+                currContext.startActivity(in);
+                //Log.d("holder",dataSet.get(listPosition).projectName);
+
+            }
+        });
+
+        holder.textViewName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+
+                Intent in = new Intent(currContext, TaskDashboard.class);
+                in.putExtra("PROJECT_ID",dataSet.get(listPosition).project_id);
+                in.putExtra("PROJECT_NAME",dataSet.get(listPosition).projectName);
+                in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
+                currContext.startActivity(in);
+                //Log.d("holder",dataSet.get(listPosition).projectName);
+
+            }
+        });
+
+        holder.textViewLastModified.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+
+                Intent in = new Intent(currContext, TaskDashboard.class);
+                in.putExtra("PROJECT_ID",dataSet.get(listPosition).project_id);
+                in.putExtra("PROJECT_NAME",dataSet.get(listPosition).projectName);
+                in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
+                currContext.startActivity(in);
+                //Log.d("holder",dataSet.get(listPosition).projectName);
+
+            }
+        });
+
+        holder.textViewProjectType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+
+                Intent in = new Intent(currContext, TaskDashboard.class);
+                in.putExtra("PROJECT_ID",dataSet.get(listPosition).project_id);
+                in.putExtra("PROJECT_NAME",dataSet.get(listPosition).projectName);
+                in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
+                currContext.startActivity(in);
+                //Log.d("holder",dataSet.get(listPosition).projectName);
+
+            }
+        });
+
+
 
     }
 
