@@ -15,6 +15,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.LinkedList;
 import android.content.Intent;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import mcc.group14.apiclientapp.R;
 import mcc.group14.apiclientapp.api.APIInterfaceJava;
@@ -72,7 +74,7 @@ public class ProjectsHomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_project_home, container, false);
 
         myOnClickListener = new MyOnClickListener(mContext);
-
+        ProgressBar spinner = (ProgressBar) view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
@@ -91,14 +93,15 @@ public class ProjectsHomeFragment extends Fragment {
 
 
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
+        try{
+            Call<ProjectsResponse> call = apiInterface.doGetListProjects(userEmail);
 
-        Call<ProjectsResponse> call = apiInterface.doGetListProjects(userEmail);
-        call.enqueue(new Callback<ProjectsResponse>() {
-            @Override
-            public void onResponse(Call<ProjectsResponse> call, Response<ProjectsResponse> response) {
+            call.enqueue(new Callback<ProjectsResponse>() {
+                @Override
+                public void onResponse(Call<ProjectsResponse> call, Response<ProjectsResponse> response) {
 
 
-                Log.d("TAG",response.code()+"");
+                    Log.d("TAG",response.code()+"");
 
 
                 data = response.body();
@@ -113,20 +116,31 @@ public class ProjectsHomeFragment extends Fragment {
                     pCard.team_member = d.team_members;
                     passToAdapter.add(pCard);
                 }
+                    spinner.setVisibility(View.INVISIBLE);
+                    adapter = new CustomAdapter(passToAdapter);
+                    recyclerView.setAdapter(adapter);
 
-                //Log.d("Some",data.toString());
-
+<<<<<<< HEAD
                 adapter = new CustomAdapter(passToAdapter,mContext);
                 recyclerView.setAdapter(adapter);
+=======
+>>>>>>> Added spinners
 
+                }
 
-            }
+                @Override
+                public void onFailure(Call<ProjectsResponse> call, Throwable t) {
+                    call.cancel();
+                    spinner.setVisibility(View.INVISIBLE);
+                    Toast.makeText(mContext, "Oops! Something went wrong. Please try again", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        catch (Exception e){
+            spinner.setVisibility(View.INVISIBLE);
+            Toast.makeText(mContext, "Oops! Something went wrong. Please try again", Toast.LENGTH_LONG).show();
+        }
 
-            @Override
-            public void onFailure(Call<ProjectsResponse> call, Throwable t) {
-                call.cancel();
-            }
-        });
 
 
         //================================================================
