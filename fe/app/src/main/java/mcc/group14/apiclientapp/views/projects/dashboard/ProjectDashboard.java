@@ -41,6 +41,13 @@ public class ProjectDashboard extends AppCompatActivity {
     private static ArrayList<ProjectCard> passToAdapter;
     private String userEmail,userAuth;
 
+    //---------------------------------------
+
+
+
+
+    //==================================
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +70,7 @@ public class ProjectDashboard extends AppCompatActivity {
         userEmail = intent.getStringExtra("USER_EMAIL");
         userAuth = intent.getStringExtra("USER_AUTH");
 
-        //ProjectApiClient apiClient = ProjectApiClient.create();
 
-        //LinkedList<ProjectDetail> usrProjects = new LinkedList<>();
 
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
 

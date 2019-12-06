@@ -8,13 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedList;
+
 
 import mcc.group14.apiclientapp.R;
-import mcc.group14.apiclientapp.data.ProjectDetail;
+
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
 
