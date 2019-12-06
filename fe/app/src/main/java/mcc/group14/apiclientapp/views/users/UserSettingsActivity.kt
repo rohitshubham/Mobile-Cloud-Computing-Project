@@ -175,7 +175,7 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
                 height = 960
             }
 
-            val scaledImage: Bitmap = Bitmap.createScaledBitmap(img, width/10, height/10, true)
+            val scaledImage: Bitmap = Bitmap.createScaledBitmap(img, width, height, true)
             //Toast.makeText(applicationContext,"Resized to: ${width} x ${height}",
             //    Toast.LENGTH_SHORT).show()
             val iv = findViewById<ImageView>(R.id.userImage)
