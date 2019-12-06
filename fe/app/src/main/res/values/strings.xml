@@ -11,8 +11,5 @@
     <string name="email_field">Email</string>
     <string name="password_field">Password</string>
     <string name="btn_sign_in">SIGN IN</string>
-    <string-array name="navigation_drawer_items_array">
-        <item>Edit Profile</item>
-        <item>Logout</item>
-    </string-array>
+   
 </resources>
