@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,7 +28,7 @@ import mcc.group14.apiclientapp.views.users.LoginActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+import mcc.group14.apiclientapp.views.projects.tasks.TaskDashboard;
 
 public class ProjectDashboard extends AppCompatActivity {
 
