@@ -71,6 +71,7 @@ class Task(models.Model):
     project_id = models.TextField()    
     status = models.CharField(max_length= 20, choices= STATUS_ENUM, default= 'Pending')
     creation_time = models.DateTimeField()
+    
    
 
 class UserTask(models.Model):

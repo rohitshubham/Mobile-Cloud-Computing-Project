@@ -27,6 +27,10 @@
         <activity android:name=".views.projects.create.OptionalProjectSettingsActivity" />
         <activity android:name=".views.projects.create.NewProjectActivity" />
         <activity android:name=".views.projects.ProjectDetailActivity" />
+        <activity android:name=".views.projects.dashboard.ProjectDashboard" />
+        <activity android:name=".views.projects.tasks.TaskDashboard" />
+        <activity android:name=".views.projects.tasks.TaskAdapter" />
+        <activity android:name=".views.projects.tasks.TaskCreate" />
         <activity android:name=".views.users.LoginActivity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
