@@ -117,14 +117,9 @@ public class ProjectsHomeFragment extends Fragment {
                     passToAdapter.add(pCard);
                 }
                     spinner.setVisibility(View.INVISIBLE);
-                    adapter = new CustomAdapter(passToAdapter);
-                    recyclerView.setAdapter(adapter);
 
-<<<<<<< HEAD
                 adapter = new CustomAdapter(passToAdapter,mContext);
                 recyclerView.setAdapter(adapter);
-=======
->>>>>>> Added spinners
 
                 }
 
