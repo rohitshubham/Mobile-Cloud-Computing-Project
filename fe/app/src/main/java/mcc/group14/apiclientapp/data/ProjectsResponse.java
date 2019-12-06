@@ -1,7 +1,7 @@
 package mcc.group14.apiclientapp.data;
 import com.google.gson.annotations.SerializedName;
 
-import java.security.PublicKey;
+
 import java.util.ArrayList;
 
 

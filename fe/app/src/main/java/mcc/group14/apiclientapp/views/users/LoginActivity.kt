@@ -2,17 +2,13 @@ package mcc.group14.apiclientapp.views.users
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.*
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import mcc.group14.apiclientapp.R
-import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsActivity
 import com.valdesekamdem.library.mdtoast.MDToast
-import mcc.group14.apiclientapp.views.projects.dashboard.ProjectDashboard
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsDashboardMainActivity
 import java.lang.Exception
 
