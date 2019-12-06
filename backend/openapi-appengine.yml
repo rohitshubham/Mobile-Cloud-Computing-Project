@@ -9,6 +9,9 @@ tags:
     name: Task
     description: 'Task Operations'
   -
+    name: Tasks
+    description: 'Tasks Operations'
+  -
     name: Projects
     description: 'Handles operations for multiple projects'
 paths:
@@ -875,6 +878,48 @@ paths:
           type: string
           x-oad-type: parameter
     x-oad-type: operation
+  '/tasks/{project_id}':
+      get:
+        operationId: getTaskByProject
+        summary: 'Get all tasks of a project'
+        tags:
+        - Tasks
+        responses:
+          '200':
+            description: Success
+            schema:
+              x-oad-type: object
+              type: object
+              properties:
+                success:
+                  x-oad-type: string
+                  type: string
+                  enum:
+                    - 'true'
+                payload:
+                  x-oad-type: object
+                  type: object
+                  properties:
+                    deadline: {x-oad-type: string, type: string}
+                    description: {x-oad-type: string, type: string}
+                    name: {x-oad-type: string, type: string}
+                    project_id: {x-oad-type: string, type: string}
+                    status: {x-oad-type: string, type: string}
+                    task_id: {x-oad-type: string, type: string}
+                    email_id: {x-oad-type: string, type: string}
+                    creation_time: {x-oad-type: string, type: string}
+                    last_modified: {x-oad-type: string, type: string}
+            x-oad-type: response
+        parameters:
+          -
+            name: project_id
+            in: path
+            required: true
+            type: string
+            x-oad-type: parameter
+      x-oad-type: operation
+    
+    
 info:
   title: 'MCC Group 14 API Reference'
   version: 1.0.0

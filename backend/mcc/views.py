@@ -84,20 +84,21 @@ def user_save(request):
 
     if request.method == 'PUT':
         try:
-            user = auth.get_user_by_email(request.data["email_id"])
+            data_json = json.loads(request.data["bodyParams"])
+            user = auth.get_user_by_email(data_json["email_id"])
             
             file_obj = request.FILES.get('file', False)
 
             if file_obj is not False:
                 ext = file_obj.name.split('.')[-1]
                 profile_pic = ''
-                profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/' + request.data["email_id"] + '.'+ext+'?authuser=1'
-                auth.update_user(uid = user.uid, profile_pic = profile_pic)
-                upload_blob(file_obj.file, request.data["email_id"]+'.'+ext)
+                profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/' + data_json["email_id"] + '.'+ext+'?authuser=1'
+                auth.update_user(uid = user.uid, photo_url = profile_pic)
+                upload_blob(file_obj.file, data_json["email_id"]+'.'+ext)
 
             
-            if 'password' in request.data:
-                auth.update_user(uid = user.uid, password = request.data["password"])
+            if 'password' in data_json:
+                auth.update_user(uid = user.uid, password = data_json["password"])
 
 
 
@@ -573,4 +574,31 @@ def set_task_completed(request):
 
     
 
+@csrf_exempt
+@api_view(["GET"])
+def task_retrive(request,project_id):
+    try: 
+        # Create a reference to the projects collection
+        projects_ref = db.collection(u'userTasks')
 
+        # Create a query against the collection
+        docs = projects_ref.where(u'project_id', u'==', project_id).stream()        
+        
+        value = []
+
+        for x in docs:
+            data = x.to_dict()
+            task_id = data["task_id"]
+            task = db.collection(u'tasks').document(task_id).get().to_dict()
+            if task is not None:  
+                task["task_id"] = task_id
+                task["email_id"]  =  data["email_id"]           
+                value.append(task)
+                
+                
+         
+        return Response({"success": "true",
+                         "payload": value }, status=status.HTTP_200_OK)    
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException' , "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

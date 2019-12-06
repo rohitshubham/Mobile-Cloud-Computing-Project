@@ -1,6 +1,2 @@
 runtime: custom
 env: flex
-
-endpoints_api_service:   
-    name: mcc-fall-2019-g14.appspot.com
-    rollout_strategy: managed  
