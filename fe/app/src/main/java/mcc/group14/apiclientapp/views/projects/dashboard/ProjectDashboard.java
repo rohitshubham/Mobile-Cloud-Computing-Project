@@ -6,36 +6,15 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import java.util.ArrayList;
-import android.app.Activity;
-import android.app.ListActivity;
+
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.widget.PopupMenu;
-import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-import mcc.group14.apiclientapp.R;
-import mcc.group14.apiclientapp.api.ProjectApiClient;
-import mcc.group14.apiclientapp.api.Response;
-import mcc.group14.apiclientapp.data.ProjectDetail;
-import mcc.group14.apiclientapp.views.projects.ProjectDetailActivity;
-import mcc.group14.apiclientapp.views.projects.create.NewProjectActivity;
-import mcc.group14.apiclientapp.views.users.LoginActivity;
-import mcc.group14.apiclientapp.views.users.UserSettingsActivity;
-import retrofit2.Call;
-import retrofit2.Callback;
-
-
 
 import mcc.group14.apiclientapp.R;
+import mcc.group14.apiclientapp.views.projects.tasks.TaskDashboard;
 
 
 public class ProjectDashboard extends AppCompatActivity {
@@ -83,7 +62,6 @@ public class ProjectDashboard extends AppCompatActivity {
         }
 
         removedItems = new ArrayList<Integer>();
-
         adapter = new CustomAdapter(data);
         recyclerView.setAdapter(adapter);
     }
