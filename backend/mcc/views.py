@@ -424,6 +424,8 @@ def task_save(request):
             add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Task {task_name} was created by {auth.get_user_by_email(requester_email).display_name}.")       
             return Response({"success" : "true",
                             "payload": doc_ref.id}, status = status.HTTP_201_CREATED)
+        return Response({"error" : "Invalid project format", "success": "false"}, status = status.HTTP_206_PARTIAL_CONTENT)
+
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

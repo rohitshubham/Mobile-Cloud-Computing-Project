@@ -5,6 +5,10 @@ import java.util.LinkedList;
 
 import mcc.group14.apiclientapp.data.ProjectDetail;
 import mcc.group14.apiclientapp.data.ProjectsResponse;
+import mcc.group14.apiclientapp.data.Task;
+import mcc.group14.apiclientapp.data.TaskCreateResponse;
+import mcc.group14.apiclientapp.data.TaskResponse;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -19,10 +23,13 @@ public interface APIInterfaceJava {
     @GET("projects/{email}")
     Call<ProjectsResponse> doGetListProjects(@Path("email") String email);
 
-  /*  @POST("/api/users")
-    Call<User> createUser(@Body User user);
+    @GET("tasks/{project_id}")
+    Call<TaskResponse> doGetListTasks(@Path("project_id") String project_id);
 
-    @GET("/api/users?")
+    @POST("task/")
+    Call<TaskCreateResponse> createTask(@Body Task task);
+
+/*    @GET("/api/users?")
     Call<UserList> doGetUserList(@Query("page") String page);
 
     @FormUrlEncoded
