@@ -197,17 +197,11 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
         val imageHelper = UserImageHelper.instance
         val listener = LongProcessListener(this)
 
-<<<<<<< HEAD
         val jsonParams = Gson().toJson(userCredentials)
 
         imageHelper.storeImageAndParams(listener,
             jsonParams, img, this.applicationContext)
 
-        /*imageHelper.storeImage(listener, userEmail,
-            userCredentials.password, img, this.applicationContext)
-*/
-=======
->>>>>>> origin/fe/user-settings
         iv.setImageBitmap(img)
     }
 
