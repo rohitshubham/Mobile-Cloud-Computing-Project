@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
@@ -35,9 +33,6 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
     private lateinit var imagePutBtn: Button
     private lateinit var newPswET: EditText
     private lateinit var newPswBtn: Button
-    private lateinit var imageQualityRadioGroup: RadioGroup
-    private lateinit var userImage: Bitmap
-    private var imageSet: Boolean = false
 
     // NB: user might be changing (projects and created_projects might change), always get it from the
     //     BE before using his data
@@ -85,7 +80,7 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
         imagePutBtn = findViewById(R.id.imagePutter)
         newPswBtn = findViewById(R.id.new_psw_btn)
         newPswET = findViewById(R.id.new_psw_et)
-        imageQualityRadioGroup = findViewById(R.id.myRadioGroup)
+
     }
 
     private fun setListeners() {
@@ -103,30 +98,14 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
             if (capturedPsw != "") {
                 userCredentials.password = capturedPsw
                 postCredentials()
-            } else if (capturedPsw.length < 8){
+            } else if (capturedPsw.length < 6){
                 Toast.makeText(applicationContext,
-                    "Password must be at least 8 chars", Toast.LENGTH_LONG).show()
+                    "Password must be at least 6 chars", Toast.LENGTH_LONG).show()
             }else{
                 Toast.makeText(applicationContext, "Insert a password",
                     Toast.LENGTH_LONG).show()
             }
         }
-
-        imageQualityRadioGroup.setOnCheckedChangeListener(
-            RadioGroup.OnCheckedChangeListener {group, checkedId ->
-                val radio = findViewById<RadioButton>(checkedId)
-                var choice = ""
-                if (radio.id == R.id.low) {
-                    choice = "LOW"
-                } else if (radio.id == R.id.high) {
-                    choice = "HIGH"
-                } else if (radio.id == R.id.original) {
-                    choice = "ORIGINAL"
-                }
-
-                resizeProfilePicture(choice)
-                Toast.makeText(applicationContext,"Set resolution to : ${choice}", Toast.LENGTH_SHORT).show()
-            })
     }
 
     private fun postCredentials() {
@@ -154,7 +133,7 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK && requestCode == PROFILE_PIC_SELECTION){
-            pickProfilePicture(data)
+            pickAndUploadProfilePicture(data)
         } else {
             val t = Toast.makeText(applicationContext,
                 "No photo selected", Toast.LENGTH_SHORT)
@@ -162,29 +141,7 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
         }
     }
 
-    private fun resizeProfilePicture(imageQualityChoice: String) {
-        if (imageSet) {
-            val img = userImage
-            var width = img.width
-            var height = img.height
-            if (imageQualityChoice == "LOW") {
-                width = 640
-                height = 480
-            } else if (imageQualityChoice == "HIGH") {
-                width = 1280
-                height = 960
-            }
-
-            val scaledImage: Bitmap = Bitmap.createScaledBitmap(img, width/10, height/10, true)
-            //Toast.makeText(applicationContext,"Resized to: ${width} x ${height}",
-            //    Toast.LENGTH_SHORT).show()
-            val iv = findViewById<ImageView>(R.id.userImage)
-            iv.setImageBitmap(scaledImage)
-        }
-
-    }
-
-    private fun pickProfilePicture(data: Intent?) {
+    private fun pickAndUploadProfilePicture(data: Intent?) {
         val iv = findViewById<ImageView>(R.id.userImage)
         val imageUri = data?.data
 
@@ -192,17 +149,16 @@ class UserSettingsActivity : AppCompatActivity(), LongRunningActivity {
             contentResolver.openInputStream(imageUri!!)
         )
 
-        imageSet = true
-        userImage = img
-
         val imageHelper = UserImageHelper.instance
         val listener = LongProcessListener(this)
 
+        imageHelper.storeImage(listener, userEmail, uid,
+            img, this.applicationContext)
+
         iv.setImageBitmap(img)
-    }
 
-    private fun uploadProfilePicture() {
-
+        // TODO: cool way to scale an image
+        // val scaledImage: Bitmap = Bitmap.createScaledBitmap(img, iv.width, iv.height, true)
     }
 
     override fun onLongProcessSuccess(result: Response<ResponseBody>) {
