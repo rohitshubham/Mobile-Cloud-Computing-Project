@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 
@@ -30,6 +32,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         TextView textViewLastModified;
         TextView textViewProjectType;
         ImageView imageViewIcon;
+        TextView buttonViewOption;
 
 
         public MyViewHolder(View itemView) {
@@ -38,6 +41,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             this.textViewLastModified = (TextView) itemView.findViewById(R.id.textViewLastModified);
             this.textViewProjectType = (TextView) itemView.findViewById(R.id.textViewProjectType);
             this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageView);
+            this.buttonViewOption = (TextView) itemView.findViewById(R.id.textViewOptions);
         }
     }
 
@@ -64,6 +68,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         TextView textViewLastModified = holder.textViewLastModified;
         TextView textViewProjectType = holder.textViewProjectType;
         ImageView imageViewIcon = holder.imageViewIcon;
+        TextView buttonViewOption = holder.buttonViewOption;
 
         textViewName.setText(dataSet.get(listPosition).projectName);
         String[] dateTime=new String[2];
@@ -133,6 +138,38 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
                 currContext.startActivity(in);
                 //Log.d("holder",dataSet.get(listPosition).projectName);
+
+            }
+        });
+
+        //===================Options Menu==========================
+
+        holder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //creating a popup menu
+                PopupMenu popup = new PopupMenu(currContext, holder.buttonViewOption);
+                //inflating menu from xml resource
+                popup.inflate(R.menu.action_projects);
+                //adding click listener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.addMemberOption:
+                                Log.d("OptionMenu","Add Member Clicked");
+                                return true;
+                            case R.id.projectDescription:
+                                Log.d("OptionMenu","Proejct Description Clicked");
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                //displaying the popup
+                popup.show();
 
             }
         });
