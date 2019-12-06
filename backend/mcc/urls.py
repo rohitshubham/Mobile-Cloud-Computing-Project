@@ -16,6 +16,8 @@ urlpatterns = [
     path('task/',views.task_save,name=''),
     path('task/member/',views.add_member_to_task ,name=''),
     path('task/complete/', views.set_task_completed, name=''),
+    path('tasks/<str:project_id>',views.task_retrive,name='')
+    
     
 ]
 
