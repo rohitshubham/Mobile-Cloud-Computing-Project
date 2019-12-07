@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import mcc.group14.apiclientapp.R;
 import mcc.group14.apiclientapp.api.APIInterfaceJava;
 import mcc.group14.apiclientapp.api.ProjectAPIJava;
 import mcc.group14.apiclientapp.data.ProjectsResponse;
+import mcc.group14.apiclientapp.data.TaskDetails;
 import mcc.group14.apiclientapp.data.TaskResponse;
 import mcc.group14.apiclientapp.views.projects.dashboard.CustomAdapter;
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectCard;
@@ -31,8 +35,11 @@ public class Tab1Fragment extends Fragment {
     private String project_id;
     private String team_members;
     private String requester_email;
+    private String project_name;
     private static TaskResponse data;
-    private static ArrayList<TaskCard> passToAdapter;
+    private static RecyclerView recyclerView;
+    private static ArrayList<TaskDetails> passToAdapter;
+    TaskListAdapter tlAdapter;
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -46,6 +53,7 @@ public class Tab1Fragment extends Fragment {
     }
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.task_fragment_one, container, false);
@@ -54,6 +62,11 @@ public class Tab1Fragment extends Fragment {
         ProgressBar spinner = (ProgressBar) view.findViewById(R.id.progressBar4);
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
 
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_task_list);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
         spinner.setVisibility(View.VISIBLE);
 
         Bundle bundle = this.getArguments();
@@ -61,7 +74,7 @@ public class Tab1Fragment extends Fragment {
             project_id = bundle.getString("project_id");
             team_members = bundle.getString("team_members");
             requester_email = bundle.getString("requester_email");
-
+            project_name = bundle.getString("project_name");
 
         try{
             Call<TaskResponse> call = apiInterface.doGetListTasks(project_id);
@@ -77,26 +90,18 @@ public class Tab1Fragment extends Fragment {
                         data = response.body();
                         passToAdapter = new ArrayList<>();
                         for(TaskResponse.Payload d:data.payload ){
-                            TaskCard tCard = new TaskCard();
-                            tCard.name = d.name;
-                            tCard.last_modified = d.last_modified;
-                            tCard.deadline = d.deadline;
-                            tCard.status = d.status;
-                            tCard.project_id = d.project_id;
-                            tCard.creation_time = d.creation_time;
-                            tCard.description = d.description;
-                            tCard.email_id = d.email_id;
-                            tCard.task_id = d.task_id;
+                            TaskDetails tCard = new TaskDetails(d.name, d.task_id, false, d.status);
                             passToAdapter.add(tCard);
                         }
+
                     }
                     catch (Exception e){
                         Log.d("Tag", e.getMessage());
                     }
                     spinner.setVisibility(View.INVISIBLE);
-
+                    tlAdapter = new TaskListAdapter(mContext, passToAdapter);
 //                    adapter = new CustomAdapter(passToAdapter,mContext);
-//                    recyclerView.setAdapter(adapter);
+                    recyclerView.setAdapter(tlAdapter);
 
                 }
 
@@ -121,11 +126,11 @@ public class Tab1Fragment extends Fragment {
                 taskCreateActivity.putExtra("PROJECT_ID", project_id);
                 taskCreateActivity.putExtra("TEAM_MEMBER", team_members);
                 taskCreateActivity.putExtra("REQUESTER_EMAIL", requester_email);
+                taskCreateActivity.putExtra("PROJECT_NAME", project_name);
                 mContext.startActivity(taskCreateActivity);
                 }
             });
 
         return view;
     }
-
 }

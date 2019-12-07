@@ -1,6 +1,8 @@
 package mcc.group14.apiclientapp.views.projects.tasks;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +24,9 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     Context context;
     List<TaskDetails> list = new ArrayList<>();
 
-    public TaskListAdapter(Context context) {
+    public TaskListAdapter(Context context, List<TaskDetails> list ) {
         this.context = context;
+        this.list =   list;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     public void onBindViewHolder(final TaskList holder, final int position) {
 
         final TaskDetails fruits = list.get(position);
-
+        holder.task_name.setText(fruits.getName());
         holder.checkBox.setChecked(fruits.isSelected());
         holder.checkBox.setTag(list.get(position));
 
@@ -59,6 +62,16 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
                     }
                 }
                 Toast.makeText(context, "Selected Fruits : \n " + data, Toast.LENGTH_SHORT).show();
+                new AlertDialog.Builder(context)
+                        .setTitle("Title")
+                        .setMessage("Do you really want to whatever?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Toast.makeText(context, "Yaay", Toast.LENGTH_SHORT).show();
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
             }
         });
     }
@@ -79,6 +92,10 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
             task_name = itemView.findViewById(R.id.task_name);
             checkBox = itemView.findViewById(R.id.checkBox_select);
         }
+    }
+
+    public List<TaskDetails> getTaskDetailsList(){
+        return  list;
     }
 
 }

@@ -35,6 +35,7 @@ public class TaskDashboard extends AppCompatActivity {
         bundle.putString("project_id", project_id);
         bundle.putString("team_members", team_members);
         bundle.putString("requester_email", requester_email);
+        bundle.putString("project_name", project_name);
         fragment_1.setArguments(bundle);
 
 

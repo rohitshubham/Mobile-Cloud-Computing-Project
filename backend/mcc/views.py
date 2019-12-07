@@ -393,13 +393,13 @@ def change_task_status(task_id, project_id, member_count = -1):
     message = ""
 
     if member_count == 0:
-        db.collection(u"tasks").document(task_id).update({"status" : "P"})
+        db.collection(u"tasks").document(task_id).update({"status" : "Pending"})
         message =  "All Members removed. Status changed back to Pending"
     elif member_count == -1:
-        db.collection(u"tasks").document(task_id).update({"status" : "C"})
+        db.collection(u"tasks").document(task_id).update({"status" : "Complete"})
         message = "Status changed to Completed"
     else:
-        db.collection(u"tasks").document(task_id).update({"status" : "O"})
+        db.collection(u"tasks").document(task_id).update({"status" : "On-going"})
         message = "Members edited. Status changed to Pending"
 
     add_project_event(project_id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - {task_name} - {message}")

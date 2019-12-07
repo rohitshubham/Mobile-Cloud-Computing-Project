@@ -1,5 +1,6 @@
 package mcc.group14.apiclientapp.views.projects.tasks;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -29,19 +30,24 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.valdesekamdem.library.mdtoast.MDToast;
+
 
 public class TaskCreate extends AppCompatActivity {
     NachoTextView nachoTextView;
     private String project_id;
     private String team_member;
     private String requester_email;
+    private String project_name;
+    private static Activity act;
     TaskCreateResponse data;
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent  = getIntent();
-
+        act = this;
         project_id = intent.getStringExtra("PROJECT_ID");
         team_member = intent.getStringExtra("TEAM_MEMBER");
         requester_email = intent.getStringExtra("REQUESTER_EMAIL");
+        project_name = intent.getStringExtra("PROJECT_NAME");
 
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
 
@@ -114,11 +120,24 @@ public class TaskCreate extends AppCompatActivity {
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                     Integer i = response.code();
                                     ResponseBody a = response.body();
+                                    MDToast mdToast = MDToast.makeText(getApplicationContext(), "Saved Successfully", 3, MDToast.TYPE_SUCCESS);
+                                    mdToast.show();
+
+                                    act.finish();
+//
+//                                    Intent in = new Intent(getApplicationContext(), TaskDashboard.class);
+//                                    in.putExtra("PROJECT_ID", project_id);
+//                                    in.putExtra("PROJECT_NAME", project_name);
+//                                    in.putExtra("TEAM_MEMBER", team_member);
+//                                    in.putExtra("REQUESTER_EMAIL", requester_email);
+//
+//                                    getApplicationContext().startActivity(in);
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                                    MDToast mdToast = MDToast.makeText(getApplicationContext(), "Oops! Some error occurred", 3, MDToast.TYPE_ERROR);
+                                    mdToast.show();
                                 }
                             });
                         }
@@ -128,6 +147,8 @@ public class TaskCreate extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<TaskCreateResponse> call, Throwable t) {
                         call.cancel();
+                        MDToast mdToast = MDToast.makeText(getApplicationContext(), "Oops! Some error occurred", 3, MDToast.TYPE_ERROR);
+                        mdToast.show();
                     }
                 });
 

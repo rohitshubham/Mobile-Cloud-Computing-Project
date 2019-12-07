@@ -5,11 +5,13 @@ public class TaskDetails {
     String name;
     String id;
     boolean isSelected;
+    String status;
 
-    public TaskDetails (String name, String price, boolean isSelected) {
+    public TaskDetails (String name, String price, boolean isSelected, String status) {
         this.name = name;
         this.id = price;
         this.isSelected = isSelected;
+        this.status = status;
     }
 
     public String getName() {
