@@ -49,4 +49,6 @@ gradle-app.setting
 ### Gradle Patch ###
 **/build/
 
+./app/app.iml
+
 # End of https://www.gitignore.io/api/gradle,kotlin
