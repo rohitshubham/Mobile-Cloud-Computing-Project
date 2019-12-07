@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import mcc.group14.apiclientapp.data.ProjectDetail;
 import mcc.group14.apiclientapp.data.ProjectsResponse;
 import mcc.group14.apiclientapp.data.Task;
+import mcc.group14.apiclientapp.data.TaskComplete;
 import mcc.group14.apiclientapp.data.TaskCreateResponse;
 import mcc.group14.apiclientapp.data.TaskMembers;
 import mcc.group14.apiclientapp.data.TaskResponse;
@@ -33,6 +34,10 @@ public interface APIInterfaceJava {
 
     @POST("task/member/")
     Call<ResponseBody> createTaskMember(@Body TaskMembers task);
+
+    @POST("task/complete/")
+    Call<ResponseBody> completeTask(@Body TaskComplete task);
+
 
 /*    @GET("/api/users?")
     Call<UserList> doGetUserList(@Query("page") String page);

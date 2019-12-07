@@ -19,7 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mcc.group14.apiclientapp.R;
+import mcc.group14.apiclientapp.api.APIInterfaceJava;
+import mcc.group14.apiclientapp.api.ProjectAPIJava;
+import mcc.group14.apiclientapp.data.TaskComplete;
 import mcc.group14.apiclientapp.data.TaskDetails;
+import mcc.group14.apiclientapp.data.TaskResponse;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskList>{
@@ -27,10 +35,13 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     Context context;
     List<TaskDetails> list = new ArrayList<>();
     private static TaskDetails tasks;
+    private static APIInterfaceJava apiInterfaceJava;
+    private String requester_email;
 
-    public TaskListAdapter(Context context, List<TaskDetails> list ) {
+    public TaskListAdapter(Context context, List<TaskDetails> list , String requester_email) {
         this.context = context;
         this.list =   list;
+        this.requester_email = requester_email;
     }
 
     @Override
@@ -52,6 +63,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
             holder.task_name.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             holder.checkBox.setEnabled(false);
         }
+        apiInterfaceJava =  ProjectAPIJava.getClient().create(APIInterfaceJava.class);
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,18 +82,34 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
                                     MDToast mdToast = MDToast.makeText(context, "Attempting to save!", 3, MDToast.TYPE_INFO);
                                     mdToast.show();
 
-                                    boolean result = CompleteTask();
 
-                                    if(result){
-                                        holder.checkBox.setEnabled(false);
-                                        holder.task_name.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-                                        mdToast = MDToast.makeText(context, "Successfully marked the task as complete!", 3, MDToast.TYPE_SUCCESS);
-                                        mdToast.show();
-                                    }else{
-                                        holder.checkBox.setChecked(false);
-                                        mdToast = MDToast.makeText(context, "Oops! Some unexpected error occurred! Please try again later.", 3, MDToast.TYPE_ERROR);
-                                        mdToast.show();
-                                    }
+
+
+                                    Call<ResponseBody> call = apiInterfaceJava.completeTask(new TaskComplete(tasks1.getId(), tasks1.getProjectId(), requester_email));
+                                    call.enqueue(new Callback<ResponseBody>() {
+                                        @Override
+                                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                            if(response.code() == 200){
+                                                holder.checkBox.setEnabled(false);
+                                                holder.task_name.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                                                MDToast mdToast = MDToast.makeText(context, "Successfully marked the task as complete!", 3, MDToast.TYPE_SUCCESS);
+                                                mdToast.show();
+                                            }else {
+                                                holder.checkBox.setChecked(false);
+                                                MDToast mdToast = MDToast.makeText(context, "Oops! Some unexpected error occurred! Please try again later.", 3, MDToast.TYPE_ERROR);
+                                                mdToast.show();
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                            holder.checkBox.setChecked(false);
+                                            MDToast mdToast = MDToast.makeText(context, "Oops! Some unexpected error occurred! Please try again later.", 3, MDToast.TYPE_ERROR);
+                                            mdToast.show();
+
+                                        }
+                                    });
                                 }})
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                                 @Override
@@ -120,7 +148,4 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         return  list;
     }
 
-    public boolean CompleteTask(){
-        return true;
-    }
 }

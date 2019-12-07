@@ -92,7 +92,7 @@ public class Tab1Fragment extends Fragment {
                             data = response.body();
                             passToAdapter = new ArrayList<>();
                             for(TaskResponse.Payload d:data.payload ){
-                                TaskDetails tCard = new TaskDetails(d.name, d.task_id, d.status.equalsIgnoreCase("Complete"), d.status);
+                                TaskDetails tCard = new TaskDetails(d.name, d.task_id, d.status.equalsIgnoreCase("Complete"), d.status, d.project_id);
                                 passToAdapter.add(tCard);
                             }
 
@@ -102,7 +102,7 @@ public class Tab1Fragment extends Fragment {
                         }
                         spinner.setVisibility(View.INVISIBLE);
                         recyclerView.setVisibility(View.VISIBLE);
-                        tlAdapter = new TaskListAdapter(mContext, passToAdapter);
+                        tlAdapter = new TaskListAdapter(mContext, passToAdapter, requester_email);
 //                    adapter = new CustomAdapter(passToAdapter,mContext);
                         recyclerView.setAdapter(tlAdapter);
 
@@ -175,7 +175,7 @@ public class Tab1Fragment extends Fragment {
                         data = response.body();
                         passToAdapter = new ArrayList<>();
                         for(TaskResponse.Payload d:data.payload ){
-                            TaskDetails tCard = new TaskDetails(d.name, d.task_id, false, d.status);
+                            TaskDetails tCard = new TaskDetails(d.name, d.task_id, false, d.status, d.project_id);
                             passToAdapter.add(tCard);
                         }
 
@@ -184,7 +184,7 @@ public class Tab1Fragment extends Fragment {
                         Log.d("Tag", e.getMessage());
                     }
                     spinner.setVisibility(View.INVISIBLE);
-                    tlAdapter = new TaskListAdapter(mContext, passToAdapter);
+                    tlAdapter = new TaskListAdapter(mContext, passToAdapter,requester_email);
 //                    adapter = new CustomAdapter(passToAdapter,mContext);
                     recyclerView.setAdapter(tlAdapter);
 
