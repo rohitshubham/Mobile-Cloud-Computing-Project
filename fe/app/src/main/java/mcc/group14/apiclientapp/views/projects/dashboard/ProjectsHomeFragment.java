@@ -114,6 +114,7 @@ public class ProjectsHomeFragment extends Fragment {
                     pCard.badge = d.badge;
                     pCard.project_id = d.project_id;
                     pCard.team_member = d.team_members;
+                    pCard.requester_email = d.requester_email;
                     passToAdapter.add(pCard);
                 }
                     spinner.setVisibility(View.INVISIBLE);

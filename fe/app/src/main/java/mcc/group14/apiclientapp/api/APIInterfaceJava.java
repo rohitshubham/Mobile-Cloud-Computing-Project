@@ -6,6 +6,10 @@ import java.util.LinkedList;
 import mcc.group14.apiclientapp.data.ProjectDetail;
 import mcc.group14.apiclientapp.data.ProjectsDeleteResponse;
 import mcc.group14.apiclientapp.data.ProjectsResponse;
+import mcc.group14.apiclientapp.data.Task;
+import mcc.group14.apiclientapp.data.TaskCreateResponse;
+import mcc.group14.apiclientapp.data.TaskMembers;
+import mcc.group14.apiclientapp.data.TaskResponse;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -30,13 +34,16 @@ public interface APIInterfaceJava {
 
 
 
-  /*  @POST("/api/users")
-    Call<User> createUser(@Body User user);
+  
+    @GET("tasks/{project_id}")
+    Call<TaskResponse> doGetListTasks(@Path("project_id") String project_id);
 
-    @GET("/api/users?")
-    Call<UserList> doGetUserList(@Query("page") String page);
+    @POST("task/")
+    Call<TaskCreateResponse> createTask(@Body Task task);
 
-    @FormUrlEncoded
-    @POST("/api/users?")
-    Call<UserList> doCreateUserWithField(@Field("name") String name, @Field("job") String job);*/
+
+    @POST("task/member/")
+    Call<ResponseBody> createTaskMember(@Body TaskMembers task);
+
+
 }

@@ -7,4 +7,5 @@ public class ProjectCard {
     public String badge;
     public String project_id;
     public String team_member;
+    public String requester_email;
 }

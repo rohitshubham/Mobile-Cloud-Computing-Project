@@ -7,5 +7,5 @@ public class Task {
     public String project_id;
     public String status = "On-going";
     public String description = "";
-    public Date deadline;
+    public String deadline;
 }

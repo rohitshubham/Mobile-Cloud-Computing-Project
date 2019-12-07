@@ -109,6 +109,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 in.putExtra("PROJECT_ID",dataSet.get(listPosition).project_id);
                 in.putExtra("PROJECT_NAME",dataSet.get(listPosition).projectName);
                 in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
+                in.putExtra("REQUESTER_EMAIL",dataSet.get(listPosition).requester_email);
                 currContext.startActivity(in);
                 //Log.d("holder",dataSet.get(listPosition).projectName);
 
@@ -124,6 +125,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 in.putExtra("PROJECT_ID",dataSet.get(listPosition).project_id);
                 in.putExtra("PROJECT_NAME",dataSet.get(listPosition).projectName);
                 in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
+                in.putExtra("REQUESTER_EMAIL",dataSet.get(listPosition).requester_email);
+
                 currContext.startActivity(in);
                 //Log.d("holder",dataSet.get(listPosition).projectName);
 
@@ -139,6 +142,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 in.putExtra("PROJECT_ID",dataSet.get(listPosition).project_id);
                 in.putExtra("PROJECT_NAME",dataSet.get(listPosition).projectName);
                 in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
+                in.putExtra("REQUESTER_EMAIL",dataSet.get(listPosition).requester_email);
+
                 currContext.startActivity(in);
                 //Log.d("holder",dataSet.get(listPosition).projectName);
 
@@ -154,6 +159,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 in.putExtra("PROJECT_ID",dataSet.get(listPosition).project_id);
                 in.putExtra("PROJECT_NAME",dataSet.get(listPosition).projectName);
                 in.putExtra("TEAM_MEMBER",dataSet.get(listPosition).team_member);
+                in.putExtra("REQUESTER_EMAIL",dataSet.get(listPosition).requester_email);
+
                 currContext.startActivity(in);
                 //Log.d("holder",dataSet.get(listPosition).projectName);
 
