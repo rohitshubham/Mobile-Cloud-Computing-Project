@@ -878,10 +878,10 @@ paths:
           type: string
           x-oad-type: parameter
     x-oad-type: operation
-  '/tasks/{project_id}':
+  '/tasks/{project_id}/{email_id}':
       get:
         operationId: getTaskByProject
-        summary: 'Get all tasks of a project'
+        summary: 'Get all tasks of a project for a particular user'
         tags:
         - Tasks
         responses:
@@ -913,6 +913,12 @@ paths:
         parameters:
           -
             name: project_id
+            in: path
+            required: true
+            type: string
+            x-oad-type: parameter
+          -
+            name: email_id
             in: path
             required: true
             type: string

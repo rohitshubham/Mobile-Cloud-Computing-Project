@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
@@ -40,6 +41,9 @@ public class TaskCreate extends AppCompatActivity {
     private String requester_email;
     private String project_name;
     private static Activity act;
+    private static ProgressBar spinner;
+    private static View view;
+    private static Button btn;
     TaskCreateResponse data;
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent  = getIntent();
@@ -53,16 +57,17 @@ public class TaskCreate extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.task_create);
+        view = this.findViewById(R.id.content);
         final DatePicker task_deadline = (DatePicker)findViewById(R.id.datePicker1);
         String[] suggestions = team_member.split(",");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, suggestions);
         nachoTextView = (NachoTextView) findViewById(R.id.nacho_text_view);
         nachoTextView.setAdapter(adapter);
-
+        spinner = (ProgressBar) findViewById(R.id.progressBar5);
         final EditText task_name = (EditText) findViewById(R.id.editText2);
         final EditText task_desc = (EditText) findViewById(R.id.editText3);
-
-        Button btn =  (Button) findViewById(R.id.button);
+        spinner.setVisibility(view.INVISIBLE);
+         btn =  (Button) findViewById(R.id.button);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +103,8 @@ public class TaskCreate extends AppCompatActivity {
                     task.status = "Pending";
                 }
                 task_members.add(requester_email);
+                spinner.setVisibility(view.VISIBLE);
+                btn.setVisibility(view.INVISIBLE);
                 //Call HTTP method here
                 Call<TaskCreateResponse> call = apiInterface.createTask(task);
                 call.enqueue(new Callback<TaskCreateResponse>() {
@@ -118,6 +125,9 @@ public class TaskCreate extends AppCompatActivity {
                             call_member.enqueue(new Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    spinner.setVisibility(view.INVISIBLE);
+                                    btn.setVisibility(view.VISIBLE);
+
                                     Integer i = response.code();
                                     ResponseBody a = response.body();
                                     MDToast mdToast = MDToast.makeText(getApplicationContext(), "Saved Successfully", 3, MDToast.TYPE_SUCCESS);
@@ -136,6 +146,8 @@ public class TaskCreate extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    spinner.setVisibility(view.INVISIBLE);
+                                    btn.setVisibility(view.VISIBLE);
                                     MDToast mdToast = MDToast.makeText(getApplicationContext(), "Oops! Some error occurred", 3, MDToast.TYPE_ERROR);
                                     mdToast.show();
                                 }
@@ -147,6 +159,8 @@ public class TaskCreate extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<TaskCreateResponse> call, Throwable t) {
                         call.cancel();
+                        spinner.setVisibility(view.INVISIBLE);
+                        btn.setVisibility(view.VISIBLE);
                         MDToast mdToast = MDToast.makeText(getApplicationContext(), "Oops! Some error occurred", 3, MDToast.TYPE_ERROR);
                         mdToast.show();
                     }

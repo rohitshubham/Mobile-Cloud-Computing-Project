@@ -576,13 +576,13 @@ def set_task_completed(request):
 
 @csrf_exempt
 @api_view(["GET"])
-def task_retrive(request,project_id):
+def task_retrive(request,project_id, email_id):
     try: 
         # Create a reference to the projects collection
         projects_ref = db.collection(u'userTasks')
 
         # Create a query against the collection
-        docs = projects_ref.where(u'project_id', u'==', project_id).stream()        
+        docs = projects_ref.where(u'project_id', u'==', project_id).where(u"email_id", u"==", email_id).stream()        
         
         value = []
 

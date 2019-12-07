@@ -127,4 +127,13 @@
         app:chipTextColor="@color/chip_default_text_color"
         app:chipTextSize="16dp"
         app:chipVerticalSpacing="3dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar5"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="175dp" />
 </RelativeLayout>

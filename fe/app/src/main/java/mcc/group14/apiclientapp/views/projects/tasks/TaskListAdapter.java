@@ -2,6 +2,8 @@ package mcc.group14.apiclientapp.views.projects.tasks;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Paint;
+import android.media.MediaCodecInfo;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,8 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
+
+import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
 
     Context context;
     List<TaskDetails> list = new ArrayList<>();
+    private static TaskDetails tasks;
 
     public TaskListAdapter(Context context, List<TaskDetails> list ) {
         this.context = context;
@@ -40,38 +44,56 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
     @Override
     public void onBindViewHolder(final TaskList holder, final int position) {
 
-        final TaskDetails fruits = list.get(position);
-        holder.task_name.setText(fruits.getName());
-        holder.checkBox.setChecked(fruits.isSelected());
+        tasks = list.get(position);
+        holder.task_name.setText(tasks.getName());
+        holder.checkBox.setChecked(tasks.isSelected());
         holder.checkBox.setTag(list.get(position));
-
+        if (tasks.isSelected()){
+            holder.task_name.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.checkBox.setEnabled(false);
+        }
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String data = "";
-                TaskDetails fruits1 = (TaskDetails) holder.checkBox.getTag();
+                TaskDetails tasks1 = (TaskDetails) holder.checkBox.getTag();
+                if(holder.checkBox.isChecked()){
 
-                fruits1.setSelected(holder.checkBox.isChecked());
+                   //tasks1.setSelected(holder.checkBox.isChecked());
 
-                list.get(position).setSelected(holder.checkBox.isChecked());
+                    new AlertDialog.Builder(context)
+                            .setTitle("Complete Task")
+                            .setMessage("Do you really want to set task " + tasks1.getName() +" to completed?")
+                            .setIcon(android.R.drawable.ic_dialog_info)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
-                for (int j=0; j<list.size();j++){
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    MDToast mdToast = MDToast.makeText(context, "Attempting to save!", 3, MDToast.TYPE_INFO);
+                                    mdToast.show();
 
-                    if (list.get(j).isSelected() == true){
-                        data = data + "\n" + list.get(j).getName().toString() + "   " + list.get(j).getId().toString();
-                    }
+                                    boolean result = CompleteTask();
+
+                                    if(result){
+                                        holder.checkBox.setEnabled(false);
+                                        holder.task_name.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+                                        mdToast = MDToast.makeText(context, "Successfully marked the task as complete!", 3, MDToast.TYPE_SUCCESS);
+                                        mdToast.show();
+                                    }else{
+                                        holder.checkBox.setChecked(false);
+                                        mdToast = MDToast.makeText(context, "Oops! Some unexpected error occurred! Please try again later.", 3, MDToast.TYPE_ERROR);
+                                        mdToast.show();
+                                    }
+                                }})
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    holder.checkBox.setChecked(false);
+                                }
+                            }).show();
+                }else{
+                    holder.checkBox.setChecked(true);
+                    MDToast mdToast = MDToast.makeText(context, "This Task is already completed!", 3, MDToast.TYPE_WARNING);
+                    mdToast.show();
                 }
-                Toast.makeText(context, "Selected Fruits : \n " + data, Toast.LENGTH_SHORT).show();
-                new AlertDialog.Builder(context)
-                        .setTitle("Title")
-                        .setMessage("Do you really want to whatever?")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                Toast.makeText(context, "Yaay", Toast.LENGTH_SHORT).show();
-                            }})
-                        .setNegativeButton(android.R.string.no, null).show();
             }
         });
     }
@@ -98,4 +120,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.TaskLi
         return  list;
     }
 
+    public boolean CompleteTask(){
+        return true;
+    }
 }

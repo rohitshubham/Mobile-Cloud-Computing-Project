@@ -24,8 +24,8 @@ public interface APIInterfaceJava {
     @GET("projects/{email}")
     Call<ProjectsResponse> doGetListProjects(@Path("email") String email);
 
-    @GET("tasks/{project_id}")
-    Call<TaskResponse> doGetListTasks(@Path("project_id") String project_id);
+    @GET("tasks/{project_id}/{email_id}")
+    Call<TaskResponse> doGetListTasks(@Path("project_id") String project_id, @Path("email_id") String email_id);
 
     @POST("task/")
     Call<TaskCreateResponse> createTask(@Body Task task);

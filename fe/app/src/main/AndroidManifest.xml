@@ -28,7 +28,7 @@
         <activity android:name=".views.projects.create.NewProjectActivity" />
         <activity android:name=".views.projects.ProjectDetailActivity" />
         <activity android:name=".views.projects.dashboard.ProjectsDashboardMainActivity" />
-        <activity android:name=".views.projects.tasks.TaskDashboard" android:noHistory="true" />
+        <activity android:name=".views.projects.tasks.TaskDashboard"/>
         <activity android:name=".views.projects.tasks.TaskCreate" android:noHistory="true"/>
         <activity android:name=".views.users.LoginActivity"
             android:windowSoftInputMode="adjustResize">
