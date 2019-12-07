@@ -14,6 +14,9 @@ tags:
   -
     name: Projects
     description: 'Handles operations for multiple projects'
+  -
+    name: Token
+    description: 'Handles operation related with token of every application required for FCM push notifications'
 paths:
   '/user/{email_id}':
     get:
@@ -555,7 +558,7 @@ paths:
     x-oad-type: operation
   '/projects/{email_id}':
     get:
-      operationId : GetAllProjectsForThisEmail
+      operationId: GetAllProjectsForThisEmail
       tags:
         - Projects
       responses:
@@ -676,10 +679,41 @@ paths:
                 enum:
                   - 'false'
           x-oad-type: response
+      parameters:
+        -
+          name: requestbody
+          in: body
+          required: true
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              name:
+                x-oad-type: string
+                type: string
+              project_id:
+                x-oad-type: string
+                type: string
+              status:
+                x-oad-type: string
+                type: string
+              description:
+                x-oad-type: string
+                type: string
+              deadline:
+                x-oad-type: string
+                type: string
+            required:
+              - name
+              - project_id
+              - description
+              - status
+              - deadline
+          x-oad-type: parameter
     x-oad-type: operation
   /task/member:
     post:
-      operationId : GetMemberForTask
+      operationId: GetMemberForTask
       summary: 'Add/Update task members'
       tags:
         - Task
@@ -812,7 +846,7 @@ paths:
     x-oad-type: operation
   '/project/user/{search_path}':
     get:
-      operationId : GetsTheDisplayNameForServicePath
+      operationId: GetsTheDisplayNameForServicePath
       summary: 'Searches displayname and returns users for the typehead service'
       tags:
         - Project
@@ -879,53 +913,90 @@ paths:
           x-oad-type: parameter
     x-oad-type: operation
   '/tasks/{project_id}/{email_id}':
-      get:
-        operationId: getTaskByProject
-        summary: 'Get all tasks of a project for a particular user'
-        tags:
+    get:
+      operationId: getTaskByProject
+      summary: 'Get all tasks of a project for a particular user'
+      tags:
         - Tasks
-        responses:
-          '200':
-            description: Success
-            schema:
-              x-oad-type: object
-              type: object
-              properties:
-                success:
-                  x-oad-type: string
-                  type: string
-                  enum:
-                    - 'true'
-                payload:
-                  x-oad-type: object
-                  type: object
-                  properties:
-                    deadline: {x-oad-type: string, type: string}
-                    description: {x-oad-type: string, type: string}
-                    name: {x-oad-type: string, type: string}
-                    project_id: {x-oad-type: string, type: string}
-                    status: {x-oad-type: string, type: string}
-                    task_id: {x-oad-type: string, type: string}
-                    email_id: {x-oad-type: string, type: string}
-                    creation_time: {x-oad-type: string, type: string}
-                    last_modified: {x-oad-type: string, type: string}
-            x-oad-type: response
-        parameters:
-          -
-            name: project_id
-            in: path
-            required: true
-            type: string
-            x-oad-type: parameter
-          -
-            name: email_id
-            in: path
-            required: true
-            type: string
-            x-oad-type: parameter
-      x-oad-type: operation
-    
-    
+      responses:
+        '200':
+          description: Success
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: object
+                type: object
+                properties:
+                  deadline: {x-oad-type: string, type: string}
+                  description: {x-oad-type: string, type: string}
+                  name: {x-oad-type: string, type: string}
+                  project_id: {x-oad-type: string, type: string}
+                  status: {x-oad-type: string, type: string}
+                  task_id: {x-oad-type: string, type: string}
+                  email_id: {x-oad-type: string, type: string}
+                  creation_time: {x-oad-type: string, type: string}
+                  last_modified: {x-oad-type: string, type: string}
+          x-oad-type: response
+      parameters:
+        -
+          name: project_id
+          in: path
+          required: true
+          type: string
+          x-oad-type: parameter
+        -
+          name: email_id
+          in: path
+          required: true
+          type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  /token:
+    post:
+      operationId: unique-id
+      summary: 'Saves/update the unique token of every user. '
+      tags:
+        - Token
+      responses:
+        '201':
+          description: Created
+          schema:
+            x-oad-type: object
+            type: object
+            title: 'successful request'
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+          x-oad-type: response
+        '500':
+          description: InternalServerError
+          schema:
+            x-oad-type: object
+            type: object
+            title: error
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalServerError
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+    x-oad-type: operation
 info:
   title: 'MCC Group 14 API Reference'
   version: 1.0.0
