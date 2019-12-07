@@ -1,5 +1,6 @@
 package mcc.group14.apiclientapp.views.projects.dashboard;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -27,6 +28,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.google.firebase.FirebaseApp;
@@ -69,8 +71,7 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         super.onDetach();
         mContext = null;
     }
-
-
+    private static MDToast mdToast;
     DatePickerDialog picker;
 
     EditText txtDeadline;
@@ -79,6 +80,7 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
 
     EditText txtDescription;
 
+    ProgressBar spn ;
     //EditText txtTeamMembers;
 
     Button btnCreateProj;
@@ -92,7 +94,6 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_project, container, false);
-
         spinner = (Spinner) view.findViewById(R.id.projects_spinner);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mContext,
@@ -147,7 +148,8 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         imageView = (ImageView) view.findViewById(R.id.imageViewBadge);
         //txtTeamMembers = (EditText) view.findViewById(R.id.txtTeammembers);
 
-
+        spn = (ProgressBar) view.findViewById(R.id.progressBar6);
+        spn.setVisibility(view.INVISIBLE);
         //===============Badge ====================================
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,7 +234,7 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         List<String> keywords = nachoTextView.getChipAndTokenValues();
 
         if(keywords.size() > 3){
-            MDToast mdToast = MDToast.makeText(mContext, "You can define at most 3 keywords", 4, MDToast.TYPE_ERROR);
+            mdToast = MDToast.makeText(mContext, "You can define at most 3 keywords", 4, MDToast.TYPE_ERROR);
             mdToast.show();
             return;
         }
@@ -242,7 +244,7 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         p.description = txtDescription.getText().toString();
 
         if(p.name.equals("")|| p.description.equals("")){
-            MDToast mdToast = MDToast.makeText(mContext, "Project name and description is mandatory", 4, MDToast.TYPE_ERROR);
+            mdToast = MDToast.makeText(mContext, "Project name and description is mandatory", 4, MDToast.TYPE_ERROR);
             mdToast.show();
             return;
         }
@@ -268,7 +270,8 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
 
         Log.d("ImageView",hasImage(imageView)+" "+imageView.getDrawable().toString());
 
-
+        spn.setVisibility(v.VISIBLE);
+        btnCreateProj.setVisibility(v.INVISIBLE);
         //=====API CALL====
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
         Call<ProjectCreateResponse> call = apiInterface.createProject(p);
@@ -285,8 +288,10 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
                 if(response.isSuccessful()){
                     Log.d("Response","201");
 
-                    MDToast mdToast = MDToast.makeText(mContext, "Project Created Successfully", 3, MDToast.TYPE_SUCCESS);
+                    mdToast = MDToast.makeText(mContext, "Project Created Successfully", 3, MDToast.TYPE_SUCCESS);
                     mdToast.show();
+                    spn.setVisibility(v.INVISIBLE);
+                    btnCreateProj.setVisibility(v.VISIBLE);
 
 
                 }
@@ -295,7 +300,11 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
 
             @Override
             public void onFailure(Call<ProjectCreateResponse> call, Throwable t) {
-                call.cancel();
+                call.cancel();        spn.setVisibility(v.INVISIBLE);
+                btnCreateProj.setVisibility(v.VISIBLE);
+                mdToast = MDToast.makeText(mContext, "Oops! some error occurred.", 3, MDToast.TYPE_ERROR);
+                mdToast.show();
+
             }
         });
         
