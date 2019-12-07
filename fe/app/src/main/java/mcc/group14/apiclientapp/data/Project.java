@@ -6,7 +6,7 @@ public class Project {
 
     public String project_type;
 
-    public String deadline;
+    public String deadline="";
 
     public String description;
 
@@ -16,7 +16,7 @@ public class Project {
 
     public String badge="";
 
-    public String keywords;
+    public String keywords="";
 
     public String requester_email;
 

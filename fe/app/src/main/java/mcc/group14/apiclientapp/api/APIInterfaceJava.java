@@ -2,6 +2,7 @@ package mcc.group14.apiclientapp.api;
 
 
 import java.util.LinkedList;
+import java.util.Map;
 
 import mcc.group14.apiclientapp.data.Project;
 import mcc.group14.apiclientapp.data.ProjectCreateResponse;
@@ -25,6 +26,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -46,7 +48,7 @@ public interface APIInterfaceJava {
 
     @Multipart
     @POST("project/")
-    Call<ProjectCreateResponse> createProjectWithBadge(@Part("file") RequestBody file , @Part("name") RequestBody name, @Part("description") RequestBody id);
+    Call<ProjectCreateResponse> createProjectWithBadge(@PartMap Map<String,RequestBody> params);
 
   
 
