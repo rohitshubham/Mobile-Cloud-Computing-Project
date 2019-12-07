@@ -602,3 +602,26 @@ def task_retrive(request,project_id, email_id):
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException' , "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@csrf_exempt
+@api_view(["POST"])
+def save_token(request):
+    try:
+        email_id = request.data["email_id"]
+        registration_token = request.data["registration_token"]
+
+        tokens_ref = db.collection(u'registrationTokens')
+        docs = tokens_ref.where(u'email_id',u'==', email_id).get()
+        
+        #If the number of docs is zero then insert else update
+        if sum(1 for _ in docs) == 0:
+            db.collection(u"registrationTokens").add({u"email_id" : email_id, u"registration_token" : registration_token})
+        else:
+            docs = tokens_ref.where(u'email_id',u'==', email_id).get()
+            for doc in docs:                
+                db.collection(u"registrationTokens").document(doc.id).update({u"registration_token" : registration_token})
+
+        return Response({"Success" : "true"}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException' , "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

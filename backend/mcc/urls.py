@@ -17,8 +17,7 @@ urlpatterns = [
     path('task/member/',views.add_member_to_task ,name=''),
     path('task/complete/', views.set_task_completed, name=''),
     path('tasks/<str:project_id>/<str:email_id>',views.task_retrive,name='')
-    
-    
+    path('token/', views.save_token, name="" )    
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
