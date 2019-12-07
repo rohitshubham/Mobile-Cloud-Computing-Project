@@ -9,6 +9,7 @@ import mcc.group14.apiclientapp.data.ProjectDetail;
 import mcc.group14.apiclientapp.data.ProjectsDeleteResponse;
 import mcc.group14.apiclientapp.data.ProjectsResponse;
 import mcc.group14.apiclientapp.data.Task;
+import mcc.group14.apiclientapp.data.TaskComplete;
 import mcc.group14.apiclientapp.data.TaskCreateResponse;
 import mcc.group14.apiclientapp.data.TaskMembers;
 import mcc.group14.apiclientapp.data.TaskResponse;
@@ -47,8 +48,9 @@ public interface APIInterfaceJava {
     Call<ProjectCreateResponse> createProjectWithBadge(@Part("file") RequestBody file , @Part("name") RequestBody name, @Part("description") RequestBody id);
 
   
-    @GET("tasks/{project_id}")
-    Call<TaskResponse> doGetListTasks(@Path("project_id") String project_id);
+
+    @GET("tasks/{project_id}/{email_id}")
+    Call<TaskResponse> doGetListTasks(@Path("project_id") String project_id, @Path("email_id") String email_id);
 
     @POST("task/")
     Call<TaskCreateResponse> createTask(@Body Task task);
@@ -56,6 +58,10 @@ public interface APIInterfaceJava {
 
     @POST("task/member/")
     Call<ResponseBody> createTaskMember(@Body TaskMembers task);
+
+    @POST("task/complete/")
+    Call<ResponseBody> completeTask(@Body TaskComplete task);
+
 
 
 }

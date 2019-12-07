@@ -393,13 +393,13 @@ def change_task_status(task_id, project_id, member_count = -1):
     message = ""
 
     if member_count == 0:
-        db.collection(u"tasks").document(task_id).update({"status" : "P"})
+        db.collection(u"tasks").document(task_id).update({"status" : "Pending"})
         message =  "All Members removed. Status changed back to Pending"
     elif member_count == -1:
-        db.collection(u"tasks").document(task_id).update({"status" : "C"})
+        db.collection(u"tasks").document(task_id).update({"status" : "Complete"})
         message = "Status changed to Completed"
     else:
-        db.collection(u"tasks").document(task_id).update({"status" : "O"})
+        db.collection(u"tasks").document(task_id).update({"status" : "On-going"})
         message = "Members edited. Status changed to Pending"
 
     add_project_event(project_id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - {task_name} - {message}")
@@ -576,13 +576,13 @@ def set_task_completed(request):
 
 @csrf_exempt
 @api_view(["GET"])
-def task_retrive(request,project_id):
+def task_retrive(request,project_id, email_id):
     try: 
         # Create a reference to the projects collection
         projects_ref = db.collection(u'userTasks')
 
         # Create a query against the collection
-        docs = projects_ref.where(u'project_id', u'==', project_id).stream()        
+        docs = projects_ref.where(u'project_id', u'==', project_id).where(u"email_id", u"==", email_id).stream()        
         
         value = []
 
