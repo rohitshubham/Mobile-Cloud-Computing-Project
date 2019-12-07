@@ -30,6 +30,7 @@ public class Tab1Fragment extends Fragment {
     private Context mContext;
     private String project_id;
     private String team_members;
+    private String requester_email;
     private static TaskResponse data;
     private static ArrayList<TaskCard> passToAdapter;
     @Override
@@ -59,6 +60,7 @@ public class Tab1Fragment extends Fragment {
         if (bundle != null) {
             project_id = bundle.getString("project_id");
             team_members = bundle.getString("team_members");
+            requester_email = bundle.getString("requester_email");
 
 
         try{
@@ -118,6 +120,7 @@ public class Tab1Fragment extends Fragment {
                 Intent taskCreateActivity = new Intent(mContext, TaskCreate.class);
                 taskCreateActivity.putExtra("PROJECT_ID", project_id);
                 taskCreateActivity.putExtra("TEAM_MEMBER", team_members);
+                taskCreateActivity.putExtra("REQUESTER_EMAIL", requester_email);
                 mContext.startActivity(taskCreateActivity);
                 }
             });

@@ -7,6 +7,7 @@ import mcc.group14.apiclientapp.data.ProjectDetail;
 import mcc.group14.apiclientapp.data.ProjectsResponse;
 import mcc.group14.apiclientapp.data.Task;
 import mcc.group14.apiclientapp.data.TaskCreateResponse;
+import mcc.group14.apiclientapp.data.TaskMembers;
 import mcc.group14.apiclientapp.data.TaskResponse;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -28,6 +29,10 @@ public interface APIInterfaceJava {
 
     @POST("task/")
     Call<TaskCreateResponse> createTask(@Body Task task);
+
+
+    @POST("task/member/")
+    Call<ResponseBody> createTaskMember(@Body TaskMembers task);
 
 /*    @GET("/api/users?")
     Call<UserList> doGetUserList(@Query("page") String page);

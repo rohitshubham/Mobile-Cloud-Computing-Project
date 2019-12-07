@@ -21,6 +21,7 @@ public class TaskDashboard extends AppCompatActivity {
         String project_id = intent.getStringExtra("PROJECT_ID");
         String project_name = intent.getStringExtra("PROJECT_NAME");
         String team_members = intent.getStringExtra("TEAM_MEMBER");
+        String requester_email = intent.getStringExtra("REQUESTER_EMAIL");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -33,6 +34,7 @@ public class TaskDashboard extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("project_id", project_id);
         bundle.putString("team_members", team_members);
+        bundle.putString("requester_email", requester_email);
         fragment_1.setArguments(bundle);
 
 

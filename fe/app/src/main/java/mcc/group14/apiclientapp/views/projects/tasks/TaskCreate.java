@@ -23,6 +23,7 @@ import mcc.group14.apiclientapp.api.APIInterfaceJava;
 import mcc.group14.apiclientapp.api.ProjectAPIJava;
 import mcc.group14.apiclientapp.data.Task;
 import mcc.group14.apiclientapp.data.TaskCreateResponse;
+import mcc.group14.apiclientapp.data.TaskMembers;
 import mcc.group14.apiclientapp.data.TaskResponse;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -33,12 +34,14 @@ public class TaskCreate extends AppCompatActivity {
     NachoTextView nachoTextView;
     private String project_id;
     private String team_member;
+    private String requester_email;
     TaskCreateResponse data;
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent  = getIntent();
 
         project_id = intent.getStringExtra("PROJECT_ID");
         team_member = intent.getStringExtra("TEAM_MEMBER");
+        requester_email = intent.getStringExtra("REQUESTER_EMAIL");
 
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
 
@@ -59,7 +62,8 @@ public class TaskCreate extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 List<String> task_members = nachoTextView.getChipValues();
-                Date task_deadline_value = new Date(task_deadline.getYear() -1900, task_deadline.getMonth(), task_deadline.getDayOfMonth());
+                Date task_deadline_date = new Date(task_deadline.getYear() -1900, task_deadline.getMonth(), task_deadline.getDayOfMonth());
+                String task_deadline_value =  task_deadline.getYear() + "-" + task_deadline.getMonth()+"-"+task_deadline.getDayOfMonth();
                 String task_name_value = task_name.getText().toString();
                 String task_desc_value = task_desc.getText().toString();
                 if(task_name_value.isEmpty()) {
@@ -72,13 +76,13 @@ public class TaskCreate extends AppCompatActivity {
                 }
                 Date d = new Date();
 
-                if(task_deadline_value.compareTo(d) <= 0){
+                if(task_deadline_date.compareTo(d) <= 0){
                     Toast.makeText(getApplicationContext(), "Deadline can't be older than current date", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 Task task = new Task();
-                task.deadline = task_deadline_value;
+                task.deadline = task_deadline_value.toString();
                 task.name = task_name_value;
                 task.project_id = project_id;
                 task.description = task_desc_value;
@@ -87,7 +91,7 @@ public class TaskCreate extends AppCompatActivity {
                 }else{
                     task.status = "Pending";
                 }
-
+                task_members.add(requester_email);
                 //Call HTTP method here
                 Call<TaskCreateResponse> call = apiInterface.createTask(task);
                 call.enqueue(new Callback<TaskCreateResponse>() {
@@ -98,6 +102,26 @@ public class TaskCreate extends AppCompatActivity {
                         data = response.body();
                         Log.d("TAG",response.code()+"");
                         Log.d("TAG",data+"");
+                        if(response.code() == 201){
+                            TaskMembers tm = new TaskMembers();
+                            tm.members = String.join(",", task_members);
+                            tm.task_id = data.payload;
+                            tm.project_id = project_id;
+                            tm.requester_email = requester_email;
+                            Call<ResponseBody> call_member = apiInterface.createTaskMember(tm);
+                            call_member.enqueue(new Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    Integer i = response.code();
+                                    ResponseBody a = response.body();
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                                }
+                            });
+                        }
 
                     }
 
@@ -111,3 +135,4 @@ public class TaskCreate extends AppCompatActivity {
         });
     }
 }
+
