@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ScrollView01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:stretchColumns="1">
+
+            <!-- everything you already have -->
+
+            <ImageView
+                android:id="@+id/imageViewBadge"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="45dp"
+                android:src="@drawable/ic_home" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="60dp">
+
+
+
+
+                <android.support.design.widget.CollapsingToolbarLayout
+                    android:id="@+id/LProjType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Spinner
+                        android:id="@+id/projects_spinner"
+                        android:layout_width="fill_parent"
+                        android:layout_height="46dp"
+                        android:autofillHints="Project Type" />
+                </android.support.design.widget.CollapsingToolbarLayout>
+
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/LProjName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/txtInputName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:hint="Project name" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/LDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/txtDesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:hint="Description" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/LDatepicker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/txtdeadline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="false"
+                        android:inputType="text"
+                        android:hint="Deadline" />
+                </android.support.design.widget.TextInputLayout>
+
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/LKeywords"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.hootsuite.nachos.NachoTextView
+                        android:id="@+id/nacho_keywords"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="413dp"
+                        android:hint="Keywords"
+                        app:chipBackground="@color/chip_material_background"
+                        app:chipHeight="30dp"
+                        app:chipTextColor="@color/chip_default_text_color"
+                        app:chipTextSize="16dp"
+                        app:chipVerticalSpacing="3dp" />
+                </android.support.design.widget.TextInputLayout>
+
+<!--
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/LTeamMembers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/txtTeammembers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:hint="Team members" />
+                </android.support.design.widget.TextInputLayout>
+-->
+
+
+
+
+                <Button android:id="@+id/btnCreateProj"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Create Project"
+                    android:background="@color/colorPrimary"
+                    android:layout_marginTop="40dp"
+                    android:textColor="@android:color/white"/>
+
+
+
+
+
+            </LinearLayout>
+
+        </TableLayout>
+
+
+
+
+    </ScrollView>
+

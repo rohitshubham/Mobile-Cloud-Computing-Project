@@ -11,5 +11,10 @@
     <string name="email_field">Email</string>
     <string name="password_field">Password</string>
     <string name="btn_sign_in">SIGN IN</string>
+
+    <string-array name="project_type">
+        <item>Personal</item>
+        <item>Team</item>
+    </string-array>
    
 </resources>
