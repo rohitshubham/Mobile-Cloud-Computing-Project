@@ -3,6 +3,8 @@ package mcc.group14.apiclientapp.api;
 
 import java.util.LinkedList;
 
+import mcc.group14.apiclientapp.data.Project;
+import mcc.group14.apiclientapp.data.ProjectCreateResponse;
 import mcc.group14.apiclientapp.data.ProjectDetail;
 import mcc.group14.apiclientapp.data.ProjectsDeleteResponse;
 import mcc.group14.apiclientapp.data.ProjectsResponse;
@@ -33,6 +35,9 @@ public interface APIInterfaceJava {
     Call<ProjectsDeleteResponse> doDeleteProject(@Path("project_id") String project_id);
 
 
+
+    @POST("project/")
+    Call<ProjectCreateResponse> createProject(@Body Project project);
 
   
     @GET("tasks/{project_id}")

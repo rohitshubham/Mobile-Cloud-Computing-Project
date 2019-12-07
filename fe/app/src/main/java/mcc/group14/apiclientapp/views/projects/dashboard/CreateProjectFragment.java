@@ -7,23 +7,42 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.hootsuite.nachos.NachoTextView;
+import com.hootsuite.nachos.chip.Chip;
 import com.hootsuite.nachos.terminator.ChipTerminatorHandler;
+import com.valdesekamdem.library.mdtoast.MDToast;
+
+import java.util.List;
 
 import mcc.group14.apiclientapp.R;
+import mcc.group14.apiclientapp.api.APIInterfaceJava;
+import mcc.group14.apiclientapp.api.ProjectAPIJava;
+import mcc.group14.apiclientapp.data.Project;
+import mcc.group14.apiclientapp.data.ProjectCreateResponse;
+import mcc.group14.apiclientapp.data.TaskCreateResponse;
+import mcc.group14.apiclientapp.data.TaskMembers;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class CreateProjectFragment extends Fragment {
+public class CreateProjectFragment extends Fragment implements View.OnClickListener {
 
     private Context mContext;
 
+    public FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -41,13 +60,23 @@ public class CreateProjectFragment extends Fragment {
 
     EditText txtDeadline;
 
+    EditText txtProjectName;
+
+    EditText txtDescription;
+
+    //EditText txtTeamMembers;
+
+    Button btnCreateProj;
+    Spinner spinner;
+
+    NachoTextView nachoTextView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_project, container, false);
 
-        Spinner spinner = (Spinner) view.findViewById(R.id.projects_spinner);
+        spinner = (Spinner) view.findViewById(R.id.projects_spinner);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mContext,
                 R.array.project_type, android.R.layout.simple_spinner_item);
@@ -61,7 +90,7 @@ public class CreateProjectFragment extends Fragment {
 
         //=================Chip
 
-        NachoTextView nachoTextView;
+
 
         nachoTextView = (NachoTextView) view.findViewById(R.id.nacho_keywords);
 
@@ -93,10 +122,92 @@ public class CreateProjectFragment extends Fragment {
             }
         });
 
-        //==============================
+        //==============================Getting all the values
+
+        btnCreateProj = (Button) view.findViewById(R.id.btnCreateProj);
+        txtProjectName = (EditText) view.findViewById(R.id.txtInputName);
+        txtDescription = (EditText) view.findViewById(R.id.txtDesc);
+        //txtTeamMembers = (EditText) view.findViewById(R.id.txtTeammembers);
+
+
+        btnCreateProj.setOnClickListener(this);
+
+
+
+
+
+
+        //============================
 
         return view;
 
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        List<String> keywords = nachoTextView.getChipAndTokenValues();
+
+        if(keywords.size() > 3){
+            MDToast mdToast = MDToast.makeText(mContext, "You can define at most 3 keywords", 4, MDToast.TYPE_ERROR);
+            mdToast.show();
+            return;
+        }
+
+        Project p = new Project();
+        p.name = txtProjectName.getText().toString();
+        p.description = txtDescription.getText().toString();
+        p.project_type = spinner.getSelectedItem().toString();
+        String deadlineInput = txtDeadline.getText().toString();
+
+        //0================Date conversion======================
+        String dateArray[] = deadlineInput.split("/");
+        p.deadline = dateArray[2]+"-"+("00"+dateArray[1]).substring(dateArray[1].length())+"-"+("00"+dateArray[0]).substring(dateArray[0].length())+"T23:59:59";
+
+        //=======================================================
+        p.requester_email = firebaseAuth.getCurrentUser().getEmail();
+        p.team_members = p.requester_email;
+        //========================================================
+        if(keywords.size() > 0)
+           p.keywords = android.text.TextUtils.join(",", keywords);
+
+        //==========================================================
+
+        Log.d("Project",p.name+" "+p.description+" "+p.project_type+" "+p.deadline+" "+p.team_members+" "+keywords.toString());
+
+        //=====API CALL====
+        APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
+        Call<ProjectCreateResponse> call = apiInterface.createProject(p);
+        call.enqueue(new Callback<ProjectCreateResponse>() {
+            @Override
+            public void onResponse(Call<ProjectCreateResponse> call, Response<ProjectCreateResponse> response) {
+
+                //start the intent
+                ProjectCreateResponse data = response.body();
+                Log.d("PROJECT CREATE",response.code()+"");
+                Log.d("TAG",data+"");
+
+
+                if(response.isSuccessful()){
+                    Log.d("Response","201");
+
+                    MDToast mdToast = MDToast.makeText(mContext, "Project Created Successfully", 3, MDToast.TYPE_SUCCESS);
+                    mdToast.show();
+                    /*ProjectsHomeFragment nextFrag= new ProjectsHomeFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container_projects, nextFrag)
+                            .addToBackStack(null)
+                            .commit();*/
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ProjectCreateResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
 
     }
 }

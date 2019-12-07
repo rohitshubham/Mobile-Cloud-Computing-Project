@@ -88,6 +88,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         ImageView imageViewIcon = holder.imageViewIcon;
         TextView buttonViewOption = holder.buttonViewOption;
 
+        CustomAdapter thisAdapter = this;
+
         textViewName.setText(dataSet.get(listPosition).projectName);
         String[] dateTime=new String[2];
         if(dataSet.get(listPosition).lastModified != null)
@@ -188,7 +190,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                                 Log.d("OptionMenu","Add Member Clicked");
                                 return true;
                             case R.id.projectDescription:
-                                Log.d("OptionMenu","Proejct Description Clicked");
+                                Log.d("OptionMenu","Project Description Clicked");
                                 return true;
                             case R.id.generateProjectReport:
                                 Log.d("OptionMenu","PDF Clicked");
@@ -227,15 +229,15 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
                             case R.id.deleteProject:
                                 new AlertDialog.Builder(currContext)
-                                        .setTitle("Title")
-                                        .setMessage("Do you really want to whatever?")
+                                        .setTitle("Warning")
+                                        .setMessage("Do you really want to delete \n\""+dataSet.get(listPosition).projectName+"\" Project?")
                                         .setIcon(android.R.drawable.ic_dialog_alert)
                                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                                             public void onClick(DialogInterface dialog, int whichButton) {
                                                 Log.d("Alert",String.valueOf(whichButton));
 
-                                                makeDeleteRequest(downloadService,dataSet.get(listPosition).project_id,dataSet.get(listPosition).projectName);
+                                                makeDeleteRequest(thisAdapter,listPosition,downloadService,dataSet.get(listPosition).project_id,dataSet.get(listPosition).projectName);
 
 
                                                 //-------------------------------------------------------------
@@ -257,7 +259,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     }
 
-    public void makeDeleteRequest(APIInterfaceJava apiInt,String project_id,String projectName){
+    public void makeDeleteRequest(CustomAdapter adapter,int listPos,APIInterfaceJava apiInt,String project_id,String projectName){
         //==================Send Delete Request==========================
         try {
             Call<ProjectsDeleteResponse> call = apiInt.doDeleteProject(project_id);
@@ -268,6 +270,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                     if (response.body().success.equals("true")) {
                         MDToast mdToast = MDToast.makeText(currContext, "Project " + projectName + " Deleted", 3, MDToast.TYPE_INFO);
                         mdToast.show();
+
+                        adapter.dataSet.remove(listPos);
+                        adapter.notifyItemRemoved(listPos);
+                        adapter.notifyItemRangeChanged(listPos, dataSet.size());
+
+                        Log.d("Dataset Size",String.valueOf((adapter.getItemCount())));
+
                     }
                     if (response.body().success.equals("false")) {
                         MDToast mdToast = MDToast.makeText(currContext, "Error: " + response.body().error, 3, MDToast.TYPE_ERROR);

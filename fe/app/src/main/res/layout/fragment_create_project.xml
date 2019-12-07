@@ -3,7 +3,6 @@
 
 
 
-
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ScrollView01"
@@ -103,7 +102,7 @@
                         app:chipVerticalSpacing="3dp" />
                 </android.support.design.widget.TextInputLayout>
 
-
+<!--
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/LTeamMembers"
                     android:layout_width="match_parent"
@@ -116,7 +115,7 @@
                         android:inputType="textMultiLine"
                         android:hint="Team members" />
                 </android.support.design.widget.TextInputLayout>
-
+-->
 
 
 
