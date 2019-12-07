@@ -9,12 +9,21 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
+
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:stretchColumns="1">
 
             <!-- everything you already have -->
+
+            <ImageView
+                android:id="@+id/imageViewBadge"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="45dp"
+                android:src="@drawable/ic_home" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -90,7 +99,7 @@
 
                     <com.hootsuite.nachos.NachoTextView
                         android:id="@+id/nacho_keywords"
-                        android:layout_width="300dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_marginTop="413dp"

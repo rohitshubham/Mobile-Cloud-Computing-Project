@@ -1,9 +1,20 @@
 package mcc.group14.apiclientapp.views.projects.dashboard;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
@@ -15,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.google.firebase.FirebaseApp;
@@ -37,6 +49,9 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class CreateProjectFragment extends Fragment implements View.OnClickListener {
 
@@ -70,6 +85,8 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
     Spinner spinner;
 
     NachoTextView nachoTextView;
+
+    ImageView imageView;
 
     @Nullable
     @Override
@@ -127,14 +144,47 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         btnCreateProj = (Button) view.findViewById(R.id.btnCreateProj);
         txtProjectName = (EditText) view.findViewById(R.id.txtInputName);
         txtDescription = (EditText) view.findViewById(R.id.txtDesc);
+        imageView = (ImageView) view.findViewById(R.id.imageViewBadge);
         //txtTeamMembers = (EditText) view.findViewById(R.id.txtTeammembers);
 
 
+        //===============Badge ====================================
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("Choose a project Badge");
+
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+
+                        if (options[item].equals("Take Photo")) {
+                            Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                            startActivityForResult(takePicture, 0);
+
+                        } else if (options[item].equals("Choose from Gallery")) {
+                            Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(pickPhoto , 1);
+
+                        } else if (options[item].equals("Cancel")) {
+                            dialog.dismiss();
+                        }
+                    }
+                });
+                builder.show();
+            }
+        });
+
+
+
+        //========================================================
+
+
         btnCreateProj.setOnClickListener(this);
-
-
-
-
 
 
         //============================
@@ -142,6 +192,39 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         return view;
 
 
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode != RESULT_CANCELED) {
+            switch (requestCode) {
+                case 0:
+                    if (resultCode == RESULT_OK && data != null) {
+                        Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
+                        imageView.setImageBitmap(selectedImage);
+                    }
+
+                    break;
+                case 1:
+                    if (resultCode == RESULT_OK && data != null) {
+                        Uri selectedImage =  data.getData();
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                        if (selectedImage != null) {
+                            Cursor cursor = mContext.getContentResolver().query(selectedImage,
+                                    filePathColumn, null, null, null);
+                            if (cursor != null) {
+                                cursor.moveToFirst();
+
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                String picturePath = cursor.getString(columnIndex);
+                                imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                                cursor.close();
+                            }
+                        }
+
+                    }
+                    break;
+            }
+        }
     }
 
     @Override
@@ -157,12 +240,20 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         Project p = new Project();
         p.name = txtProjectName.getText().toString();
         p.description = txtDescription.getText().toString();
+
+        if(p.name.equals("")|| p.description.equals("")){
+            MDToast mdToast = MDToast.makeText(mContext, "Project name and description is mandatory", 4, MDToast.TYPE_ERROR);
+            mdToast.show();
+            return;
+        }
+
         p.project_type = spinner.getSelectedItem().toString();
         String deadlineInput = txtDeadline.getText().toString();
 
         //0================Date conversion======================
         String dateArray[] = deadlineInput.split("/");
-        p.deadline = dateArray[2]+"-"+("00"+dateArray[1]).substring(dateArray[1].length())+"-"+("00"+dateArray[0]).substring(dateArray[0].length())+"T23:59:59";
+        if(dateArray.length == 3)
+            p.deadline = dateArray[2]+"-"+("00"+dateArray[1]).substring(dateArray[1].length())+"-"+("00"+dateArray[0]).substring(dateArray[0].length())+"T23:59:59";
 
         //=======================================================
         p.requester_email = firebaseAuth.getCurrentUser().getEmail();
@@ -174,6 +265,9 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         //==========================================================
 
         Log.d("Project",p.name+" "+p.description+" "+p.project_type+" "+p.deadline+" "+p.team_members+" "+keywords.toString());
+
+        Log.d("ImageView",hasImage(imageView)+" "+imageView.getDrawable().toString());
+
 
         //=====API CALL====
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
@@ -193,11 +287,7 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
 
                     MDToast mdToast = MDToast.makeText(mContext, "Project Created Successfully", 3, MDToast.TYPE_SUCCESS);
                     mdToast.show();
-                    /*ProjectsHomeFragment nextFrag= new ProjectsHomeFragment();
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container_projects, nextFrag)
-                            .addToBackStack(null)
-                            .commit();*/
+
 
                 }
 
@@ -208,6 +298,13 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
                 call.cancel();
             }
         });
+        
 
+
+    }
+
+    private boolean hasImage(ImageView view) {
+
+        return !(view.getDrawable() instanceof VectorDrawable);
     }
 }

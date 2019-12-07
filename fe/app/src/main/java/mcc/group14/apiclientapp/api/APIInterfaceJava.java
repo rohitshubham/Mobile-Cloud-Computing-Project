@@ -12,6 +12,7 @@ import mcc.group14.apiclientapp.data.Task;
 import mcc.group14.apiclientapp.data.TaskCreateResponse;
 import mcc.group14.apiclientapp.data.TaskMembers;
 import mcc.group14.apiclientapp.data.TaskResponse;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -19,7 +20,9 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -38,6 +41,10 @@ public interface APIInterfaceJava {
 
     @POST("project/")
     Call<ProjectCreateResponse> createProject(@Body Project project);
+
+    @Multipart
+    @POST("project/")
+    Call<ProjectCreateResponse> createProjectWithBadge(@Part("file") RequestBody file , @Part("name") RequestBody name, @Part("description") RequestBody id);
 
   
     @GET("tasks/{project_id}")
