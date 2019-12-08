@@ -135,10 +135,7 @@ Below a list of used libraries:
 
 * api:
 	* calls to BE: `retrofit:2.3.0`;
-
-<!-- ================ Kibria which picasso version??? ================ -->
-  
-<!-- 	  * picasso: `picasso:<version>`  -->
+        * images download: `picasso:2.5.2`; 
 
 * Android libraries: `support-v7:28.0.0`.
 
