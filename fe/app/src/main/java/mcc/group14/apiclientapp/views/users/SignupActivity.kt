@@ -18,6 +18,7 @@ import mcc.group14.apiclientapp.R
 import mcc.group14.apiclientapp.api.ProjectApiClient
 import mcc.group14.apiclientapp.data.UserRegistration
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsActivity
+import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsDashboardMainActivity
 import mcc.group14.apiclientapp.views.users.LoginActivity
 import retrofit2.HttpException
 import java.lang.Exception
@@ -119,7 +120,7 @@ class SignupActivity : AppCompatActivity() {
 
                                                 // Login successful, redirect to dashboard
                                                 val intent =
-                                                    Intent(this, ProjectsActivity::class.java).apply {
+                                                    Intent(this, ProjectsDashboardMainActivity::class.java).apply {
                                                         putExtra("USER_EMAIL", userEmail)
                                                         putExtra("USER_AUTH", userAuth)
                                                     }

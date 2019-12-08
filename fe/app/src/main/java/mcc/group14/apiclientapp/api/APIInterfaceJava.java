@@ -8,6 +8,7 @@ import mcc.group14.apiclientapp.data.ProjectCreateResponse;
 import mcc.group14.apiclientapp.data.ProjectDetail;
 import mcc.group14.apiclientapp.data.ProjectsDeleteResponse;
 import mcc.group14.apiclientapp.data.ProjectsResponse;
+import mcc.group14.apiclientapp.data.RegistrationToken;
 import mcc.group14.apiclientapp.data.Task;
 import mcc.group14.apiclientapp.data.TaskComplete;
 import mcc.group14.apiclientapp.data.TaskCreateResponse;
@@ -62,6 +63,8 @@ public interface APIInterfaceJava {
     @POST("task/complete/")
     Call<ResponseBody> completeTask(@Body TaskComplete task);
 
+    @POST("token/")
+    Call<ResponseBody> sendResgistrationTokenToServer(@Body RegistrationToken token);
 
 
 }
