@@ -627,6 +627,7 @@ def save_token(request):
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException' , "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 @api_view(["POST","GET"])
 def upload_project_attachment(request):
     request.data._mutable = True    
