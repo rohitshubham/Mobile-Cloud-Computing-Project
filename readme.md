@@ -17,9 +17,22 @@ The application is a project management cloud platform. It provides with followi
 <!--  * admin/user project privileges -->
  
 
+---
+
+There are following basic components of this application:
+
+- _Backend_ - Runs in on a Dockerized environment in `GCP App Engine` Flex environment.
+- _Frontend_ - Android Application targeting API v28.
+- _Database_ - The database is hosted on GCP `Firestore Database`.
+- _Storage_ - The files are stored in GCP `Cloud buckets`.
+- _API Endpoints_ - The OpenAPI Endpoints are deployed on `Google Cloud Endpoints` using a ESP to our App engine.
+- _Push Notification Service_ - Triggered by `Google Cloud Functions` and messages sent to the device via `Firebase Cloud Messaging`.
+- _Email-Notification Service_ - Runs in `Google cloud platform compute engine` (Instance Provisioned by `Terraform`).
+- _CI and CD of repo_ - The continuos integration and deployment of the git repo is handled by two private GitLab CI runners. (Hosted on GCP Compute engine and Oracle Cloud engine each).
+
 ## Deployment 
 
-For deployment the CI/CD on GitLab has been implemented, for more detail see  [pipelines](https://version.aalto.fi/gitlab/CS-E4100/mcc-fall-2019-g14/pipelines). 
+The file `deploy.sh` can be used to build, deploy, provision the instances. For deployment on the CI/CD on GitLabCI has been implemented, for more detail see  [pipelines](https://version.aalto.fi/gitlab/CS-E4100/mcc-fall-2019-g14/pipelines). 
 
 
 <!-- Add here be deployment instructions -->
@@ -27,16 +40,24 @@ For deployment the CI/CD on GitLab has been implemented, for more detail see  [p
 
 ## Structure
 
-The project consists of three folders in the root: `backend`, `frontend` (`fe`) and `notifications`, as described below. 
+The project consists of four folders in the root: `backend`, `frontend` (`fe`), `terraform` and `notifications`, as described below. 
 
 ### Backend
+
+The backend of our project is build using `Django Framework` for Python. We are using a micro-services architecture pattern for a decoupled frontend and backend, and hence for backend communication, we are using REST Framework. The endpoints are designed as per OpenAPI 3.0/Swagger specifications.
+
+The backend is deployed as a container in Google Cloud Platform's App Engine Flexible Environment.The base URL of our project is : 
+> [https://mcc-fall-2019-g14.appspot.com/mcc/](https://mcc-fall-2019-g14.appspot.com/mcc/).
+
+For a improved compatibility in build deployment and portability, the backend is dockerized into a docker containers using `Ubuntu-18.04` as a base images as specified in the [dockerfile](./backend/Dockerfile). 
+
+
 
 The backend folder contains the following files and folders.
 
 ```
 ├── app.yaml
 ├── Dockerfile
-├── email_job.py
 ├── env
 ├── key.json
 ├── manage.py
@@ -47,31 +68,39 @@ The backend folder contains the following files and folders.
 └── webServer
 ```
 
-Backend is deployed in docker containers using `Ubuntu-18.04` docker images as specified in the [dockerfile](./backend/Dockerfile). The framework we use is Django, the main logic is in  [webServer](./backend/webServer). 
-
-For more information about the services offered by the backend see [openapi-appengine.yml](./backend/openapi-appengine.yml).
-
-<!-- ========================================================== -->
-
-<!-- Rohit: please modify here -->
-
-
-<!-- Insert important files -->
-This [file](backend/key.json) contains the credentials to Firebase.
-
-<!-- Are they important? I am not sure -->
-.vscode - the launching project endpoint (??? does it)
-env - the GCP deployng settings 
-
+This [file](backend/key.json) contains the credentials to Firebase. We communicate and perform the request to the back end as a `firebase-admin` user. And hence `firebase-admin` package for python has been used in our code.
 
 
 <!-- Add libraries -->
 #### Libraries 
-
+The main libraries of our backend application is 
+* `gunicorn:20.0.0`
+* `requests:2.22.0`
+* `urllib3:1.25.7` 
+* `django:2.2.7`
+* `djangorestframework:3.10.3`
+* `pyrebase:3.0.27`
+* `pillow:6.2.1`
+* `firebase-admin:3.2.0`
+* `xhtml2pdf:0.2.3`
+* `python-dateutil:2.6.1`
 
 <!-- ================================================  -->
 
+### API Reference Guide 
+
+The backend follows the OpenAPI specifications for serving the requests. The API's are deployed on Google cloud Platform's `Cloud Endpoints`. The developer console and the API reference material for all the backend endpoints are in `https://endpointsportal.mcc-fall-2019-g14.cloud.goog/`. 
+
 ### Notifications
+
+The push notifications to the device is being sent by the Firebase Cloud Messaging (FCM) service. We can send notifications to every device that has signed-up in the application. 
+To send the notifications, we are using serverless `Google Cloud Functions`. The code for this functionality has been written in NodeJs and is in `sendNotifications/functions/index.js`. The trigger that we have used is HTTP Trigger i.e. we can trigger the function through HTTP post requests. The url endpoint for our function is : https://us-central1-mcc-fall-2019-g14.cloudfunctions.net/sendNotification . The triggers in our application happen when there are there are members added to the project or tasks assigned to the project.
+
+More details(request/response) about this can be seen in the OpenApi reference under the `tokens` tag.
+
+### Email Notification:
+The email notification is sent via MailJet CLient running on a Google cloud platform's compute engine. The code run as a python script on this infrastructure. This infrastructure can be automatically deployed using Hashicorp's Terraform. It deploys a Ubuntu instance with `g1-micro` setting and installs the necessary dependencies using the `email_service_init.sh`.
+The `email_job.py` then runs on this instance and sends email notification to when the deadline is approaching.
 
 
 ### Frontend
@@ -117,3 +146,4 @@ Below a list of used libraries:
 	* theme: `nachos:1.1.1`;
 	* toasts: `md-toast:0.9.0`.
 
+### CI/CD using GitLabCI

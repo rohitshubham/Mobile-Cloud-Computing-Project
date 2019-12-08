@@ -9,7 +9,7 @@
         }
       }
      
-      metadata_startup_script = "${file("init.sh")}"
+      metadata_startup_script = "${file("email_service_init.sh")}"
      
       network_interface {
         network = "default"
@@ -20,19 +20,6 @@
       }
      
       tags = ["http-server"]
-    }
-     
-    resource "google_compute_firewall" "http-server" {
-      name    = "default-allow-http"
-      network = "default"
-     
-      allow {
-        protocol = "tcp"
-        ports    = ["80"]
-      }
-     
-      source_ranges = ["0.0.0.0/0"]
-      target_tags   = ["http-server"]
     }
      
     output "ip" {

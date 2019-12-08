@@ -56,8 +56,9 @@ sudo mv terraform /usr/local/bin/
 cd terraform
 
 #Create the VM Instance
+sudo terraform init 
 sudo terraform plan
-sudo terraform apply
+sudo yes yes | terraform apply
 
 cd ..
 
