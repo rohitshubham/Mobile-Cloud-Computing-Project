@@ -136,6 +136,10 @@ public class ProjectsDashboardMainActivity extends AppCompatActivity {
                             selectedFragment = new ProjectsHomeFragment();
                             break;
 
+                        case R.id.nav_search_project:
+                            selectedFragment = new UserSettingsFragment();
+                            break;
+
                         case R.id.nav_create_project:
                             selectedFragment = new CreateProjectFragment();
                             break;
