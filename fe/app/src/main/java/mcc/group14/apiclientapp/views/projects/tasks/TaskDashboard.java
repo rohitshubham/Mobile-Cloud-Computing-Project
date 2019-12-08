@@ -41,6 +41,8 @@ public class TaskDashboard extends AppCompatActivity {
         String team_members = intent.getStringExtra("TEAM_MEMBER");
         String requester_email = intent.getStringExtra("REQUESTER_EMAIL");
 
+        setTitle(project_name);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.task_dash_toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(project_name);
