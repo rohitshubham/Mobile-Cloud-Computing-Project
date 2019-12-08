@@ -49,7 +49,7 @@ The backend folder contains the following files and folders.
 
 Backend is deployed in docker containers using `Ubuntu-18.04` docker images as specified in the [dockerfile](./backend/Dockerfile). The framework we use is Django, the main logic is in  [webServer](./backend/webServer). 
 
-For more information about the services offered by the backend see [openapi-appengine.yml](./backed/openapi-appengine.yml).
+For more information about the services offered by the backend see [openapi-appengine.yml](./backend/openapi-appengine.yml).
 
 <!-- ========================================================== -->
 
