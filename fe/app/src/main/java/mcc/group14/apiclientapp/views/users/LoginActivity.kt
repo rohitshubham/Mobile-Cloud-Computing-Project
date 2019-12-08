@@ -107,13 +107,16 @@ class LoginActivity : AppCompatActivity() {
                             spinner.visibility = View.INVISIBLE
                             startActivity(intent)
                         } else {
+                            loginBtn.visibility = View.VISIBLE
+                            spinner.visibility = View.INVISIBLE
                             val mdToast = MDToast.makeText(
                                 this@LoginActivity,
-                                "Could not log in. Please try again.",
+                                "Invalid email or password",
                                 3,
                                 MDToast.TYPE_ERROR
                             )
                             mdToast.show()
+
 
 
                         }

@@ -69,15 +69,15 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/nacho_text_view"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="173dp"
+        android:layout_marginTop="41dp"
         android:background="@drawable/button"
         android:foreground="?android:attr/selectableItemBackground"
         android:text="Create"
         android:textAllCaps="false"
-        android:textSize="20sp"
-        android:textColor="#FE5295"/>
+        android:textColor="#FF5722"
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/editText2"
@@ -95,13 +95,14 @@
         android:id="@+id/editText3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_marginStart="135dp"
         android:layout_marginTop="210dp"
         android:layout_marginEnd="20dp"
         android:ems="12"
-        android:inputType="textPersonName"
-        />
+        android:inputType="textPersonName" />
 
 
     <DatePicker
@@ -117,8 +118,11 @@
         android:id="@+id/nacho_text_view"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
+        android:layout_marginStart="135dp"
         android:layout_marginTop="413dp"
+        android:layout_marginEnd="20dp"
         app:chipBackground="@color/chip_material_background"
         app:chipHeight="30dp"
         app:chipTextColor="@color/chip_default_text_color"
