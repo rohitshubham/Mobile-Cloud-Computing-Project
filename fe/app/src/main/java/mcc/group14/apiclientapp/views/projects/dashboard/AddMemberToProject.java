@@ -7,19 +7,23 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toolbar;
+import android.support.v7.widget.Toolbar;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.io.ByteArrayOutputStream;
@@ -37,6 +41,8 @@ import mcc.group14.apiclientapp.data.ProjectAttachmentsResponse;
 import mcc.group14.apiclientapp.data.ProjectCreateResponse;
 import mcc.group14.apiclientapp.views.projects.tasks.TaskAttachmentAdapter;
 import mcc.group14.apiclientapp.views.projects.tasks.TaskAttachmentCard;
+import mcc.group14.apiclientapp.views.users.LoginActivity;
+import mcc.group14.apiclientapp.views.users.UserProfileActivity;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -55,6 +61,9 @@ public class AddMemberToProject extends AppCompatActivity {
 
     Context currContext;
 
+    private FirebaseAuth firebaseAuth;
+
+
 
 
     @Override
@@ -64,11 +73,46 @@ public class AddMemberToProject extends AppCompatActivity {
 
         currContext = this;
 
+        //Init and attach
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.addAuthStateListener(authStateListener);
+
         Intent intent = getIntent();
 
-        Toolbar heading = findViewById(R.id.toolbarAddMember);
+        Toolbar toolbar = findViewById(R.id.toolbarAddMember);
+
+
+        setSupportActionBar(toolbar);
+
+        toolbar.setOnMenuItemClickListener(new android.support.v7.widget.Toolbar.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if(item.getItemId()==R.id.userProfile_menu)
+                {
+                    Intent intent = new Intent(currContext, UserProfileActivity.class);
+                    intent.putExtra("USER_EMAIL", userEmail);
+                    startActivity(intent);
+
+
+                }
+                else if(item.getItemId()== R.id.logout_menu)
+                {
+                    Log.d("Logout","Logout in progress");
+
+                    firebaseAuth.signOut();
+                }
+
+                return false;
+            }
+        });
+
+
+
+
         Button addMemberBtn = findViewById(R.id.btnAddMembersProj);
-        heading.setTitle(intent.getStringExtra("PROJECT_NAME"));
+        toolbar.setTitle(intent.getStringExtra("PROJECT_NAME"));
 
         //===========Getting extras===================================
         name = intent.getStringExtra("PROJECT_NAME");
@@ -243,4 +287,28 @@ public class AddMemberToProject extends AppCompatActivity {
         RequestBody body = RequestBody.create(MediaType.parse("text/plain"), value);
         return body ;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.user_menu, menu);
+        return true;
+    }
+
+    FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            if (firebaseAuth.getCurrentUser() == null){
+                //Do anything here which needs to be done after signout is complete
+                Log.d("Logout","Logout in progress");
+                Intent intent = new Intent(currContext, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+
+            }
+            else {
+            }
+        }
+    };
+
 }
