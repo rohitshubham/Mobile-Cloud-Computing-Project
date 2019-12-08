@@ -26,6 +26,7 @@ import mcc.group14.apiclientapp.data.TaskDetails;
 import mcc.group14.apiclientapp.data.TaskResponse;
 import mcc.group14.apiclientapp.views.projects.dashboard.CustomAdapter;
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectCard;
+import mcc.group14.apiclientapp.views.users.LoginActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -87,6 +88,7 @@ public class Tab1Fragment extends Fragment {
 
 
                         Log.d("TAG",response.code()+"");
+                        Log.d("Test",response.toString());
 
                         try{
                             data = response.body();
@@ -170,6 +172,7 @@ public class Tab1Fragment extends Fragment {
 
 
                     Log.d("TAG",response.code()+"");
+                    Log.d("Test",response.toString());
 
                     try{
                         data = response.body();
