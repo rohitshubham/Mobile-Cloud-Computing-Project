@@ -997,6 +997,365 @@ paths:
                   - 'false'
           x-oad-type: response
     x-oad-type: operation
+  /project/search/keywords:
+    get:
+      operationId: uniqueId
+      description: "\t\t\t"
+      tags:
+        - Project
+      responses:
+        '200':
+          description: success
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: array
+                type: array
+                items:
+                  x-oad-type: object
+                  type: object
+          x-oad-type: response
+    post:
+      operationId: uniqueIdentifier
+      tags:
+        - Project
+      responses:
+        '200':
+          description: success
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: array
+                type: array
+                items:
+                  x-oad-type: object
+                  type: object
+          x-oad-type: response
+      parameters:
+        -
+          name: body
+          in: body
+          required: true
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              search_keyword:
+                x-oad-type: string
+                type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  /project/search/name:
+    post:
+      operationId: search_name
+      tags:
+        - Project
+      responses:
+        '200':
+          description: success
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: array
+                type: array
+                items:
+                  x-oad-type: object
+                  type: object
+          x-oad-type: response
+        '500':
+          description: error
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalServerError
+          x-oad-type: response
+      parameters:
+        -
+          name: body
+          in: body
+          required: true
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              search_name:
+                x-oad-type: string
+                type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  /project/attachment:
+    post:
+      operationId: uniqueIDforattachment
+      tags:
+        - Project
+      responses:
+        '201':
+          description: success
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: object
+                type: object
+          x-oad-type: response
+        '204':
+          description: 'not found'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - NoFileRecieved
+          x-oad-type: response
+        '500':
+          description: error
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalServerError
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+      parameters:
+        -
+          name: body
+          in: body
+          required: true
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              creation_time:
+                x-oad-type: string
+                type: string
+              project_id:
+                x-oad-type: string
+                type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  '/project/attachment/{project_id}':
+    get:
+      operationId: attachment_project_id
+      tags:
+        - Project
+      responses:
+        '200':
+          description: success
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: array
+                type: array
+                items:
+                  x-oad-type: object
+                  type: object
+          x-oad-type: response
+        '500':
+          description: error
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternalServerError
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+          x-oad-type: response
+      parameters:
+        -
+          name: project_id
+          in: path
+          required: true
+          type: string
+          x-oad-type: parameter
+    x-oad-type: operation
+  /project/image:
+    post:
+      operationId: saveprojectimage
+      tags:
+        - Project
+      responses:
+        '200':
+          description: success
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: string
+                type: string
+          x-oad-type: response
+        '204':
+          description: 'no file found'
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'No file recieved'
+          x-oad-type: response
+        '500':
+          description: error
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternelServerError
+          x-oad-type: response
+      parameters:
+        -
+          name: body
+          in: body
+          required: true
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              creation_time:
+                x-oad-type: string
+                type: string
+              project_id:
+                x-oad-type: string
+                type: string
+          x-oad-type: parameter        
+    x-oad-type: operation
+  '/project/image/{project_id}':
+    get:
+      operationId: getProjectImages
+      tags:
+        - Project
+      responses:
+        '200':
+          description: success
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'true'
+              payload:
+                x-oad-type: array
+                type: array
+                items:
+                  x-oad-type: object
+                  type: object
+          x-oad-type: response
+        '500':
+          description: error
+          schema:
+            x-oad-type: object
+            type: object
+            properties:
+              success:
+                x-oad-type: string
+                type: string
+                enum:
+                  - 'false'
+              error:
+                x-oad-type: string
+                type: string
+                enum:
+                  - InternelServerError
+          x-oad-type: response
+      parameters:
+        -
+          name: project_id
+          in: path
+          required: true
+          type: string
+          x-oad-type: parameter
+    x-oad-type: operation
 info:
   title: 'MCC Group 14 API Reference'
   version: 1.0.0
