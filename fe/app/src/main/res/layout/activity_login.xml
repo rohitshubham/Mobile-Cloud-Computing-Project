@@ -68,7 +68,7 @@
             android:foreground="?android:attr/selectableItemBackground"
             android:text="@string/btn_sign_in"
             android:textAllCaps="false"
-            android:textColor="#FE5295"
+            android:textColor="#FF5722"
             android:textSize="17sp" />
 
         <ProgressBar

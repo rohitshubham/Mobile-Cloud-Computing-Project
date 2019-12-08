@@ -43,6 +43,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     private ArrayList<ProjectCard> dataSet;
     Context currContext;
+    String userEmail,userAuth;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -51,6 +52,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         TextView textViewProjectType;
         ImageView imageViewIcon;
         TextView buttonViewOption;
+
 
 
         public MyViewHolder(View itemView) {
@@ -63,9 +65,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         }
     }
 
-    public CustomAdapter(ArrayList<ProjectCard> data, Context currContext) {
+    public CustomAdapter(ArrayList<ProjectCard> data, Context currContext,String userEmail,String userAuth) {
         this.dataSet = data;
         this.currContext = currContext;
+        this.userEmail = userEmail;
+        this.userAuth = userAuth;
     }
 
     @Override
@@ -187,7 +191,18 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.addMemberOption:
-                                Log.d("OptionMenu","Add Member Clicked");
+                                Intent intent = new Intent(currContext, AddMemberToProject.class);
+                                String message = dataSet.get(listPosition).project_id;
+                                intent.putExtra("PROJECT_ID", message);
+                                intent.putExtra("PROJECT_NAME", dataSet.get(listPosition).projectName);
+                                intent.putExtra("PROJECT_MEMBERS", dataSet.get(listPosition).team_member);
+                                intent.putExtra("REQ_EMAIL", dataSet.get(listPosition).requester_email);
+                                intent.putExtra("CREATION_TIME", dataSet.get(listPosition).creation_time);
+                                intent.putExtra("PROJ_TYPE", dataSet.get(listPosition).projectType);
+                                intent.putExtra("USER_EMAIL", userEmail);
+                                intent.putExtra("USER_AUTH",userAuth);
+
+                                currContext.startActivity(intent);
                                 return true;
                             case R.id.projectDescription:
                                 Log.d("OptionMenu","Project Description Clicked");

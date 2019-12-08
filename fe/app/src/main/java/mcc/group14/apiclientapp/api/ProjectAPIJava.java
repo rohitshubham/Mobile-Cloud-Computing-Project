@@ -16,7 +16,7 @@ public class ProjectAPIJava {
 
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8000/mcc/")
+                .baseUrl("https://mcc-fall-2019-g14.appspot.com/mcc/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();

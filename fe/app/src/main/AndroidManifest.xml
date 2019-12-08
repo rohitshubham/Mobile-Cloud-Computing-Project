@@ -31,6 +31,9 @@
         <activity android:name=".views.projects.create.OptionalProjectSettingsActivity" />
         <activity android:name=".views.projects.create.NewProjectActivity" />
         <activity android:name=".views.projects.ProjectDetailActivity" />
+        <activity android:name=".views.projects.dashboard.AddMemberToProject" />
+        <activity android:name=".views.users.UserProfileActivity" />
+
         <activity android:name=".views.projects.dashboard.ProjectsDashboardMainActivity" />
         <activity android:name=".views.projects.tasks.TaskDashboard"/>
         <activity android:name=".views.projects.tasks.TaskCreate" android:noHistory="true"/>
@@ -46,20 +49,10 @@
 
 
         <activity android:name=".views.users.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
 
         <activity android:name=".views.users.UserSettingsActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <service
             android:name=".utils.MyFirebaseMessagingService"
