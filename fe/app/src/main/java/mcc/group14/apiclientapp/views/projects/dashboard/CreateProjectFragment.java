@@ -314,20 +314,24 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
             public void onResponse(Call<ProjectCreateResponse> call, Response<ProjectCreateResponse> response) {
 
                 //start the intent
-                ProjectCreateResponse data = response.body();
-                Log.d("PROJECT CREATE",response.code()+"");
-                Log.d("TAG",data+"");
+                try {
+                    ProjectCreateResponse data = response.body();
+                    Log.d("PROJECT CREATE", response.code() + "");
+                    Log.d("TAG", data + "");
 
 
-                if(response.code()==201){
-                    Log.d("Response","201");
+                    if (data.success == "true") {
+                        Log.d("Response", "201");
 
-                    mdToast = MDToast.makeText(mContext, "Project Created Successfully", 3, MDToast.TYPE_SUCCESS);
-                    mdToast.show();
-                    spn.setVisibility(v.INVISIBLE);
-                    btnCreateProj.setVisibility(v.VISIBLE);
+                        mdToast = MDToast.makeText(mContext, "Project Created Successfully", 3, MDToast.TYPE_SUCCESS);
+                        mdToast.show();
+                        //spn.setVisibility(v.INVISIBLE);
+                        btnCreateProj.setVisibility(v.VISIBLE);
 
 
+                    }
+                }catch (Exception e){
+                    Log.d("API","ERRoR");
                 }
 
             }
@@ -335,9 +339,8 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
             @Override
             public void onFailure(Call<ProjectCreateResponse> call, Throwable t) {
                 call.cancel();        spn.setVisibility(v.INVISIBLE);
-                btnCreateProj.setVisibility(v.VISIBLE);
-                mdToast = MDToast.makeText(mContext, "Oops! some error occurred.", 3, MDToast.TYPE_ERROR);
-                mdToast.show();
+                /*mdToast = MDToast.makeText(mContext, "Oops! some error occurred.", 3, MDToast.TYPE_ERROR);
+                mdToast.show();*/
 
             }
         });

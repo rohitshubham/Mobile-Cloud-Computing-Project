@@ -7,11 +7,7 @@
         android:title="Add Member"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/projectDescription"
-        android:orderInCategory="200"
-        android:title="Project Description"
-        app:showAsAction="never" />
+
 
     <item
         android:id="@+id/generateProjectReport"

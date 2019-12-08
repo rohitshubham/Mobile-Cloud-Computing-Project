@@ -24,7 +24,7 @@
             >
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/imageViewProject"
                 android:tag="image_tag"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -50,16 +50,6 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
 
                 <TextView
-                    android:id="@+id/textViewLastModified"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-
-                    android:text="Android Version"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-                <TextView
                     android:id="@+id/textViewProjectType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -67,7 +57,19 @@
                     android:layout_marginTop="10dp"
 
                     android:text="Android Version"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textViewLastModified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+
+                    android:text="Android Version"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textSize="14sp" />
+
 
 
 

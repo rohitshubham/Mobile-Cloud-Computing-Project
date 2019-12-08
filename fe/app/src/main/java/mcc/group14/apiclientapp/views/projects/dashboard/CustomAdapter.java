@@ -16,6 +16,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 
+import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.io.File;
@@ -60,7 +61,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             this.textViewName = (TextView) itemView.findViewById(R.id.textViewName);
             this.textViewLastModified = (TextView) itemView.findViewById(R.id.textViewLastModified);
             this.textViewProjectType = (TextView) itemView.findViewById(R.id.textViewProjectType);
-            this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageView);
+            this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageViewProject);
             this.buttonViewOption = (TextView) itemView.findViewById(R.id.textViewOptions);
         }
     }
@@ -94,6 +95,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
         CustomAdapter thisAdapter = this;
 
+        //Picasso.get().load("http://i.imgur.com/DvpvklR.png").into(holder.imageViewIcon);
+        //Picasso.with(currContext).load(dataSet.get(listPosition).badge).into(imageViewIcon);
+        //Log.d("URL Pica",dataSet.get(listPosition).badge);
+
         textViewName.setText(dataSet.get(listPosition).projectName);
         String[] dateTime=new String[2];
         if(dataSet.get(listPosition).lastModified != null)
@@ -103,7 +108,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
 
         //Just showing the date
-        textViewLastModified.setText(dateTime[0]);
+        textViewLastModified.setText("Last Modified:" +dateTime[0]);
         textViewProjectType.setText(dataSet.get(listPosition).projectType);
 
         holder.imageViewIcon.setOnClickListener(new View.OnClickListener() {
@@ -204,9 +209,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
                                 currContext.startActivity(intent);
                                 return true;
-                            case R.id.projectDescription:
-                                Log.d("OptionMenu","Project Description Clicked");
-                                return true;
+
                             case R.id.generateProjectReport:
                                 Log.d("OptionMenu","PDF Clicked");
 

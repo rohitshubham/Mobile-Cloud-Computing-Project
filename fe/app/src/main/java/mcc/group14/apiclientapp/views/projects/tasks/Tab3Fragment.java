@@ -38,6 +38,7 @@ import mcc.group14.apiclientapp.data.ProjectCreateResponse;
 import mcc.group14.apiclientapp.data.TaskDetails;
 import mcc.group14.apiclientapp.data.TaskResponse;
 import mcc.group14.apiclientapp.data.UploadAttachmentResponse;
+import mcc.group14.apiclientapp.views.users.LoginActivity;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -163,6 +164,7 @@ public class Tab3Fragment extends Fragment {
                 File file = new File(uri.getPath());
 
                 Log.d("File name",getFileName(uri));
+
 
                 //=====API CALL====
                 APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);

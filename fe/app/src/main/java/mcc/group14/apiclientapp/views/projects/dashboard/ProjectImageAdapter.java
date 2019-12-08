@@ -40,7 +40,7 @@ public class ProjectImageAdapter extends BaseAdapter {
         }
         ImageView imageView;
         imageView = (ImageView) convertView.findViewById(R.id.projectImage);
-        Picasso.with(context).load(arrayList.get(position).fileurl).into(imageView);
+        //Picasso.with(context).load(arrayList.get(position).fileurl).into(imageView);
         Log.d("Piccaso",arrayList.get(position).fileurl);
         //imageView.setImageResource(arrayList.get(position).mThumbIds);
         return convertView;
