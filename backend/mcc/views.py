@@ -16,7 +16,7 @@ from .models import UserAuth, User, Project, UserProject
 from .render import Render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-
+import requests
 
 
 
@@ -29,7 +29,7 @@ default_app = initialize_app(cred,{
 
 bucket = storage.bucket()
 db = firestore.client()
-
+url ="https://us-central1-mcc-fall-2019-g14.cloudfunctions.net/sendNotification"
 #========================================================================
 
 def add_project_event(project_id, message):
