@@ -7,74 +7,84 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.*
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.iid.FirebaseInstanceId
-import mcc.group14.apiclientapp.R
 import com.valdesekamdem.library.mdtoast.MDToast
 import mcc.group14.apiclientapp.views.projects.dashboard.ProjectsDashboardMainActivity
 import java.lang.Exception
 
+
+
 class LoginActivity : AppCompatActivity() {
+
     private var mAuth = FirebaseAuth.getInstance()
-    var TAG = "MyMessagingActivity"
-    var registrationtoken = ""
+
+    private lateinit var spinner: ProgressBar
+    private lateinit var loginBtn: Button
+    private lateinit var passET: EditText
+    private lateinit var emailET: EditText
+    companion object{
+        private val TAG: String = "LoginActivity"
+    }
+
+    override fun onBackPressed() {
+        // leaves the back stack as it is,
+        // just puts the task (all activities) in background.
+        // Same as if user pressed Home button.
+
+        moveTaskToBack(true)
+        super.onBackPressed()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(mcc.group14.apiclientapp.R.layout.activity_login)
 
         this.title = "Login"
 
-        val loginBtn = findViewById<Button>(R.id.btn_login)
-        val signUpText = findViewById<TextView>(R.id.signUp_text)
-        val spinner = findViewById<ProgressBar>(R.id.progressBar3)
-        loginBtn.visibility = View.VISIBLE
-        spinner.visibility = View.INVISIBLE;
+        val signUpText = findViewById<TextView>(mcc.group14.apiclientapp.R.id.signUp_text)
+
+        setUpListeners()
+
+        activateLoginButton()
+
         signUpText.setOnClickListener{
-            val intent =
-                Intent(this, SignupActivity::class.java)
+
+            val intent =  Intent(this, SignupActivity::class.java)
             startActivity(intent)
+
+            passET.setText("")
         }
 
-//        FirebaseInstanceId.getInstance().instanceId
-//            .addOnCompleteListener(OnCompleteListener { task ->
-//                if (!task.isSuccessful) {
-//                    Log.w(TAG, "getInstanceId failed", task.exception)
-//                    return@OnCompleteListener
-//                }
-//
-//                // Get new Instance ID token
-//                val token = task.result?.token
-//
-//                // Log and toast
-//                val msg = getString(R.string.msg_token_fmt, token)
-//                Log.d(TAG, msg)
-//                //Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-//                registrationtoken = msg
-//            })
 
         loginBtn.setOnClickListener{
 
-            val userEmail = findViewById<EditText>(R.id.txt_email_signin).text.toString()
-            val userPassword = findViewById<EditText>(R.id.txt_password_login).text.toString()
-            loginBtn.visibility = View.INVISIBLE;
-            spinner.visibility = View.VISIBLE;
+            val userEmail = emailET.text.toString()
+
+            val userPassword = passET.text.toString()
+
+            setLoading()
 
             //Validating email
             if (!userEmail.trim().matches(Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))){
                 val mdToast = MDToast.makeText(this@LoginActivity, "Invalid email address.", 3, MDToast.TYPE_ERROR)
                 mdToast.show()
+
+                activateLoginButton()
+
                 return@setOnClickListener
             }
+
 
             try {
                 mAuth.signInWithEmailAndPassword(userEmail, userPassword)
                     .addOnCompleteListener { task ->
-                        // If login successful, get the userAuth(a token) and send it to the next activity (ProjectActivity)
+                        // If login successful, get the userAuth(a token) and send it to the next mActivity (ProjectActivity)
                         val user = mAuth.currentUser
                         //var t1 = Toast.makeText(this@LoginActivity, "email:${userEmail} and password: ${userPassword}", Toast.LENGTH_LONG)
                         //t1.show()
                         if (task.isSuccessful && user != null) {
+
+
                             val userAuth: String = user.uid
 
                             val mdToast = MDToast.makeText(
@@ -99,35 +109,64 @@ class LoginActivity : AppCompatActivity() {
 
                             // Login successful, redirect to dashboard
                             val intent =
-                                Intent(this, ProjectsDashboardMainActivity::class.java).apply {
+                                Intent(this,
+                                    ProjectsDashboardMainActivity::class.java).apply {
+
                                     putExtra("USER_EMAIL", userEmail)
                                     putExtra("USER_AUTH", userAuth)
                                 }
-                            loginBtn.visibility = View.VISIBLE
-                            spinner.visibility = View.INVISIBLE
+
+                            setLoading()
+
                             startActivity(intent)
+
+                            passET.setText("")
+
                         } else {
-                            loginBtn.visibility = View.VISIBLE
-                            spinner.visibility = View.INVISIBLE
                             val mdToast = MDToast.makeText(
                                 this@LoginActivity,
-                                "Invalid email or password",
+                                "Could not log in. Please try again.",
                                 3,
                                 MDToast.TYPE_ERROR
                             )
                             mdToast.show()
 
-
-
+                            activateLoginButton()
                         }
                     }
-            }catch (e:Exception){
-                loginBtn.visibility = View.VISIBLE
-                spinner.visibility = View.INVISIBLE
+            } catch (e:Exception){
 
-                val mdToast = MDToast.makeText(this@LoginActivity, "Oops! Something went wrong!", 3, MDToast.TYPE_ERROR)
+                activateLoginButton()
+
+                Log.d(TAG, e.message)
+
+                val mdToast = MDToast.makeText(this@LoginActivity,
+                    "Oops! Something went wrong!", 3, MDToast.TYPE_ERROR)
                 mdToast.show()
+
             }
         }
+    }
+
+    private fun setUpListeners() {
+        spinner = findViewById(mcc.group14.apiclientapp.R.id.progressBar3)
+        loginBtn = findViewById(mcc.group14.apiclientapp.R.id.btn_login)
+        passET = findViewById<EditText>(mcc.group14.apiclientapp.R.id.txt_password_login)
+        emailET = findViewById<EditText>(mcc.group14.apiclientapp.R.id.txt_email_signin)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        activateLoginButton()
+    }
+
+    private fun setLoading() {
+        spinner.visibility = View.VISIBLE
+        loginBtn.visibility = View.INVISIBLE
+    }
+
+    private fun activateLoginButton() {
+        spinner.visibility = View.INVISIBLE
+        loginBtn.visibility = View.VISIBLE
     }
 }
