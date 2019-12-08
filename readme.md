@@ -9,12 +9,6 @@ The application is a project management cloud platform. It provides with followi
 * adding members to a project;
 * user settings and account management;
 * notifications on project assignment.
-
-<!-- ============ might be missing something: =================== -->
- 
-<!--  * conversion of an image to a project -->
-<!--  * project search -->
-<!--  * admin/user project privileges -->
  
 
 ---
@@ -93,19 +87,23 @@ The backend follows the OpenAPI specifications for serving the requests. The API
 
 ### Notifications
 
-The push notifications to the device is being sent by the Firebase Cloud Messaging (FCM) service. We can send notifications to every device that has signed-up in the application. 
-To send the notifications, we are using serverless `Google Cloud Functions`. The code for this functionality has been written in NodeJs and is in `sendNotifications/functions/index.js`. The trigger that we have used is HTTP Trigger i.e. we can trigger the function through HTTP post requests. The url endpoint for our function is : https://us-central1-mcc-fall-2019-g14.cloudfunctions.net/sendNotification . The triggers in our application happen when there are there are members added to the project or tasks assigned to the project.
+The push notifications to the device is being sent by the Firebase Cloud Messaging (FCM) service. We can send notifications to every device that has signed-up in the application. To send messages to the device, we use HTTPv1 Protocol specified for the Firebase Cloud Messaging Service. 
+
+To send the notifications, we are using serverless `Google Cloud Functions`. The code for this functionality has been written in NodeJs and is in `sendNotifications/functions/index.js`. The trigger that we have used is HTTP Trigger i.e. we can trigger the function through HTTP post requests. The url endpoint for our function is : https://us-central1-mcc-fall-2019-g14.cloudfunctions.net/sendNotification . The triggers in our application happen when there are there are members added to the project or tasks is assigned to a project.
+
+
 
 More details(request/response) about this can be seen in the OpenApi reference under the `tokens` tag.
 
 ### Email Notification:
 The email notification is sent via MailJet CLient running on a Google cloud platform's compute engine. The code run as a python script on this infrastructure. This infrastructure can be automatically deployed using Hashicorp's Terraform. It deploys a Ubuntu instance with `g1-micro` setting and installs the necessary dependencies using the `email_service_init.sh`.
-The `email_job.py` then runs on this instance and sends email notification to when the deadline is approaching.
+
+The `email_job.py` then runs on this instance and sends email notification to the user when the deadline is approaching.
 
 
 ### Frontend
 
-The frontend has been developed using both Kotlin and Java. You can find the application logic in this [folder](fe/app/src/main/java/mcc/group14/apiclientapp), 
+The frontend has been developed using both Kotlin and Java. You can find the application logic in the [folder](fe/app/src/main/java/mcc/group14/apiclientapp), 
 
 ```
 .
@@ -143,4 +141,12 @@ Below a list of used libraries:
 	* theme: `nachos:1.1.1`;
 	* toasts: `md-toast:0.9.0`.
 
-### CI/CD using GitLabCI
+#### CI/CD using GitLabCI
+
+For Continuous integration and deployment, we are using our own private Gitlab runners. There are two runners. One is hosted on Google Cloud Compute Engine and the other on Oracle Cloud Platform. The gitlab Ci code can be seen in the file : `.gitlab-ci.yml`  
+
+There are two stages to our CI/CD pipeline: `build` and `deploy`. The build is responsible for building the code and `deploy` stage deploys it to gcloud in case of backend and creates downloadable artifacts in case of frontend. 
+
+Each of the build and deploy is divided into two parts: The `front-end` and the `backend`. When the code is pushed to `master`, both the build and deploy runs. That is, the current code is deployed to the server and downloadable artifacts are created. 
+
+In cases of push to other branch or a merge request, only the build pipeline is triggered and hence the code is build but not deployed to the server.  
