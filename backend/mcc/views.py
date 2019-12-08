@@ -131,6 +131,7 @@ def user_get(request, email_id):
 @csrf_exempt
 @api_view(['POST', 'PUT'])
 def project_save(request):
+    request.data._mutable = True
     if request.method == 'POST':  
         try:
             request.data['creation_time'] = datetime.now()
@@ -626,3 +627,99 @@ def save_token(request):
     except Exception as e:
         print(e)
         return Response({"error" : 'InternalException' , "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+@api_view(["POST","GET"])
+def upload_project_attachment(request):
+    request.data._mutable = True    
+    if request.method == 'POST':  
+        try:
+            request.data['creation_time'] = datetime.now()           
+         
+            #check if the image exists for this project          
+
+            file_obj = request.FILES.get('file', False)
+            project_id = request.data['project_id']
+            store_filename = ''
+            if file_obj is not False:
+                filename = file_obj.name                
+                store_filename = f'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/{project_id}/{filename}?authuser=1'
+                
+                attachment_present = db.collection('projectAttachments').where("attachment_url", "==", store_filename).stream()
+
+                for a in attachment_present:
+                    return Response({"success" : "false", "error" : "AttachmentAlreadyExists"}, status= status.HTTP_409_CONFLICT)
+                
+                upload_blob(file_obj.file, f'{project_id}/{filename}')   
+
+                attachmentEvent = { "project_id" : project_id, "attachment_url" : store_filename ,"filename":filename, "creation_time":datetime.now() }
+                db.collection(u'projectAttachments').add(attachmentEvent)
+
+                return Response({"success" : "true", "url":store_filename}, status=status.HTTP_201_CREATED)
+            return Response({"success" : "false", "url":"No file recieved"}, status=status.HTTP_204_NO_CONTENT)
+           
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@csrf_exempt
+@api_view(["GET"])
+def get_all_project_attachment(request,project_id):
+    try:
+        attachment_present = db.collection('projectAttachments').where("project_id", "==", project_id).stream()
+        ret = []
+        for a in attachment_present:
+            ret.append({"filename":a.to_dict()['filename'],"attachment_url":a.to_dict()['attachment_url'],"creation_time":a.to_dict()['creation_time']})
+        return Response({"success":"true","payload":ret}, status= status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@csrf_exempt
+@api_view(["POST","GET"])
+def upload_project_image(request):
+    request.data._mutable = True    
+    if request.method == 'POST':  
+        try:
+            request.data['creation_time'] = datetime.now()           
+         
+            #check if the image exists for this project          
+
+            file_obj = request.FILES.get('file', False)
+            project_id = request.data['project_id']
+            store_filename = ''
+            if file_obj is not False:
+                filename = file_obj.name                
+                store_filename = f'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/{project_id}/{filename}?authuser=1'
+                
+                attachment_present = db.collection('projectImages').where("attachment_url", "==", store_filename).stream()
+
+                for a in attachment_present:
+                    return Response({"success" : "false", "error" : "AttachmentAlreadyExists"}, status= status.HTTP_409_CONFLICT)
+                
+                upload_blob(file_obj.file, f'{project_id}/{filename}')   
+
+                attachmentEvent = { "project_id" : project_id, "attachment_url" : store_filename ,"filename":filename, "creation_time":datetime.now() }
+                db.collection(u'projectImages').add(attachmentEvent)
+
+                return Response({"success" : "true", "url":store_filename}, status=status.HTTP_201_CREATED)
+            return Response({"success" : "false", "url":"No file recieved"}, status=status.HTTP_204_NO_CONTENT)
+           
+        except Exception as e:
+            print(e)
+            return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@csrf_exempt
+@api_view(["GET"])
+def get_all_project_image(request,project_id):
+    try:
+        attachment_present = db.collection('projectImages').where("project_id", "==", project_id).stream()
+        ret = []
+        for a in attachment_present:
+            ret.append({"filename":a.to_dict()['filename'],"attachment_url":a.to_dict()['attachment_url'],"creation_time":a.to_dict()['creation_time']})
+        return Response({"success":"true","payload":ret}, status= status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({"error" : 'InternalException', "success": "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
