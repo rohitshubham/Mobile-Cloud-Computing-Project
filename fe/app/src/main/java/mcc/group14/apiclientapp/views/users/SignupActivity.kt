@@ -161,7 +161,10 @@ class SignupActivity : AppCompatActivity() {
                         },
                         {
                                 error -> Log.d(TAG, "sign up failed, " + error.message.toString())
-                                if (error is HttpException) {
+
+                            spinner.visibility = View.INVISIBLE;
+
+                            if (error is HttpException) {
                                     var error_msg = "Sign up failed."
                                     val errorJsonString = error.response().errorBody()?.string()
                                     val response = JsonParser().parse(errorJsonString).asJsonObject
