@@ -104,13 +104,13 @@ Below a list of used libraries:
 	* database: `firebase-database:17.0.0`;
 	* messaging: `firebase-messaging:18.0.0`.
 
-* api: 
+* api:
 	* calls to BE: `retrofit:2.3.0`;
-  <!-- ================ Kibria which picasso version??? ================ -->
-  
-  <!-- 	  * picasso: `picasso:<version>`  -->
 
+<!-- ================ Kibria which picasso version??? ================ -->
   
+<!-- 	  * picasso: `picasso:<version>`  -->
+
 * Android libraries: `support-v7:28.0.0`.
 
 * UI:
