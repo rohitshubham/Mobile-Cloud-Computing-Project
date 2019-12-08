@@ -237,17 +237,17 @@ public class UserProfileActivity extends AppCompatActivity {
 
         map.put("email_id", toRequestBody(email_id));
 
+        if(hasImage(profile_pic)) {
 
-        Bitmap bitmap = ((BitmapDrawable)profile_pic.getDrawable()).getBitmap();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100 /*ignored for PNG*/, bos);
-        byte[] bitmapdata = bos.toByteArray();
-        //File file = new File(bitmapdata);
-        RequestBody fileBody = RequestBody.create(MediaType.parse("image/*"), bitmapdata);
-        map.put("file\"; filename=\"some_file_name.jpg", fileBody);
-        Log.d("MAP",fileBody.toString());
-
-
+            Bitmap bitmap = ((BitmapDrawable) profile_pic.getDrawable()).getBitmap();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100 /*ignored for PNG*/, bos);
+            byte[] bitmapdata = bos.toByteArray();
+            //File file = new File(bitmapdata);
+            RequestBody fileBody = RequestBody.create(MediaType.parse("image/*"), bitmapdata);
+            map.put("file\"; filename=\"some_file_name.jpg", fileBody);
+            Log.d("MAP", fileBody.toString());
+        }
 
 
 
