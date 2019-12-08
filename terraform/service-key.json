@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "mcc-fall-2019-g14",
+  "private_key_id": "e5833e504c424851c222adc68440575bedbb00e1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCixX3bRmd3g2ph\nojbQbepb++2l+U5F7CpYk+UZEmhYaQBKuo+1kkKGUriGFokmu27rL39ZemLy895q\n+t9IQf1TWzggVBjX3p8Zw2LrXhW39mtH4ubxgwixxLEZBBgSvuYYUzqe3auNknUJ\nvLu1zTYYgU2oAHr6IXV184EJWjLyS/EAlTX5XaJqls8JNNUvGWtHkHXGK3ndxiyA\n+6wPMtH4QRZdGGa29jdnucp/n6xyceIhYO0S6z8r1Cg6/ZW5FER7vf548gp4x4Av\nmJzOBm959Srj73GeQ7Op8Vt8toyr0STh/QNiqVefuwqDQnDCclyjRnAIdHMn7ExN\n8UgsrwXfAgMBAAECggEAJs5PvZ3Q4BjoHWPHjrSNyaVL2KSRyTDPPbPwzCPr1Zwe\n8jH9PgwjKRQCoxEvXJkWDiMSSPpZKdQDRF0QK5Fz/FIElQyHqbuNEd7XsAaLxgKN\nPCO37H9RbNRYZn7n4Fw7zjPVh3eQxV1T4uDonaTRj1EQewu2RfkBIIBP1LN47vPT\nPQSmvikBTszU8aYSk7LGytvWvNZJcyA71ocV0QUMw3bv/7eseCGEMic35kebPFzU\nOFF4K00jEzVKLLepivrJ5iJbmQCEMggNeHmcBGBP+QzvIZyWiyqvqEpjbq5blbO1\nmlvUYv+BNLOYww4jvq4Z16jiMI2+OdRRlUsMhHecAQKBgQDgEP9XrHSZUIeB0lNy\nFIJj8dZXcJ5jCW1N+e7ucblrkdu87+Y1qt73QlDhtRYc5CVV+GzURAUbAhprTXci\nPCYXn3u8P+AAwa/Ig72EAAOi9vvjjaIHiGDbZHY3UqKBxfomZ8tp4G1kkw6J0LXS\npnnFZ07grxDLahvPN0C7FDZp3wKBgQC5+CoelHtmJxdkPj63xk9z+GHafb3xcQE4\niBmBvHWkr33+A8ZzvEYa3ln9iLRIfQ2hK7P31HTebtiK9o5FPYiAyH6wb4wREBj2\ncKH21OdGfQtIQxic22Gjq1WspXUK9EUPbybUu8D6725CLghqBpuwrNYY10fnSaOj\nLkoV35LkAQKBgQCdnbdQ4CJBOvGnc+F5LU4vqg3iAnmYJyh5oqfdmagaMEdHl+Xz\nuJgRjNfCfhTpC9/ros5DXvnMbuVQt/Rm47LUCT8MRE55mcXiojFtKmlkeKLmBlqF\nO/0ON5QlBH8GFNMLsxXXC6VIC149udA9NxgPscU9rkh9Hs4jLLXfI6/HNwKBgQCR\ntBiz+tuvzoLqPEaBT/OiRgHM4OW3zDULqL5rQk/d5s1M/oI23VUD6iARn1C41pme\nJBKN4rxqJeis/726DBrt46g27j6Mg9M7CkYrkOVe+cukI0WeZ9fZFv06Fixcl8Of\n8xM2a6AoOv1lBpH7GBBVXSUlM06XrL9zs2nCN3fsAQKBgQDZiFyFb4+h9DeL923n\nTTTdQuxxhwQUNI+DZvZP3sB33m4A8KN1HWQJCbXjrXho7vee/nhLqqkIVF4ToKRE\nDvoU+SAYczMXLd7zWYf0eaE1KoreiEUR+X5QM81R1fIy6M7YJT9iPwHdqQTfcpv/\nvxJW5G2q99TJZCXtQf5I2upDZw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "gitlab-deploy@mcc-fall-2019-g14.iam.gserviceaccount.com",
+  "client_id": "107988430921043147253",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gitlab-deploy%40mcc-fall-2019-g14.iam.gserviceaccount.com"
+}
