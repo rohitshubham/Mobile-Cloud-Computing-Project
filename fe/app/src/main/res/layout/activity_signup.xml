@@ -83,7 +83,7 @@
             android:foreground="?android:attr/selectableItemBackground"
             android:text="SIGN UP"
             android:textAllCaps="false"
-            android:textColor="#FE5295"
+            android:textColor="#FF5722"
             android:textSize="17sp" />
 
         <ProgressBar
