@@ -82,31 +82,31 @@ def user_save(request):
             return Response({"error" : 'InternalException', "success" : "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response({"success" : "true"}, status=status.HTTP_201_CREATED)
 
+
     if request.method == 'PUT':
         try:
-            data_json = json.loads(request.data["bodyParams"])
-            user = auth.get_user_by_email(data_json["email_id"])
+            user = auth.get_user_by_email(request.data["email_id"])
+           
             
             file_obj = request.FILES.get('file', False)
 
             if file_obj is not False:
                 ext = file_obj.name.split('.')[-1]
                 profile_pic = ''
-                profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/' + data_json["email_id"] + '.'+ext+'?authuser=1'
+                profile_pic = 'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/' + request.data["email_id"] + '.'+ext
                 auth.update_user(uid = user.uid, photo_url = profile_pic)
-                upload_blob(file_obj.file, data_json["email_id"]+'.'+ext)
-
+                upload_blob(file_obj.file, request.data["email_id"]+'.'+ext)
+               
             
-            if 'password' in data_json:
-                auth.update_user(uid = user.uid, password = data_json["password"])
-
-
-
+            if 'password' in request.data:
+                auth.update_user(uid = user.uid, password = request.data["password"])
             return Response({"success" : "true"}, status= status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response({"error" : 'InternalException', "success" : "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
+    
 
 def save_list_project_members(members, project_id, requester_email, project_name):
     list_members = members.split(",")
@@ -218,7 +218,7 @@ def project_save(request):
                     ext = file_obj.name.split('.')[-1]
                     upload_blob(file_obj.file, f'{request.data["requester_email"]}_{request.data["name"]}.{ext}')
 
-                del request.data["file"]
+                #del request.data["file"]
                 return Response({"success" : "true",
                                 "payload" : request.data }, status = status.HTTP_200_OK)
                                 
@@ -641,7 +641,7 @@ def upload_project_attachment(request):
             store_filename = ''
             if file_obj is not False:
                 filename = file_obj.name                
-                store_filename = f'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/{project_id}/{filename}?authuser=1'
+                store_filename = f'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/{project_id}/{filename}'
                 
                 attachment_present = db.collection('projectAttachments').where("attachment_url", "==", store_filename).stream()
 
@@ -690,7 +690,7 @@ def upload_project_image(request):
             store_filename = ''
             if file_obj is not False:
                 filename = file_obj.name                
-                store_filename = f'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/{project_id}/{filename}?authuser=1'
+                store_filename = f'https://storage.cloud.google.com/mcc-fall-2019-g14.appspot.com/{project_id}/{filename}'
                 
                 attachment_present = db.collection('projectImages').where("attachment_url", "==", store_filename).stream()
 
