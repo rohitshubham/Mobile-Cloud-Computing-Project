@@ -38,7 +38,11 @@ import com.hootsuite.nachos.chip.Chip;
 import com.hootsuite.nachos.terminator.ChipTerminatorHandler;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mcc.group14.apiclientapp.R;
 import mcc.group14.apiclientapp.api.APIInterfaceJava;
@@ -47,6 +51,8 @@ import mcc.group14.apiclientapp.data.Project;
 import mcc.group14.apiclientapp.data.ProjectCreateResponse;
 import mcc.group14.apiclientapp.data.TaskCreateResponse;
 import mcc.group14.apiclientapp.data.TaskMembers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -274,7 +280,35 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
         btnCreateProj.setVisibility(v.INVISIBLE);
         //=====API CALL====
         APIInterfaceJava apiInterface = ProjectAPIJava.getClient().create(APIInterfaceJava.class);
-        Call<ProjectCreateResponse> call = apiInterface.createProject(p);
+
+        //========Handle File=================================
+
+        Map<String, RequestBody> map = new HashMap<>();
+        map.put("name", toRequestBody(p.name));
+        map.put("description", toRequestBody(p.description));
+        map.put("deadline", toRequestBody(p.deadline));
+        map.put("team_members", toRequestBody(p.team_members));
+        map.put("requester_email", toRequestBody(p.requester_email));
+        map.put("keywords", toRequestBody(p.keywords));
+        map.put("project_type", toRequestBody(p.project_type));
+
+        if (hasImage(imageView)){
+            Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100 /*ignored for PNG*/, bos);
+            byte[] bitmapdata = bos.toByteArray();
+            //File file = new File(bitmapdata);
+            RequestBody fileBody = RequestBody.create(MediaType.parse("image/*"), bitmapdata);
+            map.put("file\"; filename=\"some_file_name.jpg", fileBody);
+            Log.d("MAP",fileBody.toString());
+
+
+        }
+        Log.d("MAP",map.toString());
+
+        //====================================================
+
+        Call<ProjectCreateResponse> call = apiInterface.createProjectWithBadge(map);
         call.enqueue(new Callback<ProjectCreateResponse>() {
             @Override
             public void onResponse(Call<ProjectCreateResponse> call, Response<ProjectCreateResponse> response) {
@@ -285,7 +319,7 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
                 Log.d("TAG",data+"");
 
 
-                if(response.isSuccessful()){
+                if(response.code()==201){
                     Log.d("Response","201");
 
                     mdToast = MDToast.makeText(mContext, "Project Created Successfully", 3, MDToast.TYPE_SUCCESS);
@@ -307,9 +341,15 @@ public class CreateProjectFragment extends Fragment implements View.OnClickListe
 
             }
         });
-        
 
 
+
+    }
+
+    // This method  converts String to RequestBody
+    public static RequestBody toRequestBody (String value) {
+        RequestBody body = RequestBody.create(MediaType.parse("text/plain"), value);
+        return body ;
     }
 
     private boolean hasImage(ImageView view) {

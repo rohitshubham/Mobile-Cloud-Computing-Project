@@ -115,11 +115,12 @@ public class ProjectsHomeFragment extends Fragment {
                     pCard.project_id = d.project_id;
                     pCard.team_member = d.team_members;
                     pCard.requester_email = d.requester_email;
+                    pCard.creation_time = d.creation_time;
                     passToAdapter.add(pCard);
                 }
                     spinner.setVisibility(View.INVISIBLE);
 
-                adapter = new CustomAdapter(passToAdapter,mContext);
+                adapter = new CustomAdapter(passToAdapter,mContext,userEmail,userAuth);
                 recyclerView.setAdapter(adapter);
 
                 }
@@ -167,5 +168,7 @@ public class ProjectsHomeFragment extends Fragment {
 
 
     }
+
+
 
 }
