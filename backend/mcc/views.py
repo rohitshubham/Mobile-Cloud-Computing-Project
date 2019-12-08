@@ -108,12 +108,12 @@ def user_save(request):
             return Response({"error" : 'InternalException', "success" : "false"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def save_list_project_members(members, project_id, requester_email):
+def save_list_project_members(members, project_id, requester_email, project_name):
     list_members = members.split(",")
     for member in list_members:
         data = {'email_id' : member, 'project_id': project_id, 'is_project_administrator' :  member == requester_email  }
         serializer_user_project = UserProjectSerializer(data = data)
-
+        requests.post(url, data={"email_id" : member, "title" : "Project Edited", "notification" : f"One or more components of the project named {project_name} has been edited by {requester_email}"})
         db.collection(u'userProjects').document().set(serializer_user_project.initial_data)
 
            
@@ -166,7 +166,7 @@ def project_save(request):
                 #using doc_ref.id as project id
                 doc_ref = db.collection(u'projects').document()
                 doc_ref.set(serializer.data)
-                save_list_project_members(serializer.data["team_members"], doc_ref.id, request.data["requester_email"])
+                save_list_project_members(serializer.data["team_members"], doc_ref.id, request.data["requester_email"], request.data["name"])
                 add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Project was created by {auth.get_user_by_email(request.data['requester_email']).display_name}.")
                 
                 
@@ -209,7 +209,7 @@ def project_save(request):
                 #Manually adding project id
                 request.data['project_id'] = project_id
                 remove_team_member(project_id)
-                save_list_project_members(serializer.data["team_members"], project_id, request.data["requester_email"])
+                save_list_project_members(serializer.data["team_members"], project_id, request.data["requester_email"], request.data["name"])
 
                 add_project_event(doc_ref.id, f"{datetime.now().strftime('%Y-%m-%d %H:%M')} - Project was edited by {auth.get_user_by_email(request.data['requester_email']).display_name}.")
                 
@@ -537,6 +537,7 @@ def add_member_to_task(request):
                 serializer_user_task = UserTaskSerializer(data = data)
                 if serializer_user_task.is_valid():    
                     db.collection(u'userTasks').document().set(serializer_user_task.initial_data)
+                    requests.post(url, data={"email_id" : member, "title" : "Added to Task", "notification" : f"You have been assigned a task by {requester_email}"})
                 else:
                     return Response({"error": "unable_to save", "success": "false"}, status = status.HTTP_422_UNPROCESSABLE_ENTITY)
 
